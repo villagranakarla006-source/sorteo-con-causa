@@ -1,0 +1,10 @@
+RIFA CON CAUSA — VERSIÓN 10.3
+
+CORRECCIÓN DE GALERÍA
+- Se reemplazó el cuadro dialog por un visor compatible con páginas abiertas localmente.
+- Al seleccionar cualquier imagen ahora se amplía.
+- Flechas anterior y siguiente siempre visibles.
+- Teclas izquierda y derecha para navegar.
+- Tecla Escape para cerrar.
+- Deslizamiento lateral en celular.
+- Se corrigió un error JavaScript que podía impedir la ejecución de la galería.

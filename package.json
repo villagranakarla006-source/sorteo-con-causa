@@ -1,0 +1,14 @@
+{
+  "name": "rifa-con-causa",
+  "version": "11.0.0-rc.2",
+  "private": true,
+  "description": "Versión definitiva RC2 conectada a Firestore y Authentication, comprobantes por WhatsApp",
+  "scripts": {
+    "serve": "python -m http.server 8080",
+    "deploy": "firebase deploy --only hosting,firestore:rules,firestore:indexes",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes",
+    "emulators": "firebase emulators:start",
+    "test:local-registration": "node scripts/test-local-registration.js"
+  }
+}

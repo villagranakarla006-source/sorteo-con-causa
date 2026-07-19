@@ -1,0 +1,22 @@
+RIFA CON CAUSA — VERSIÓN 6.2
+
+MEJORAS PRINCIPALES:
+- Página pública completamente rediseñada.
+- Apariencia premium con identidad rosa y turquesa.
+- Portada moderna para la Dodge Journey 2013.
+- Tarjeta de confianza y proceso de participación.
+- Tablero de números más claro y adaptable.
+- Mejor navegación desde teléfonos.
+- Nueva página pública del ganador.
+- Opción de imprimir el acta del sorteo.
+- Botón para abrir la vista pública del resultado.
+- Estructura visual limpia y reutilizable.
+
+ACCESO ADMINISTRATIVO:
+admin/index.html
+Usuario: admin
+Contraseña: Rifa2026
+
+IMPORTANTE:
+Las imágenes incluidas son recursos visuales provisionales en SVG.
+Pueden sustituirse después por las fotografías definitivas.

@@ -1,0 +1,23 @@
+RIFA CON CAUSA — VERSIÓN 6.1
+
+NOVEDADES:
+- Nuevo dashboard administrativo.
+- Progreso de venta y distribución de números.
+- Actividad reciente.
+- Búsqueda y conteos mejorados.
+- Respaldo completo en formato JSON.
+- Restauración de respaldos.
+- Módulo de sorteo entre números pagados.
+- Registro de cada sorteo realizado.
+- Copia rápida del resultado ganador.
+- Diseño adaptable para teléfono, tableta y computadora.
+
+ACCESO:
+Abre ABRIR-RIFA.html o admin/index.html
+
+Usuario: admin
+Contraseña: Rifa2026
+
+IMPORTANTE:
+El módulo de sorteo solo incluye números con estado PAGADO.
+Antes de realizarlo, revisa cuidadosamente que todos los pagos estén confirmados.

@@ -1,0 +1,20 @@
+RIFA CON CAUSA — VISUALIZACIÓN EN CELULAR
+
+1. Descomprime completamente la carpeta.
+2. En Windows, abre INICIAR-PARA-CELULAR-Y-PC.bat.
+3. Mantén abierta la ventana negra del servidor.
+4. Conecta el celular y la computadora al mismo Wi-Fi.
+5. En la ventana de ipconfig busca la Dirección IPv4, por ejemplo 192.168.1.25.
+6. En el navegador del celular abre:
+
+   PÁGINA PÚBLICA
+   http://192.168.1.25:8080/app/public/
+
+   PANEL ADMINISTRATIVO
+   http://192.168.1.25:8080/app/admin/
+
+Reemplaza 192.168.1.25 por la Dirección IPv4 real de tu computadora.
+
+Para que personas desde cualquier lugar puedan ingresar y para que los datos
+se sincronicen entre distintos teléfonos, todavía es necesario colocar las
+credenciales del proyecto Firebase y publicar el sitio.

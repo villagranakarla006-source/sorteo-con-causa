@@ -1,0 +1,20 @@
+RIFA CON CAUSA — VERSIÓN 6.0
+
+PARA USAR AHORA MISMO:
+1. Descomprime el ZIP.
+2. Abre ABRIR-RIFA.html.
+3. Usa el sitio público o el panel local.
+4. Panel local:
+   Usuario: admin
+   Contraseña: Rifa2026
+
+PARA ACTIVAR FIREBASE:
+1. Abre CONFIGURAR-FIREBASE.html.
+2. Crea tu proyecto Firebase.
+3. Completa firebase/firebase-config.js.
+4. En config.js cambia mode: "local" por mode: "firebase".
+5. Abre admin/FIREBASE-ADMIN.html para entrar con correo y contraseña.
+
+IMPORTANTE:
+La aplicación está preparada, pero no puede conectarse a Firebase hasta que se agreguen
+los datos de tu proyecto personal y se cree la cuenta administradora.

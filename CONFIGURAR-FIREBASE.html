@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Configurar Firebase</title><style>
+body{margin:0;font-family:Segoe UI,Arial;background:linear-gradient(135deg,#fff0f6,#e8fbfd);color:#14243a;padding:25px}
+main{max-width:850px;margin:auto;background:white;padding:30px;border-radius:24px;box-shadow:0 20px 50px #143c5a22}
+h1{color:#05839a}code,pre{background:#f1f5f7;border-radius:10px;padding:3px 7px}pre{padding:15px;overflow:auto}
+.step{border-left:5px solid #e91e63;padding:5px 18px;margin:22px 0}a{color:#05839a;font-weight:800}
+</style></head><body><main>
+<h1>Configuración de Firebase</h1>
+<p>Esta versión ya contiene la conexión, reglas y estructura. Para activarla faltan únicamente los datos de tu propio proyecto Firebase.</p>
+<div class="step"><h2>1. Crear el proyecto</h2><p>En Firebase Console crea un proyecto llamado, por ejemplo, <b>rifa-con-causa</b>.</p></div>
+<div class="step"><h2>2. Activar servicios</h2><p>Activa Authentication con correo y contraseña, Cloud Firestore y Storage.</p></div>
+<div class="step"><h2>3. Crear administradora</h2><p>En Authentication crea una cuenta de correo y contraseña para entrar al panel.</p></div>
+<div class="step"><h2>4. Copiar configuración</h2><p>Registra una aplicación web y copia sus datos dentro de <code>firebase/firebase-config.js</code>.</p></div>
+<div class="step"><h2>5. Activar modo Firebase</h2><p>En <code>config.js</code> cambia:</p><pre>mode: "local"</pre><p>por:</p><pre>mode: "firebase"</pre></div>
+<div class="step"><h2>6. Publicar reglas</h2><pre>firebase login
+firebase use --add
+firebase deploy --only firestore:rules,firestore:indexes,storage</pre></div>
+<div class="step"><h2>7. Inicializar números</h2><p>Entra al panel con tu correo de Firebase y pulsa <b>Inicializar 500 números</b>.</p></div>
+<p><b>Importante:</b> hasta completar estos pasos, la aplicación continuará funcionando en modo local.</p>
+</main></body></html>

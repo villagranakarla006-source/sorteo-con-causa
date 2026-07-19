@@ -1,0 +1,9 @@
+RIFA CON CAUSA — VERSIÓN 8.0
+
+- Nueva consulta pública de participación por teléfono.
+- Acceso directo a consulta desde el sitio y el panel.
+- Panel de salud operativa.
+- Advertencia automática cuando continúa activo el modo local.
+- Portada de revisión para publicación.
+- Documentación clara de lo incluido y lo pendiente.
+- Conserva todas las funciones de la versión 7.5.

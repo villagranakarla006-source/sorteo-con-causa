@@ -1,0 +1,10 @@
+RIFA CON CAUSA — VERSIÓN 10.7
+
+- Buscador continuo.
+- Pagados con corazón rosa.
+- Agradecimiento más empático sin la palabra rifa.
+- Galería sin imagen del motor y con nuevos fondos frontal/trasero.
+- Se eliminó 500 números de la sección Premio.
+- Progreso administrativo reconciliado.
+- Notas conservadas y exportadas a Excel.
+- Abrir con INICIAR-RIFA-Y-PANEL.bat para compartir datos entre público y administración.

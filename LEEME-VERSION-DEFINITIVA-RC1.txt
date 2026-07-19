@@ -1,0 +1,19 @@
+RIFA CON CAUSA — VERSIÓN DEFINITIVA, CANDIDATA 1
+
+Esta es la primera candidata de la versión definitiva.
+
+INCLUYE
+- Página pública adaptable a celular y computadora.
+- Panel administrativo adaptable.
+- Registro, comprobantes, números apartados y pagados.
+- Corazón rosa para números pagados.
+- Galería ampliable.
+- Fotografía original de la organizadora, sin modificar sus rasgos.
+- Fotografías frontal y trasera originales de la camioneta.
+- Notas conservadas y exportadas a Excel.
+- Preparación para Firebase y publicación.
+
+IMPORTANTE
+La sincronización real entre dispositivos y el acceso público desde Internet
+requieren configurar Firebase. Los archivos de configuración se mantienen sin
+credenciales por seguridad. Consulta CONFIGURAR-FIREBASE.html.

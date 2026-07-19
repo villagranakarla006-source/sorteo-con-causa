@@ -1,0 +1,7 @@
+RIFA CON CAUSA V10.2
+
+1. Descomprime completamente el archivo ZIP.
+2. Abre ABRIR-GALERIA.html para ir directamente a las fotografías.
+3. También puedes abrir ABRIR-RIFA.html y elegir “Abrir directamente la galería”.
+
+La sección está inmediatamente después de la portada y antes de los datos de 500 números.

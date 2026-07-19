@@ -1,0 +1,23 @@
+{
+  "app/public/js/public-hybrid.js": {
+    "ok": true,
+    "error": ""
+  },
+  "app/public/js/local-db.js": {
+    "ok": true,
+    "error": ""
+  },
+  "app/admin/js/admin-hybrid.js": {
+    "ok": true,
+    "error": ""
+  },
+  "visualAssets": {
+    "originalPortraitExists": true,
+    "portraitReferenced": true,
+    "originalFrontReferenced": true,
+    "originalRearReferenced": true,
+    "editedFrontRemovedFromPublic": true,
+    "editedRearRemovedFromPublic": true
+  },
+  "mobileLauncherExists": true
+}

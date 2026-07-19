@@ -1,0 +1,9 @@
+RIFA CON CAUSA — VERSIÓN 10.1
+
+- Se agregaron las tres fotografías entregadas del premio.
+- Se agregó el cartel promocional final.
+- Nueva galería visible en la página principal.
+- Las imágenes se amplían al tocarlas.
+- Navegación anterior/siguiente mediante botones y teclado.
+- Diseño adaptable para celulares.
+- Se conserva toda la funcionalidad Firebase de la versión 10.

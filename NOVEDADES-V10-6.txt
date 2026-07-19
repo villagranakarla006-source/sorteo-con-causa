@@ -1,0 +1,18 @@
+RIFA CON CAUSA — VERSIÓN 10.6
+
+BUSCADOR DE NÚMEROS
+- Al escribir un número se abre automáticamente el bloque correcto.
+- El número encontrado queda resaltado.
+- Se informa si está disponible, apartado o pagado.
+- Al presionar Enter sobre un número disponible se selecciona para continuar con el registro.
+
+MENSAJE AL PARTICIPANTE
+- Se agregó agradecimiento por el apoyo.
+- Se confirma la recepción del registro.
+- Se explica que el número queda amarillo mientras el pago está en revisión.
+- Se explica que cambiará a rosa/rojo cuando el pago sea confirmado.
+- El mismo texto se incluye en el mensaje de WhatsApp.
+
+PANEL ADMINISTRATIVO
+- El avance muestra separados los apartados, pagados y asignados.
+- El panel se actualiza al recuperar el foco, al volver a la pestaña y cada 1.5 segundos.

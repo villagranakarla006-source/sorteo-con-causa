@@ -1,0 +1,11 @@
+RIFA CON CAUSA — VERSIÓN 10.4
+
+- Se corrigió el error que impedía iniciar la base de datos local.
+- El registro guarda nombre, teléfono, números y comprobante.
+- Los números cambian inmediatamente a estado Apartado.
+- Se verifica que el participante y los estados queden guardados.
+- Confirmación visible con los números apartados.
+- Prueba automática de persistencia incluida.
+
+En modo local, los datos se guardan únicamente en el navegador usado.
+Para compartirlos entre dispositivos se requiere activar Firebase.

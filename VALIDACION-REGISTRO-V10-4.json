@@ -1,0 +1,5 @@
+{
+  "localRegistrationTest": true,
+  "stdout": "OK: registro y estados persistidos.",
+  "stderr": ""
+}

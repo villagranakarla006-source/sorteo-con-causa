@@ -1,0 +1,28 @@
+RIFA CON CAUSA — VERSIÓN 10.0
+
+BACKEND
+- Cloud Function transaccional para registrar participantes.
+- Prevención real de números duplicados.
+- URL firmada temporal para subir comprobantes.
+- Confirmación de carga del comprobante.
+- Consulta pública mediante función.
+- Cambio de estado protegido para administradores.
+- Liberación automática de apartados vencidos cada hora.
+
+SEGURIDAD
+- Firestore bloquea escrituras directas desde el navegador.
+- Storage bloquea cargas directas no autorizadas.
+- Operaciones administrativas requieren custom claim admin.
+- Reglas e índices preparados para despliegue.
+
+OPERACIÓN
+- Emuladores configurados.
+- Script para asignar permiso de administradora.
+- Guía completa de activación y pruebas.
+- Estructura frontend, admin-console, firebase, functions, assets y docs.
+
+PENDIENTE
+- Introducir credenciales reales de Firebase.
+- Instalar dependencias.
+- Crear cuenta administradora.
+- Desplegar y probar en dos dispositivos.

@@ -1,0 +1,10 @@
+{
+  "functions/index.js": {
+    "ok": true,
+    "stderr": ""
+  },
+  "scripts/set-admin-claim.js": {
+    "ok": true,
+    "stderr": ""
+  }
+}

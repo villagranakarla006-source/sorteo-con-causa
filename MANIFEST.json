@@ -1,0 +1,699 @@
+{
+  "version": "11.0.0-rc.1",
+  "generatedAt": "2026-07-19T10:37:37.230038",
+  "checks": {
+    "app/public/js/public-hybrid.js": {
+      "ok": true,
+      "error": ""
+    },
+    "app/public/js/local-db.js": {
+      "ok": true,
+      "error": ""
+    },
+    "app/admin/js/admin-hybrid.js": {
+      "ok": true,
+      "error": ""
+    },
+    "visualAssets": {
+      "originalPortraitExists": true,
+      "portraitReferenced": true,
+      "originalFrontReferenced": true,
+      "originalRearReferenced": true,
+      "editedFrontRemovedFromPublic": true,
+      "editedRearRemovedFromPublic": true
+    },
+    "mobileLauncherExists": true
+  },
+  "files": [
+    {
+      "path": "firestore.rules",
+      "sha256": "420260a0f6a1621c3c9a2c006914a2410647ef87a0f8bee09f2f093a638f1978",
+      "size": 958
+    },
+    {
+      "path": "storage.rules",
+      "sha256": "a6231b009d235515cbcb263cd0a4e523eb63fcacf818ae6fa1980f2734706088",
+      "size": 484
+    },
+    {
+      "path": "firebase.json",
+      "sha256": "a04d884de78e41e9519d9332d96810bf151c126a98ded40fbf56a2cb20c2f74a",
+      "size": 1203
+    },
+    {
+      "path": ".firebaserc.example",
+      "sha256": "01b12ae46008d5660bd69be8caca996af2699dcd1d58b56868a3ce4ec12bccae",
+      "size": 41
+    },
+    {
+      "path": "README.md",
+      "sha256": "a80f9b2aa69cd238925b475512d39dbd03e1ea6a43bb2bb4e06e1c66384dfd55",
+      "size": 1403
+    },
+    {
+      "path": "INICIO-RAPIDO.txt",
+      "sha256": "c1cae42259bf6c6b25b82d707abbe1c794fc22fc7a49d6430eb0b14519fc1925",
+      "size": 639
+    },
+    {
+      "path": "config.js",
+      "sha256": "a3f21fda99bb76a9c90603c94ed154782cfcb4031a339469c70e4dba21124e7c",
+      "size": 354
+    },
+    {
+      "path": "ABRIR-RIFA.html",
+      "sha256": "a162609b38ddf0bb3c2a30609d86b618e91223a66949303def26fa16c46ae0d7",
+      "size": 1435
+    },
+    {
+      "path": "LEEME-PRIMERO.txt",
+      "sha256": "f5c03c82539b0c6b29a0922d06b5b8f1223f6d55b3116e251a1b4275aa2c8794",
+      "size": 318
+    },
+    {
+      "path": "ACCESO-ADMIN.html",
+      "sha256": "23e7b9edef6287e976f603d64318919b8bb3dcdfaf0d82b02a3fb12d80007b1f",
+      "size": 490
+    },
+    {
+      "path": "CONFIGURAR-FIREBASE.html",
+      "sha256": "89439706236d0ee353e5a0df638812458e00475b005aeb08224822b74a2a020b",
+      "size": 2006
+    },
+    {
+      "path": "package.json",
+      "sha256": "f0e23dfb685f5e0f342550431286cfdb24108f9b9e45169cfc944fa7cbcdde62",
+      "size": 604
+    },
+    {
+      "path": "NOVEDADES-V6-1.txt",
+      "sha256": "5134f9a58296e6409b3c70ca36b781a8d344b864ec1da3763112e095bc34f02d",
+      "size": 673
+    },
+    {
+      "path": "NOVEDADES-V6-2.txt",
+      "sha256": "999449c90924e4f38cf488af94b3b4993fa0e6900345a596386f8ac3cd6065a8",
+      "size": 731
+    },
+    {
+      "path": "INICIAR-V7.html",
+      "sha256": "5efea36d81f3a8b49bfea6e470de34a731a5f14d22fd52bd0ba2e1e054fa0a28",
+      "size": 2348
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "e712d1c33a02e1d31ab4eb12cdf29a4d43b7a81024436d83924df6a1fcac431e",
+      "size": 431
+    },
+    {
+      "path": "README-V7.md",
+      "sha256": "13645bd114bad7e1406d3638e85eaaa451eac2478b3ac5cdca1cd5e102c977c4",
+      "size": 685
+    },
+    {
+      "path": "NOVEDADES-V7-5.txt",
+      "sha256": "3964c8c4a340125bf920827d4a164e3923421df7072e01c2ee245dd8820dd55e",
+      "size": 695
+    },
+    {
+      "path": "PUBLICAR-V8.html",
+      "sha256": "a90d8e47be8b7cdefb47440bd762f678fe08fe9f33cb85c96ccd47da0a335117",
+      "size": 2015
+    },
+    {
+      "path": "NOVEDADES-V8.txt",
+      "sha256": "67279278727f6d66a9db955bb2716ab9fd7d9c89fba42dfa8756dda728c49dea",
+      "size": 387
+    },
+    {
+      "path": "INICIAR-V9.html",
+      "sha256": "8bf1a1ba9abb8b5be87991f9c41193d2797afeb06fd639630a1a6a4dc9ef78b5",
+      "size": 2218
+    },
+    {
+      "path": "NOVEDADES-V9.txt",
+      "sha256": "bf3a86991cdeee26f908b4d8f8c8df79e03b32c31b69cbd69013488500ff4557",
+      "size": 476
+    },
+    {
+      "path": "firestore.indexes.json",
+      "sha256": "ecb2940daebe24c8ae041961f49101fb1fffb53a946a5339c92c1ae98508ae1a",
+      "size": 629
+    },
+    {
+      "path": "INICIAR-V10.html",
+      "sha256": "047bc699315d67d7e8bcd119187c89c05c6ee76351d973969b61485f97d909c0",
+      "size": 2259
+    },
+    {
+      "path": "NOVEDADES-V10.txt",
+      "sha256": "7ab228aa4cc6d4ae3c9d477f50e3b76c6962bfdffbbbd7addb7e596668e9d4c8",
+      "size": 974
+    },
+    {
+      "path": "VALIDACION-V10.json",
+      "sha256": "4be101f721781ec1da08a9fc69a590fb9cb94f4ea8d266a64f3ee10f60980d46",
+      "size": 138
+    },
+    {
+      "path": "NOVEDADES-V10-1.txt",
+      "sha256": "38820dd15eb9129d4d8bae1cc922b3d825921a772127548b89ce227caf73632d",
+      "size": 388
+    },
+    {
+      "path": "ABRIR-GALERIA.html",
+      "sha256": "78005965cc038020a40597d6a0845a67a0c365c4d8874014e0b2397daa991c1e",
+      "size": 285
+    },
+    {
+      "path": "NOVEDADES-V10-3.txt",
+      "sha256": "a94d647b31c6322fd04061c24739ed0e155cbec5c5843db2cfc94cc9e0798f7c",
+      "size": 441
+    },
+    {
+      "path": "VALIDACION-GALERIA-V10-3.json",
+      "sha256": "f89eb57ddeb30b2451c2cccf0016e942589930d7bb558b8152d96c297a1e2dce",
+      "size": 120
+    },
+    {
+      "path": "NOVEDADES-V10-4.txt",
+      "sha256": "d82b72de41fabc0f6eed4cf7994a5b5b3a0e00af739ce650e90faea3184dda0e",
+      "size": 528
+    },
+    {
+      "path": "VALIDACION-REGISTRO-V10-4.json",
+      "sha256": "15016deebedab7f7422a1f06f403da7ba63ba8907ce8a28a3464cfd8123a4463",
+      "size": 102
+    },
+    {
+      "path": "NOVEDADES-V10-5.txt",
+      "sha256": "96ab4cb46598bdc98936f6ba44b6d1a447d62983bb05c083448bfe4799175df9",
+      "size": 670
+    },
+    {
+      "path": "VALIDACION-V10-5.json",
+      "sha256": "64a2e0426e4a9f4332f49d7558c916c3962cff18ff0fc6fa8a0b08d96bf1db9a",
+      "size": 293
+    },
+    {
+      "path": "NOVEDADES-V10-6.txt",
+      "sha256": "50b2dbc381474af9e8bb375a2be527669e36d88693bcc990d786c28f8cf755d4",
+      "size": 807
+    },
+    {
+      "path": "VALIDACION-V10-6.json",
+      "sha256": "dc01df213ea7f1cac1b262967c3f8afbd793c176c96f7f46017ddb730d06c4db",
+      "size": 348
+    },
+    {
+      "path": "INICIAR-RIFA-Y-PANEL.bat",
+      "sha256": "b2f7802095d28ea93a31ad73d1740a50f4cd2d61b74552399cfa2c0cc20a70c0",
+      "size": 500
+    },
+    {
+      "path": "NOVEDADES-V10-7.txt",
+      "sha256": "8831f9b56ab9eaaee3405a6f71148444a4ca27340fb958d11bfacd081734eb75",
+      "size": 430
+    },
+    {
+      "path": "VALIDACION-V10-7.json",
+      "sha256": "3f00a847fb75dc6bf62ed1aa5ec23dfdce1e87b961c0f86a03efcb359133c1f3",
+      "size": 328
+    },
+    {
+      "path": "INICIAR-PARA-CELULAR-Y-PC.bat",
+      "sha256": "bbd51d6de4e3e2c9eba621573d4eb5efd2f3d74d5b18d034fccee4c016331499",
+      "size": 940
+    },
+    {
+      "path": "COMO-VER-EN-CELULAR.txt",
+      "sha256": "e85181348390a0a48b02f9a37bffbc9d893e46c08e61363d948ca02f084deb7e",
+      "size": 768
+    },
+    {
+      "path": "LEEME-VERSION-DEFINITIVA-RC1.txt",
+      "sha256": "c676bfa21692b90aa7e87b7a0be27fa9bde9f643807a11e3bcdede937279b07c",
+      "size": 773
+    },
+    {
+      "path": "VALIDACION-VERSION-DEFINITIVA-RC1.json",
+      "sha256": "fb4ec8efe239e7a200827cbe6293ba181425e972757f3615e9b44aec41ca0d4a",
+      "size": 500
+    },
+    {
+      "path": "public/index.html",
+      "sha256": "bd58d8ebce0bf057186c3f8aa10baa85628a7edcf8b981fcc920141f5107dafb",
+      "size": 7172
+    },
+    {
+      "path": "public/ganador.html",
+      "sha256": "d46c04f75657e787dbac7ef52bacb2bc8fec7bec9f3f0b2ad18deb654239aa30",
+      "size": 1848
+    },
+    {
+      "path": "admin/index.html",
+      "sha256": "a70789ad8f9498dfe887cb4c4573af2c87bf5cd5d0e2e9252ac8193ecb6bea89",
+      "size": 9331
+    },
+    {
+      "path": "admin/ACCESO-ADMIN.html",
+      "sha256": "53ea45cd1d149e00c4e2e93699f333fe51b1f747c87800fdd2fa8b98f6a963fa",
+      "size": 176
+    },
+    {
+      "path": "admin/FIREBASE-ADMIN.html",
+      "sha256": "c5f269ebdaf9277b351dc6a0e5d11c6d4aeb074502ba0330adb6044a2d26cfff",
+      "size": 2271
+    },
+    {
+      "path": "firebase/config.js",
+      "sha256": "1f87b1b96fc439f7fb91a3cb6a6ec0cd19fc39d446a942ea655cf99e3572ff19",
+      "size": 285
+    },
+    {
+      "path": "firebase/services.js",
+      "sha256": "a5cf45f830dec29e5ec8628831baf0674fe26b23ad9169a024886f3d6b2d1209",
+      "size": 789
+    },
+    {
+      "path": "firebase/firebase-config.js",
+      "sha256": "23588feb1d329388068361f9a64175f27eab5e8df55a61aaf73463e85e87cc93",
+      "size": 266
+    },
+    {
+      "path": "firebase/firebase-config.example.js",
+      "sha256": "c76ad542bf09cbde3e92590b977bd732957266913aabc14cee84aecf679fd6eb",
+      "size": 239
+    },
+    {
+      "path": "firebase/firebase-service.js",
+      "sha256": "ad74f0428ef59f729f31305e12975fb1c4fb784288e32d95d52fb2cbbfaf0f70",
+      "size": 4192
+    },
+    {
+      "path": "firebase/firestore.rules",
+      "sha256": "420260a0f6a1621c3c9a2c006914a2410647ef87a0f8bee09f2f093a638f1978",
+      "size": 958
+    },
+    {
+      "path": "firebase/storage.rules",
+      "sha256": "a6231b009d235515cbcb263cd0a4e523eb63fcacf818ae6fa1980f2734706088",
+      "size": 484
+    },
+    {
+      "path": "firebase/firestore.indexes.json",
+      "sha256": "66949dc729669cbf74ebd9777034c2d8b1268241621a95d9b967860c22b2866b",
+      "size": 332
+    },
+    {
+      "path": "firebase/firebase.json",
+      "sha256": "dfbf9b08697d38797803b6a21c2cfe2948a369daa125d5eb070e8d236b81dd72",
+      "size": 367
+    },
+    {
+      "path": "firebase/environment.example.json",
+      "sha256": "fd477f8e21f4cbb283361860099ef23467c446dfdc6a50195c6766e87acccf74",
+      "size": 526
+    },
+    {
+      "path": "docs/GUIA-PRODUCCION.html",
+      "sha256": "32247aa9d5c6ece01801f2449d7afd0fb395b022c2ef7fe74a95485f40c306ac",
+      "size": 2329
+    },
+    {
+      "path": "docs/MIGRACION-V6-A-V7.txt",
+      "sha256": "1457bd80ab4dffd9dfe53c514e691f41258f272fba758d7e6d8be89389530d34",
+      "size": 533
+    },
+    {
+      "path": "docs/CHECKLIST-ANTES-DE-PUBLICAR.html",
+      "sha256": "c0b38a9c75d2110bd6d7b6854c48fc7fb0cb93492f2b5af49e885ac697e840ad",
+      "size": 1416
+    },
+    {
+      "path": "docs/ESTADO-V8.txt",
+      "sha256": "2d292c09ca694b7bebed123487b012cdad2da56967bf8d21623f6421fe743258",
+      "size": 882
+    },
+    {
+      "path": "docs/REVISION-FINAL-V9.html",
+      "sha256": "249e35395c32b54b84516208ebecddf235cb119907d225e89dd6d54436802869",
+      "size": 1507
+    },
+    {
+      "path": "docs/ACTIVAR-PRODUCCION-V10.html",
+      "sha256": "8b455e170fcf75a0e8e7c96c5f6d689fbb37da94ceb2a1ef2a0bbe03d5f18a10",
+      "size": 2696
+    },
+    {
+      "path": "docs/ARQUITECTURA-SEGURIDAD-V10.md",
+      "sha256": "43b0b06d5e9801695c336257661e20129cd74f480cb9c6b34d1331a1e47b4585",
+      "size": 845
+    },
+    {
+      "path": "functions/package.json",
+      "sha256": "78dbb22b957b9bea0b30b0ffb6c7cf02e9a9350e139c1a6d9a48952d1dbb501f",
+      "size": 398
+    },
+    {
+      "path": "functions/index.js",
+      "sha256": "181f8bc0f52987b3f8342e2cfc93530e4521fac200d043b1295cf9dce679ea54",
+      "size": 10266
+    },
+    {
+      "path": "scripts/validar-estructura.py",
+      "sha256": "8b852e16ce964e27431b8918a78ea64df64eb855e71ba2c33aea640bd9760710",
+      "size": 543
+    },
+    {
+      "path": "scripts/set-admin-claim.js",
+      "sha256": "c02ff42057ace35d53d77d985d5ae1e21c91a56c1b9068073152663f6b3108bd",
+      "size": 575
+    },
+    {
+      "path": "scripts/test-local-registration.js",
+      "sha256": "498d45a2b768ad47286c8eb11d06d0308e8afd21d531a9a5ad4d547a259cf61b",
+      "size": 1078
+    },
+    {
+      "path": "scripts/test-v10-5.js",
+      "sha256": "f3c0a0f34a28a14bfe01297f93f9dbabbd04b3f68fa5e080354ec0c7ae3ead33",
+      "size": 957
+    },
+    {
+      "path": "frontend/index.html",
+      "sha256": "878076d7245c5c851c7c10e8584f556057588a30b235460994a5a6238c8b134d",
+      "size": 10175
+    },
+    {
+      "path": "frontend/ganador.html",
+      "sha256": "b2e8bf1548abd817b0148aac9e7374970031033213008489e048ba99bce7df19",
+      "size": 1855
+    },
+    {
+      "path": "frontend/consulta.html",
+      "sha256": "0534b3682f3edb46150e1a0322686d700c687ef64562778219926651d3cb377c",
+      "size": 3459
+    },
+    {
+      "path": "admin-console/index.html",
+      "sha256": "44a8fffad7496419271d346f5dff2249046f7ee98de163f0cc2523d40d732975",
+      "size": 9848
+    },
+    {
+      "path": "assets/karla.png",
+      "sha256": "9276ffbcd418bf4caa507ca64a7b161a65aee860ec27b56f109bd3c7ec3d0740",
+      "size": 326472
+    },
+    {
+      "path": "assets/journey.png",
+      "sha256": "42a5de5c3545bc742ec5ed6ce043103f07b148de11b49508a477bcd470a6b958",
+      "size": 296541
+    },
+    {
+      "path": "assets/journey-placeholder.svg",
+      "sha256": "f8fbcb2a5d3e843bee998ccef07f9ed59d8115cbba25b30a3be50b3b26b6fbf5",
+      "size": 1350
+    },
+    {
+      "path": "assets/portrait-placeholder.svg",
+      "sha256": "e54de337bb0e978dac732feee9f30062124c6afd440778a5699f0e394def00cd",
+      "size": 708
+    },
+    {
+      "path": "admin-console/css/admin.css",
+      "sha256": "060459b6d2ab0bd02b905073e6e31f0cc7600529f32731dcc84a2bbdc68f88af",
+      "size": 10204
+    },
+    {
+      "path": "admin-console/js/admin-app.js",
+      "sha256": "4c6b005f4573cb04b09a0b98443661f37f9f062d9dd195596525c297db2e27ac",
+      "size": 3092
+    },
+    {
+      "path": "admin-console/js/admin-hybrid.js",
+      "sha256": "3eaa76fb6c3fe76d2ec745ed9231a4d64f84cc61223c3a44bc444ed5e49a3cdd",
+      "size": 17986
+    },
+    {
+      "path": "admin-console/js/firebase-admin.js",
+      "sha256": "3e4972b002d1444614f93b55f8a792fec03b806f509f28ab2f501082c5f9c923",
+      "size": 2432
+    },
+    {
+      "path": "frontend/css/site.css",
+      "sha256": "d89870e2588df8ff6b9b1f90ccf821beae7a8bb0c87f83e3a0c919dac8d93358",
+      "size": 3574
+    },
+    {
+      "path": "frontend/css/styles.css",
+      "sha256": "882044d29877d9687a22b6d800d622100022b282a723786badd1bd91bafd9527",
+      "size": 14404
+    },
+    {
+      "path": "frontend/js/public-app.js",
+      "sha256": "cc403bf58c8e9c2a3405321437bc19921fcb63c1e66555bcf3c7ee2be55c4dfa",
+      "size": 5162
+    },
+    {
+      "path": "frontend/js/local-db.js",
+      "sha256": "e655f092f48b4201414d97f08ea7f1d2dbb8904757b1a1beea1cae3fa87add87",
+      "size": 7452
+    },
+    {
+      "path": "frontend/js/public-hybrid.js",
+      "sha256": "8810c184ce86c23953f4521dd5fe7abcf5256dcd9666a86b7ce87a8f0736e6d0",
+      "size": 6519
+    },
+    {
+      "path": "app/public/index.html",
+      "sha256": "b3f051f079ce556fb6a243f77d72fb955ee79aa80a69b9a512ca4a1211d47982",
+      "size": 12440
+    },
+    {
+      "path": "app/public/ganador.html",
+      "sha256": "b2e8bf1548abd817b0148aac9e7374970031033213008489e048ba99bce7df19",
+      "size": 1855
+    },
+    {
+      "path": "app/public/consulta.html",
+      "sha256": "0534b3682f3edb46150e1a0322686d700c687ef64562778219926651d3cb377c",
+      "size": 3459
+    },
+    {
+      "path": "app/admin/index.html",
+      "sha256": "44a8fffad7496419271d346f5dff2249046f7ee98de163f0cc2523d40d732975",
+      "size": 9848
+    },
+    {
+      "path": "app/shared/config.js",
+      "sha256": "a3f21fda99bb76a9c90603c94ed154782cfcb4031a339469c70e4dba21124e7c",
+      "size": 354
+    },
+    {
+      "path": "app/shared/config.example.json",
+      "sha256": "53e1da7fa9791c3176d5495a59dd2e44d8be062888249b63935b66cf64b1be3b",
+      "size": 297
+    },
+    {
+      "path": "app/shared/ui-utils.js",
+      "sha256": "a095317721a319f16463fc0041edef6e884d4d45fa0e7940e38ae2b0cde89718",
+      "size": 1486
+    },
+    {
+      "path": "app/shared/ui-utils.css",
+      "sha256": "6c8da8006216c896e34283e012c21f7a6c38392de7962d8c78c9fa487cb93196",
+      "size": 791
+    },
+    {
+      "path": "app/services/firebase-config.js",
+      "sha256": "23588feb1d329388068361f9a64175f27eab5e8df55a61aaf73463e85e87cc93",
+      "size": 266
+    },
+    {
+      "path": "app/services/firebase-config.example.js",
+      "sha256": "886cbe54010991f32596b75d2d9a9ccdd7e78673a3ca5d958440bc59052c5287",
+      "size": 259
+    },
+    {
+      "path": "app/services/firebase-service.js",
+      "sha256": "ad74f0428ef59f729f31305e12975fb1c4fb784288e32d95d52fb2cbbfaf0f70",
+      "size": 4192
+    },
+    {
+      "path": "app/assets/karla.png",
+      "sha256": "9276ffbcd418bf4caa507ca64a7b161a65aee860ec27b56f109bd3c7ec3d0740",
+      "size": 326472
+    },
+    {
+      "path": "app/assets/journey.png",
+      "sha256": "42a5de5c3545bc742ec5ed6ce043103f07b148de11b49508a477bcd470a6b958",
+      "size": 296541
+    },
+    {
+      "path": "app/assets/journey-placeholder.svg",
+      "sha256": "f8fbcb2a5d3e843bee998ccef07f9ed59d8115cbba25b30a3be50b3b26b6fbf5",
+      "size": 1350
+    },
+    {
+      "path": "app/assets/portrait-placeholder.svg",
+      "sha256": "e54de337bb0e978dac732feee9f30062124c6afd440778a5699f0e394def00cd",
+      "size": 708
+    },
+    {
+      "path": "app/assets/journey-interior-real.jpeg",
+      "sha256": "e84c1d39b444ee5d72fede8ba1b7d273cb02aa81449f8390006f3bdab42d76a8",
+      "size": 68331
+    },
+    {
+      "path": "app/assets/journey-trasera-real.jpeg",
+      "sha256": "bae2e5af6275a68082366158d734e460dcf943195349630f3e83f553c1d696de",
+      "size": 77190
+    },
+    {
+      "path": "app/assets/journey-frontal-real.jpeg",
+      "sha256": "27459bf3cf6fecdf176bf0be852ed9a6478946b549b146188afe6b9652c79b9c",
+      "size": 105305
+    },
+    {
+      "path": "app/assets/journey-poster-premio.png",
+      "sha256": "079b879932168c0cac8eda5d27c32b53d014fa8063eeda40eb469e73358f63af",
+      "size": 2151792
+    },
+    {
+      "path": "app/assets/journey-frontal-fondo.jpeg",
+      "sha256": "c858c29a2e49d074c9aeacb547451614635678f21d825fa558eafc0500014326",
+      "size": 102831
+    },
+    {
+      "path": "app/assets/journey-trasera-fondo.jpeg",
+      "sha256": "caab9ffdafa6af015411826364959053a1a69e2112638105ff251f4173483f8d",
+      "size": 64962
+    },
+    {
+      "path": "app/assets/journey-poster-sin-motor.png",
+      "sha256": "00d15ee890951b0b5d51a4caad9a79a09ac5aed984fd6875d638cca4fb46498c",
+      "size": 1394080
+    },
+    {
+      "path": "app/assets/karla-organizadora-original.jpeg",
+      "sha256": "75e9f3a59e6004b546363a38010ed00127f02503777205c407def8d5ea5586c7",
+      "size": 46924
+    },
+    {
+      "path": "app/admin/css/admin.css",
+      "sha256": "4d081d1cfdc11c399f008e48aa8e2061cbabe1fc545da0b35b9fec70d94408d8",
+      "size": 10447
+    },
+    {
+      "path": "app/admin/js/admin-app.js",
+      "sha256": "4c6b005f4573cb04b09a0b98443661f37f9f062d9dd195596525c297db2e27ac",
+      "size": 3092
+    },
+    {
+      "path": "app/admin/js/admin-hybrid.js",
+      "sha256": "6d8703451810d964a9b8a1df822e43ad4827b969a3e54e25fe57025eb8998a71",
+      "size": 14320
+    },
+    {
+      "path": "app/admin/js/firebase-admin.js",
+      "sha256": "3e4972b002d1444614f93b55f8a792fec03b806f509f28ab2f501082c5f9c923",
+      "size": 2432
+    },
+    {
+      "path": "app/public/css/site.css",
+      "sha256": "d89870e2588df8ff6b9b1f90ccf821beae7a8bb0c87f83e3a0c919dac8d93358",
+      "size": 3574
+    },
+    {
+      "path": "app/public/css/styles.css",
+      "sha256": "4c86a735ea7b83595b054554676a5591aee89b487e28340f0985cd5c44ed133f",
+      "size": 19446
+    },
+    {
+      "path": "app/public/js/public-app.js",
+      "sha256": "cc403bf58c8e9c2a3405321437bc19921fcb63c1e66555bcf3c7ee2be55c4dfa",
+      "size": 5162
+    },
+    {
+      "path": "app/public/js/local-db.js",
+      "sha256": "01829e42ae70798758d294bc67e0241be63b0aa9d2e66e82fae7bdce69b4dbc2",
+      "size": 7450
+    },
+    {
+      "path": "app/public/js/public-hybrid.js",
+      "sha256": "a19519643a7eaa8bc9dff5e315a4fb656a847d37692e0fd163020e22bed240f6",
+      "size": 13044
+    },
+    {
+      "path": "app/public/js/gallery.js",
+      "sha256": "287a488b3468386304fced1290b201be8b827cdc28cec907ef56e856696df379",
+      "size": 2737
+    },
+    {
+      "path": "admin/css/admin.css",
+      "sha256": "739aa2a8874a63de1b10d001a7c44d02f0e0bb86499709450bce8a6b95695f52",
+      "size": 7938
+    },
+    {
+      "path": "admin/js/admin-app.js",
+      "sha256": "4c6b005f4573cb04b09a0b98443661f37f9f062d9dd195596525c297db2e27ac",
+      "size": 3092
+    },
+    {
+      "path": "admin/js/admin-hybrid.js",
+      "sha256": "ec67e3403d245f865ed3cf71dd15388e48b02d3e54899a415f290f1dd512707d",
+      "size": 13490
+    },
+    {
+      "path": "admin/js/firebase-admin.js",
+      "sha256": "3e4972b002d1444614f93b55f8a792fec03b806f509f28ab2f501082c5f9c923",
+      "size": 2432
+    },
+    {
+      "path": "public/assets/karla.png",
+      "sha256": "9276ffbcd418bf4caa507ca64a7b161a65aee860ec27b56f109bd3c7ec3d0740",
+      "size": 326472
+    },
+    {
+      "path": "public/assets/journey.png",
+      "sha256": "42a5de5c3545bc742ec5ed6ce043103f07b148de11b49508a477bcd470a6b958",
+      "size": 296541
+    },
+    {
+      "path": "public/assets/journey-placeholder.svg",
+      "sha256": "f8fbcb2a5d3e843bee998ccef07f9ed59d8115cbba25b30a3be50b3b26b6fbf5",
+      "size": 1350
+    },
+    {
+      "path": "public/assets/portrait-placeholder.svg",
+      "sha256": "e54de337bb0e978dac732feee9f30062124c6afd440778a5699f0e394def00cd",
+      "size": 708
+    },
+    {
+      "path": "public/css/site.css",
+      "sha256": "d89870e2588df8ff6b9b1f90ccf821beae7a8bb0c87f83e3a0c919dac8d93358",
+      "size": 3574
+    },
+    {
+      "path": "public/css/styles.css",
+      "sha256": "23e243a9401b2783d19687f23197f63d2e1b93acff8f7b32015830befd41ab44",
+      "size": 10042
+    },
+    {
+      "path": "public/js/public-app.js",
+      "sha256": "cc403bf58c8e9c2a3405321437bc19921fcb63c1e66555bcf3c7ee2be55c4dfa",
+      "size": 5162
+    },
+    {
+      "path": "public/js/local-db.js",
+      "sha256": "e655f092f48b4201414d97f08ea7f1d2dbb8904757b1a1beea1cae3fa87add87",
+      "size": 7452
+    },
+    {
+      "path": "public/js/public-hybrid.js",
+      "sha256": "8748b658540072ab24c700398ed5b3daadcba3ae4115724e8860f1be2eb6d622",
+      "size": 4514
+    }
+  ]
+}

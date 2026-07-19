@@ -1,0 +1,34 @@
+RIFA CON CAUSA — VERSIÓN DEFINITIVA RC2
+
+ESTA VERSIÓN YA ESTÁ CONECTADA AL PROYECTO:
+rifa-con-causa-karla
+
+FUNCIONAMIENTO
+- Firestore sincroniza números y participantes entre teléfonos.
+- Firebase Authentication protege el panel administrativo.
+- Los comprobantes se envían y revisan por WhatsApp.
+- No utiliza Cloud Storage ni requiere cambiar al plan Blaze.
+
+ORDEN PARA PUBLICAR
+1. Instala Node.js en Windows.
+2. Descomprime esta carpeta.
+3. Abre una terminal dentro de la carpeta.
+4. Ejecuta:
+
+   npm install -g firebase-tools
+   firebase login
+   firebase deploy --only hosting,firestore:rules,firestore:indexes
+
+5. Abre la dirección web.app que Firebase mostrará.
+6. IMPORTANTE: entra primero al panel /admin/ con el correo y contraseña que
+   creaste en Firebase. En el primer acceso se crearán los 500 números.
+7. Después abre /public/ para probar un apartado.
+
+DIRECCIONES ESPERADAS
+Página pública: https://rifa-con-causa-karla.web.app/public/
+Panel:         https://rifa-con-causa-karla.web.app/admin/
+
+SEGURIDAD
+- No compartas la contraseña del usuario administrador.
+- Las credenciales web de Firebase identifican el proyecto; la seguridad se
+  controla mediante Authentication y firestore.rules.

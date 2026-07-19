@@ -1,0 +1,20 @@
+{
+  "app/public/js/public-hybrid.js": {
+    "ok": true,
+    "error": ""
+  },
+  "app/admin/js/admin-hybrid.js": {
+    "ok": true,
+    "error": ""
+  },
+  "app/public/js/local-db.js": {
+    "ok": true,
+    "error": ""
+  },
+  "searchEnhancement": {
+    "statusElement": true,
+    "dataNumber": true,
+    "thankYou": true,
+    "adminPolling": true
+  }
+}

@@ -1,0 +1,12 @@
+RIFA CON CAUSA — VERSIÓN 9.0
+
+- Imagen de Dodge Journey integrada en la página principal.
+- Fotografía de la organizadora integrada.
+- Nueva galería ampliable del premio.
+- Sección personal “Juntos somos más fuertes”.
+- Botón para compartir la rifa.
+- Navegación móvil desplegable.
+- Animaciones suaves al desplazarse.
+- Mejoras visuales en el panel administrativo.
+- Portada independiente INICIAR-V9.html.
+- Documento de revisión final antes de publicación.

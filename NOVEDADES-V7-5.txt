@@ -1,0 +1,23 @@
+RIFA CON CAUSA — VERSIÓN 7.5
+
+MEJORAS PÚBLICAS
+- Validación más clara del teléfono.
+- Vista previa de comprobantes.
+- Límite recomendado de 2 MB.
+- Mensajes emergentes de éxito y error.
+- Estados de carga durante el registro.
+- Búsqueda visual de números.
+- Indicador de disponibilidad del sistema.
+
+MEJORAS ADMINISTRATIVAS
+- Gráfica de números disponibles, apartados y pagados.
+- Actividad reciente.
+- Filtro de participantes por estado.
+- Reporte operativo imprimible.
+- Conservación del módulo de sorteo y acta.
+
+PRODUCCIÓN
+- Checklist de publicación.
+- Estructura única mantenida.
+- Preparación para Firebase.
+- No se reemplazaron todavía las fotografías provisionales.

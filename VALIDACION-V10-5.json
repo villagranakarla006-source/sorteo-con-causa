@@ -1,0 +1,19 @@
+{
+  "app/public/js/public-hybrid.js": {
+    "ok": true,
+    "error": ""
+  },
+  "app/admin/js/admin-hybrid.js": {
+    "ok": true,
+    "error": ""
+  },
+  "app/public/js/local-db.js": {
+    "ok": true,
+    "error": ""
+  },
+  "dataFlow": {
+    "ok": true,
+    "output": "OK",
+    "error": ""
+  }
+}

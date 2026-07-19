@@ -1,0 +1,13 @@
+RIFA CON CAUSA — VERSIÓN 10.5
+
+- Se repararon Resumen, Avance, Actividad, Participantes, Sorteo e Historial.
+- Los filtros de participantes ahora funcionan.
+- El avance incluye números apartados y pagados.
+- El comprobante se visualiza y descarga desde la ficha del participante.
+- En celular aparece la opción nativa para compartir el comprobante con WhatsApp.
+- En computadora se descarga el archivo para adjuntarlo manualmente.
+
+IMPORTANTE:
+WhatsApp no permite adjuntar automáticamente un archivo mediante un enlace web.
+La página pública y el panel deben abrirse desde la misma carpeta y navegador.
+Para sincronizar varios dispositivos se requiere Firebase.
