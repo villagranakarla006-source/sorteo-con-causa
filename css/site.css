@@ -12,3 +12,5 @@ dialog{border:0;border-radius:24px;padding:0;width:min(620px,calc(100% - 22px));
 @media(max-width:850px){.hero{grid-template-columns:1fr}.number-grid{grid-template-columns:repeat(5,1fr)}.section-head{align-items:flex-start;flex-direction:column}.selection-panel{align-items:flex-start;flex-direction:column}.selection-panel .btn{width:100%}}
 
 .mode-banner{padding:9px 16px;text-align:center;font-weight:900;background:#fff3b0;color:#5a4700}.mode-banner.firebase{background:#e8fbfd;color:#056175}
+
+.selection-actions{display:grid;gap:.55rem;margin-top:.75rem}.selection-actions .text-button{justify-self:center}.selection-actions button:disabled{opacity:.55;cursor:not-allowed}

@@ -140,7 +140,10 @@
       <div class="selection-card">
         <small>Tu selección</small>
         <strong id="selectedNumbers">Ninguno</strong>
-        <button id="continueButton" type="button" disabled>Continuar registro</button>
+        <div class="selection-actions">
+          <button id="continueButton" type="button" disabled>Continuar registro</button>
+          <button id="clearSelectionButton" class="text-button" type="button" disabled>Limpiar selección</button>
+        </div>
       </div>
     </aside>
     <div class="board-main">
@@ -198,9 +201,10 @@
 </div>
 
 <dialog id="registrationDialog">
-  <form id="registrationForm">
+  <form id="registrationForm" autocomplete="off">
     <button id="closeDialog" class="dialog-close" type="button">×</button>
     <p class="eyebrow">Registro</p><h2>Completa tu participación</h2>
+    <input id="selectedNumbersInput" name="selectedNumbers" type="hidden" value="">
     <div class="modal-summary">
       <p><span>Números:</span><strong id="modalSelectedNumbers"></strong></p>
       <p><span>Cantidad:</span><strong id="ticketCount">0</strong></p>

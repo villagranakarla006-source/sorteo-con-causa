@@ -59,9 +59,48 @@
    const status=document.querySelector("#numberSearchStatus");
    if(query&&status)status.innerHTML=visible?`Se encontraron <strong>${visible}</strong> coincidencias. Selecciona un número disponible para continuar.`:"No se encontraron números con esa búsqueda.";
  }
- function update(){const a=[...selected].sort((x,y)=>x-y);$("#selectedNumbers").textContent=a.length?a.map(fmt).join(", "):"Ninguno";$("#continueButton").disabled=!a.length}
- function openDialog(){const a=[...selected].sort((x,y)=>x-y);$("#modalSelectedNumbers").textContent=a.map(fmt).join(", ");$("#ticketCount").textContent=a.length;$("#paymentTotal").textContent=`$${(a.length*PRICE).toLocaleString("es-MX")} MXN`;dialog.showModal()}
+ function update(){
+   const a=[...selected].sort((x,y)=>x-y);
+   $("#selectedNumbers").textContent=a.length?a.map(fmt).join(", "):"Ninguno";
+   $("#continueButton").disabled=!a.length;
+   const clearButton=$("#clearSelectionButton");
+   if(clearButton)clearButton.disabled=!a.length;
+   const selectedInput=$("#selectedNumbersInput");
+   if(selectedInput)selectedInput.value=a.join(",");
+ }
+ function resetRegistrationForm({closeDialog=false}={}){
+   const form=$("#registrationForm");
+   form?.reset();
+   $("#participantName")?.setAttribute("value","");
+   $("#participantPhone")?.setAttribute("value","");
+   const status=$("#formStatus");
+   if(status){status.textContent="";status.className="form-status"}
+   lastReceiptFile=null;
+   lastWhatsappMessage="";
+   if(receiptShareActions)receiptShareActions.hidden=true;
+   if(closeDialog&&dialog?.open)dialog.close();
+ }
+ function clearSelection({clearForm=true,closeDialog=true}={}){
+   selected.clear();
+   saveSel();
+   if(numberSearch)numberSearch.value="";
+   if(numberSearchStatus)numberSearchStatus.textContent="";
+   if(clearForm)resetRegistrationForm({closeDialog});
+   update();
+   renderGrid();
+ }
+ function openDialog(){
+   const a=[...selected].sort((x,y)=>x-y);
+   if(!a.length)return;
+   $("#modalSelectedNumbers").textContent=a.map(fmt).join(", ");
+   $("#ticketCount").textContent=a.length;
+   $("#paymentTotal").textContent=`$${(a.length*PRICE).toLocaleString("es-MX")} MXN`;
+   const selectedInput=$("#selectedNumbersInput");
+   if(selectedInput)selectedInput.value=a.join(",");
+   dialog.showModal();
+ }
  $("#continueButton").onclick=openDialog;$("#showPayment").onclick=()=>selected.size?openDialog():$("#tablero").scrollIntoView({behavior:"smooth"});
+ $("#clearSelectionButton")?.addEventListener("click",()=>clearSelection({clearForm:true,closeDialog:true}));
  $("#closeDialog").onclick=()=>dialog.close();
  $("#copyClabe").onclick=async()=>{try{ui.setLoading?.($("#submitRegistration"),true,"Registrando…");await navigator.clipboard.writeText(cfg.clabe);$("#copyClabe").textContent="Copiada"}catch(_){prompt("Copia la CLABE:",cfg.clabe)}};
  const numberSearch=$("#numberSearch"),numberSearchStatus=$("#numberSearchStatus");
@@ -155,13 +194,7 @@
      lastWhatsappMessage=msg;
      if(receiptShareActions)receiptShareActions.hidden=true;
 
-     selected.clear();
-     saveSel();
-     update();
-     renderGrid();
-
-     $("#participantName").value="";
-     $("#participantPhone").value="";
+     clearSelection({clearForm:true,closeDialog:false});
      
 
      status.className="form-status success";
@@ -187,6 +220,7 @@
  };
 
  renderTabs();
+ update();
  if(useFirebase){RifaFirebase.listenNumbers(rows=>{records=rows;renderGrid()})}
  else{loadLocal();renderGrid();window.addEventListener("rifa-local-change",()=>{loadLocal();renderGrid()})}
 })();
