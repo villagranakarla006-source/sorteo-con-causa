@@ -212,7 +212,11 @@
     </div>
     <label>Nombre completo<input id="participantName" autocomplete="name" required><small class="input-help">Escribe el nombre que aparecerá en tu registro.</small></label>
     <label>Teléfono de 10 dígitos<input id="participantPhone" inputmode="numeric" autocomplete="tel" maxlength="10" required><small class="input-help">Lo utilizaremos para confirmar tus números.</small></label>
-    <div class="payment-box"><strong>Comprobante por WhatsApp</strong><span>Después de apartar tus números, se abrirá WhatsApp para que envíes la imagen o PDF del comprobante.</span></div><input id="receiptFile" type="hidden">
+    <div class="payment-box"><strong>Comprobante por WhatsApp</strong><span>Selecciona aquí la imagen o PDF. Después del registro podrás compartirlo por WhatsApp.</span></div>
+    <label>Adjuntar comprobante
+      <input id="receiptFile" type="file" accept="image/*,.pdf,application/pdf">
+      <small class="input-help">Puedes tomar una foto o elegir una imagen/PDF. Máximo recomendado: 10 MB.</small>
+    </label>
     <div class="payment-box">
       <span>Banamex · CLABE</span><strong>****5734</strong>
       <button id="copyClabe" class="text-button" type="button">Copiar CLABE completa</button>
@@ -220,9 +224,14 @@
     <button id="submitRegistration" class="button primary full" type="submit">Registrar participación</button>
     <p id="formStatus" class="form-status"></p>
     <div id="receiptShareActions" class="receipt-share-actions" hidden>
-      <button id="shareReceiptButton" class="button secondary full" type="button">Compartir comprobante por WhatsApp</button>
+      <div class="payment-box status-waiting">
+        <strong>Pago en verificación</strong>
+        <span>Tus números ya están apartados en amarillo. Cambiarán a pagados cuando la administradora confirme el comprobante.</span>
+      </div>
+      <a id="openWhatsappButton" class="button primary full" href="#" target="_blank" rel="noopener">Abrir WhatsApp con mi mensaje</a>
+      <button id="shareReceiptButton" class="button secondary full" type="button">Compartir comprobante</button>
       <button id="downloadReceiptButton" class="text-button" type="button">Descargar comprobante</button>
-      <small>En celular se abrirá el menú para compartir el archivo. En computadora se descargará para adjuntarlo en WhatsApp.</small>
+      <small>En celular, «Compartir comprobante» abre el menú de compartir para elegir WhatsApp. En computadora, abre WhatsApp y adjunta manualmente el archivo seleccionado.</small>
     </div>
   </form>
 </dialog>

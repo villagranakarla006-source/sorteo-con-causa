@@ -14,3 +14,7 @@ dialog{border:0;border-radius:24px;padding:0;width:min(620px,calc(100% - 22px));
 .mode-banner{padding:9px 16px;text-align:center;font-weight:900;background:#fff3b0;color:#5a4700}.mode-banner.firebase{background:#e8fbfd;color:#056175}
 
 .selection-actions{display:grid;gap:.55rem;margin-top:.75rem}.selection-actions .text-button{justify-self:center}.selection-actions button:disabled{opacity:.55;cursor:not-allowed}
+
+.status-waiting{border:1px solid #f2c94c;background:#fff9df}
+.receipt-share-actions{display:grid;gap:.75rem;margin-top:1rem}
+#receiptFile{padding:.75rem;background:#fff;border:1px dashed #c8a3b7;border-radius:12px}

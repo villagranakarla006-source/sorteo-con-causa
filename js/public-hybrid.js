@@ -9,6 +9,8 @@
  const receiptShareActions=$("#receiptShareActions");
  const shareReceiptButton=$("#shareReceiptButton");
  const downloadReceiptButton=$("#downloadReceiptButton");
+ const openWhatsappButton=$("#openWhatsappButton");
+ const receiptFileInput=$("#receiptFile");
 
  function downloadReceiptFile(file){
    if(!file)return;
@@ -17,19 +19,19 @@
    setTimeout(()=>URL.revokeObjectURL(url),1000);
  }
  shareReceiptButton?.addEventListener("click",async()=>{
-   if(!lastReceiptFile){alert("No hay comprobante para compartir.");return}
+   if(!lastReceiptFile){alert("Primero selecciona una imagen o PDF del comprobante.");receiptFileInput?.click();return}
    try{
-     if(navigator.canShare?.({files:[lastReceiptFile]})&&navigator.share){
+     if(navigator.share && (!navigator.canShare || navigator.canShare({files:[lastReceiptFile]}))){
        await navigator.share({title:"Comprobante — Rifa con Causa",text:lastWhatsappMessage,files:[lastReceiptFile]});
      }else{
        downloadReceiptFile(lastReceiptFile);
-       window.open(`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(lastWhatsappMessage)}`,"_blank","noopener");
-       alert("El comprobante se descargó. Adjunta ese archivo en WhatsApp.");
+       openWhatsappButton?.click();
+       alert("El comprobante se descargó. En WhatsApp, usa el clip para adjuntarlo.");
      }
    }catch(err){
      if(err?.name!=="AbortError"){
        downloadReceiptFile(lastReceiptFile);
-       alert("El archivo se descargó para que lo adjuntes manualmente.");
+       alert("No fue posible compartir automáticamente. El archivo se descargó para adjuntarlo manualmente en WhatsApp.");
      }
    }
  });
@@ -91,6 +93,11 @@
  }
  function openDialog(){
    const a=[...selected].sort((x,y)=>x-y);
+   const submitButton=$("#submitRegistration");
+   if(submitButton)submitButton.hidden=false;
+   if(receiptShareActions)receiptShareActions.hidden=true;
+   const status=$("#formStatus");
+   if(status){status.textContent="";status.className="form-status"}
    if(!a.length)return;
    $("#modalSelectedNumbers").textContent=a.map(fmt).join(", ");
    $("#ticketCount").textContent=a.length;
@@ -115,7 +122,7 @@
    const phone=$("#participantPhone").value.replace(/\D/g,"");
    const nums=[...selected].sort((a,b)=>a-b);
    const status=$("#formStatus");
-   const file=null;
+   const file=receiptFileInput?.files?.[0]||null;
 
    status.className="form-status";
 
@@ -192,23 +199,26 @@
 
      lastReceiptFile=file||null;
      lastWhatsappMessage=msg;
-     if(receiptShareActions)receiptShareActions.hidden=true;
+     const whatsappUrl=`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(msg)}`;
+     if(openWhatsappButton)openWhatsappButton.href=whatsappUrl;
+     if(receiptShareActions)receiptShareActions.hidden=false;
 
-     clearSelection({clearForm:true,closeDialog:false});
-     
+     selected.clear();
+     saveSel();
+     if(numberSearch)numberSearch.value="";
+     if(numberSearchStatus)numberSearchStatus.textContent="";
+     update();
+     if(!useFirebase){loadLocal();}
+     renderGrid();
+
+     $("#participantName").value="";
+     $("#participantPhone").value="";
+     submitButton.hidden=true;
 
      status.className="form-status success";
-     status.innerHTML=`<strong>¡Gracias por tu apoyo!</strong><br>Tu participación fue recibida correctamente y significa mucho para nosotros.<br><strong>Números apartados:</strong> ${nums.map(fmt).join(", ")}.<br>Por ahora aparecerán en color amarillo. Cuando se confirme el pago cambiarán a color rosa/rojo como pagados.`;
+     status.innerHTML=`<strong>¡Muchas gracias por participar! 💗</strong><br>Tu registro fue recibido correctamente.<br><strong>Números apartados:</strong> ${nums.map(fmt).join(", ")}.<br><strong>Estatus actual:</strong> pago en verificación. Tus números aparecen en amarillo y cambiarán a rosa/rojo cuando el pago sea confirmado.<br>Ahora abre WhatsApp y envía tu comprobante.`;
 
-     ui.toast?.("Registro guardado y números apartados.","success");
-
-     setTimeout(()=>{try{dialog.close()}catch(_){}},1800);
-
-     const whatsappUrl=`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(msg)}`;
-     const whatsappWindow=window.open(whatsappUrl,"_blank","noopener");
-     if(!whatsappWindow){
-       status.innerHTML+=`<br><a href="${whatsappUrl}" target="_blank" rel="noopener">Abrir WhatsApp</a>`;
-     }
+     ui.toast?.("Participación recibida. Pago en verificación.","success");
    }catch(err){
      status.className="form-status error";
      status.textContent=err.message||"No fue posible guardar el registro.";
