@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Consultar participación — Rifa con Causa</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="shared/ui-utils.css">
+<style>
+.lookup-page{min-height:100vh;display:grid;place-items:center;padding:30px;background:radial-gradient(circle at 10% 0,#ffe8f0,transparent 35%),radial-gradient(circle at 95% 100%,#dff9fb,transparent 38%),#f7fbfc}
+.lookup-card{width:min(720px,100%);background:#fff;border-radius:28px;padding:32px;box-shadow:0 24px 70px #14384e20}
+.lookup-form{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:18px}
+.lookup-form input{padding:14px;border:2px solid #dce9ed;border-radius:14px}
+.lookup-result{margin-top:20px}
+.status-pill{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900}
+.status-paid{background:#ffe1eb;color:#a51449}.status-reserved{background:#fff1b6;color:#725a00}.status-other{background:#e8f5f7;color:#075f73}
+.ticket-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.ticket-list span{display:grid;place-items:center;width:54px;height:54px;border-radius:14px;background:linear-gradient(135deg,#07879a,#ea2868);color:#fff;font-weight:1000}
+@media(max-width:600px){.lookup-form{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="lookup-page">
+  <section class="lookup-card">
+    <p class="eyebrow">Rifa con Causa</p>
+    <h1>Consulta tu participación</h1>
+    <p>Escribe el teléfono utilizado en tu registro para revisar el estado de tus números.</p>
+    <div class="lookup-form">
+      <input id="lookupPhone" inputmode="numeric" maxlength="10" placeholder="Teléfono de 10 dígitos">
+      <button id="lookupButton" class="button primary">Consultar</button>
+    </div>
+    <div id="lookupResult" class="lookup-result"></div>
+    <a class="button secondary" href="index.html">Volver a la rifa</a>
+  </section>
+</main>
+<script src="shared/config.js"></script>
+<script src="shared/ui-utils.js"></script>
+<script src="js/local-db.js"></script>
+<script>
+const phone=document.getElementById("lookupPhone"),button=document.getElementById("lookupButton"),root=document.getElementById("lookupResult");
+phone.addEventListener("input",()=>phone.value=RifaUI.normalizePhone(phone.value));
+button.addEventListener("click",()=>{
+ const value=RifaUI.normalizePhone(phone.value);
+ if(value.length!==10){RifaUI.toast("Escribe un teléfono válido.","error");return}
+ const db=RifaLocalDB.load(),matches=(db.participants||[]).filter(p=>String(p.phone||"").replace(/\D/g,"")===value);
+ if(!matches.length){root.innerHTML='<div class="empty-state">No encontramos un registro con ese teléfono.</div>';return}
+ root.innerHTML=matches.map(p=>{
+  const status=p.status||"reserved",label=status==="paid"?"Pagado":status==="reserved"?"Apartado":"En revisión";
+  const klass=status==="paid"?"status-paid":status==="reserved"?"status-reserved":"status-other";
+  return `<article class="selection-card" style="margin-bottom:12px"><small>Participante</small><h3>${RifaUI.escape(p.name||"Registro")}</h3><span class="status-pill ${klass}">${label}</span><div class="ticket-list">${(p.numbers||[]).map(n=>`<span>${String(n).padStart(3,"0")}</span>`).join("")}</div><p class="input-help">Registrado: ${new Date(p.createdAt||Date.now()).toLocaleString("es-MX")}</p></article>`
+ }).join("");
+});
+</script>
+</body></html>

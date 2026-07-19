@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Panel privado — Rifa con Causa</title><link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="../shared/ui-utils.css"></head>
+<body>
+<section id="loginView" class="login-view">
+<form id="loginForm" class="login-card">
+<p class="eyebrow">Rifa con Causa</p><h1>Panel privado</h1><div class="mode-note">Versión Definitiva RC2 · Firebase</div>
+<label>Correo electrónico<input id="user" type="email" required autocomplete="username"></label>
+<label>Contraseña<input id="password" type="password" required autocomplete="current-password"></label>
+<button>Entrar al panel</button><p id="loginStatus" class="form-status"></p>
+<small>Usuario: <b>admin</b> · Contraseña: <b>Rifa2026</b></small>
+</form></section>
+
+<section id="dashboardView" hidden>
+<header>
+<div><p class="eyebrow">Administración</p><h1>Rifa con Causa</h1><p class="header-subtitle">Dodge Journey 2013 · 500 números</p></div>
+<div class="header-actions"><span id="modeChip">Local seguro</span><button id="logout" class="secondary-btn">Cerrar sesión</button></div>
+</header>
+<main>
+<nav class="admin-tabs">
+<button class="tab-btn active" data-view="dashboardHome">Resumen</button>
+<button class="tab-btn" data-view="numbersView">Números</button>
+<button class="tab-btn" data-view="participantsView">Participantes</button>
+<button class="tab-btn" data-view="drawView">Sorteo</button>
+<button class="tab-btn" data-view="historyView">Historial</button>
+</nav>
+
+<section id="dashboardHome" class="view">
+<section class="stats">
+<article><span>Disponibles</span><strong id="available">0</strong><small>boletos sin asignar</small></article>
+<article><span>Apartados</span><strong id="reserved">0</strong><small>pendientes de pago</small></article>
+<article><span>Pagados</span><strong id="paid">0</strong><small>participan en el sorteo</small></article>
+<article><span>Total confirmado</span><strong id="total">$0</strong><small>ingreso registrado</small></article>
+</section>
+
+<section class="dashboard-grid">
+<article class="panel progress-panel">
+<div class="section-title"><div><p class="eyebrow">Avance</p><h2>Progreso de la rifa</h2></div><strong id="progressPercent">0%</strong></div>
+<div class="progress-track"><span id="progressBar"></span></div>
+<div class="progress-labels"><span id="progressPaid">0 pagados</span><span>Meta: 500</span></div>
+<div class="mini-bars">
+<div><label>Disponibles</label><span><i id="availableBar"></i></span><b id="availablePct">0%</b></div>
+<div><label>Apartados</label><span><i id="reservedBar"></i></span><b id="reservedPct">0%</b></div>
+<div><label>Pagados</label><span><i id="paidBar"></i></span><b id="paidPct">0%</b></div>
+</div>
+</article>
+
+<article class="panel">
+<div class="section-title"><div><p class="eyebrow">Actividad</p><h2>Últimos movimientos</h2></div></div>
+<div id="recentActivity" class="activity-list"></div>
+</article>
+</section>
+
+<section class="panel quick-panel">
+<div class="section-title"><div><p class="eyebrow">Acciones rápidas</p><h2>Administración diaria</h2></div></div>
+<div class="quick-actions">
+<button data-go="numbersView">Administrar números</button>
+<button data-go="participantsView">Revisar participantes</button>
+<button data-go="drawView">Preparar sorteo</button>
+<button id="exportBackup" class="secondary-btn">Descargar respaldo</button>
+<label class="upload-button">Restaurar respaldo<input id="importBackup" type="file" accept=".json,application/json"></label>
+</div>
+</section>
+</section>
+
+<section id="numbersView" class="view panel" hidden>
+<div class="section-title"><div><p class="eyebrow">Control</p><h2>Administración de números</h2></div><span id="numberResultCount"></span></div>
+<div class="toolbar">
+<input id="search" placeholder="Buscar número, nombre o teléfono">
+<select id="filter"><option value="all">Todos</option><option value="available">Disponible</option><option value="reserved">Apartado</option><option value="paid">Pagado</option></select>
+<button id="exportCsv">CSV</button><button id="exportExcel">Excel</button><button id="resetData" class="danger">Reiniciar</button>
+</div>
+<div class="table-wrap"><table><thead><tr><th>Número</th><th>Estado</th><th>Participante</th><th>Teléfono</th><th>Actualización</th><th>Acción</th></tr></thead><tbody id="table"></tbody></table></div>
+</section>
+
+<section id="participantsView" class="view panel" hidden>
+<div class="section-title"><div><p class="eyebrow">Directorio</p><h2>Participantes</h2></div><span id="participantResultCount"></span></div>
+<div class="toolbar participant-toolbar"><select id="participantStatusFilter"><option value="">Todos los estados</option><option value="reserved">Apartados</option><option value="paid">Pagados</option><option value="available">Liberados</option></select><input id="participantSearch" placeholder="Buscar participante, teléfono o número"><select id="participantFilter"><option value="all">Todos</option><option value="reserved">Apartados</option><option value="paid">Pagados</option><option value="released">Liberados</option></select></div>
+<div id="participantCards" class="participant-cards"></div>
+</section>
+
+<section id="drawView" class="view" hidden>
+<div class="draw-layout">
+<article class="panel draw-machine">
+<p class="eyebrow">Sorteo oficial</p><h2>Seleccionar número ganador</h2>
+<p>El sistema utilizará únicamente números marcados como <b>pagados</b>.</p>
+<div id="drawNumber" class="draw-number">---</div>
+<div id="drawStatus" class="draw-status">Esperando para iniciar.</div>
+<button id="runDraw" class="draw-button">Realizar sorteo</button>
+<p class="draw-warning">Antes de continuar, confirma que todos los pagos estén actualizados. El resultado se guardará en el historial local.</p>
+</article>
+<article class="panel">
+<p class="eyebrow">Elegibilidad</p><h2>Resumen del sorteo</h2>
+<div class="draw-summary">
+<div><span>Números pagados</span><strong id="eligibleCount">0</strong></div>
+<div><span>Participantes pagados</span><strong id="eligibleParticipants">0</strong></div>
+<div><span>Último ganador</span><strong id="lastWinner">—</strong></div>
+</div>
+<div id="winnerCard" class="winner-card" hidden>
+<p class="eyebrow">Resultado</p><h3 id="winnerName"></h3><p>Número ganador: <b id="winnerNumber"></b></p><p>Teléfono: <span id="winnerPhone"></span></p><p>Fecha: <span id="winnerDate"></span></p>
+<button id="copyWinner" class="secondary-btn">Copiar resultado</button><button id="printAct" class="secondary-btn">Imprimir acta</button><a href="../public/consulta.html" target="_blank" class="secondary-btn" style="display:inline-block;text-decoration:none;border-radius:999px;padding:11px 17px;font-weight:800">Consulta pública</a><a href="../public/ganador.html" target="_blank" class="secondary-btn" style="display:inline-block;text-decoration:none;border-radius:999px;padding:11px 17px;font-weight:800">Vista pública</a>
+</div>
+</article>
+</div>
+<section class="panel">
+<div class="section-title"><div><p class="eyebrow">Registro</p><h2>Sorteos realizados</h2></div></div>
+<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Número ganador</th><th>Participante</th><th>Teléfono</th><th>Elegibles</th></tr></thead><tbody id="drawHistory"></tbody></table></div>
+</section>
+</section>
+
+<section id="historyView" class="view panel" hidden>
+<div class="section-title"><div><p class="eyebrow">Auditoría local</p><h2>Historial de movimientos</h2></div><button id="exportHistory" class="secondary-btn">Exportar historial</button></div>
+<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Acción</th><th>Detalle</th><th>Participante</th></tr></thead><tbody id="historyTable"></tbody></table></div>
+</section>
+</main>
+</section>
+
+<dialog id="editDialog"><form id="editForm"><h2 id="editTitle"></h2><input id="editNumber" type="hidden">
+<label>Estado<select id="editStatus"><option value="available">Disponible</option><option value="reserved">Apartado</option><option value="paid">Pagado</option></select></label>
+<label>Nombre<input id="editName"></label><label>Teléfono<input id="editPhone"></label><label>Notas<textarea id="editNotes"></textarea></label>
+<div class="actions"><button type="button" id="cancelEdit" class="secondary-btn">Cancelar</button><button>Guardar</button></div></form></dialog>
+
+<dialog id="participantDialog"><form id="participantForm" class="participant-form"><button type="button" class="dialog-close" id="closeParticipant">×</button>
+<input id="participantId" type="hidden"><p class="eyebrow">Ficha completa</p><h2 id="participantTitle">Participante</h2>
+<div class="participant-grid">
+<div><label>Nombre<input id="participantNameEdit"></label><label>Teléfono<input id="participantPhoneEdit"></label><label>Notas<textarea id="participantNotesEdit"></textarea></label>
+<div class="participant-meta"><p><strong>Números:</strong> <span id="participantNumbers"></span></p><p><strong>Total:</strong> <span id="participantTotal"></span></p><p><strong>Registro:</strong> <span id="participantCreated"></span></p><p><strong>Pago:</strong> <span id="participantPaidAt"></span></p></div></div>
+<div class="receipt-box"><h3>Comprobante</h3><div id="receiptPreview" class="receipt-preview">El comprobante se revisa en WhatsApp.</div></div>
+</div>
+<div class="participant-actions"><button type="button" id="markPaid">Confirmar pago</button><button type="button" id="markReserved" class="secondary-btn">Marcar apartado</button><button type="button" id="releaseParticipant" class="danger">Liberar números</button><button type="submit">Guardar datos</button></div>
+</form></dialog>
+
+<script src="../shared/config.js"></script>
+<script src="../shared/ui-utils.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="../services/firebase-config.js"></script>
+<script src="../services/firebase-service.js"></script>
+<script src="js/admin-firebase.js"></script></body></html>
