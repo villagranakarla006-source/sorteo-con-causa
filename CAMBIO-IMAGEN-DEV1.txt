@@ -1,0 +1,9 @@
+Rifa con Causa v1.0.4-dev1
+
+Cambio realizado:
+- Se reemplazó la fotografía de Karla en la página pública.
+- Se conservó el mismo nombre de archivo y las mismas referencias HTML.
+- No se modificaron textos, colores, estructura, tablero, registro ni administración.
+
+Archivo reemplazado:
+assets/karla-organizadora-original.jpeg
