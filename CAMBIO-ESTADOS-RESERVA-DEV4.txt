@@ -1,0 +1,18 @@
+Rifa con Causa — v1.0.4-dev4
+
+Cambios incluidos:
+- Estado inicial según método de pago:
+  * Pendiente de transferencia
+  * Pendiente de efectivo
+- Fecha y hora de reserva.
+- Fecha y hora de vencimiento calculada a 5 días.
+- Campos preparados para recordatorio, confirmación de pago y boleto.
+- Panel administrativo con filtros por estado.
+- Ficha del participante con reserva, vencimiento, estado, método y fecha de pago.
+- Confirmar pago cambia participante y números a Pagado.
+- Liberar números conserva el flujo administrativo existente.
+
+No incluye todavía:
+- Envío automático del recordatorio.
+- Liberación automática al vencer.
+- Generación automática del boleto.

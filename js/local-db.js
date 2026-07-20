@@ -112,19 +112,27 @@
 
       const id=uid();
       const now=new Date().toISOString();
+      const expiresAt=new Date(Date.now()+5*24*60*60*1000).toISOString();
+      const paymentMethod=participant.paymentMethod==="efectivo"?"efectivo":"transferencia";
       const record={
         id,
         name:participant.name,
         phone:participant.phone,
         numbers:[...numbers],
         total:participant.total,
-        status:"reserved",
-        paymentMethod:participant.paymentMethod==="efectivo"?"efectivo":"transferencia",
+        status:paymentMethod==="efectivo"?"pending_cash":"pending_transfer",
+        paymentMethod,
         receiptData:participant.receiptData||"",
         receiptName:participant.receiptName||"",
         receiptType:participant.receiptType||"",
         notes:"",
         createdAt:now,
+        reservationAt:now,
+        expiresAt,
+        reminderSent:false,
+        reminderSentAt:"",
+        paymentConfirmedAt:"",
+        ticketGenerated:false,
         updatedAt:now,
         paidAt:""
       };
@@ -207,18 +215,25 @@
       p.numbers.forEach(n=>{
         const row=data.numbers[n-1];
         if(row){
-          row.status=status;
+          const numberStatus=(status==="available"||status==="expired")?"available":status==="paid"?"paid":"reserved";
+          row.status=numberStatus;
           row.updatedAt=now;
           if(status==="paid") row.paidAt=now;
-          if(status==="available"){
+          if(status==="available"||status==="expired"){
             Object.assign(row,{participantId:"",participantName:"",phone:"",reservedAt:"",paidAt:""});
           }
         }
       });
 
-      p.status=status==="available"?"released":status;
+      if(status==="available") p.status="released";
+      else if(status==="expired") p.status="expired";
+      else if(status==="paid") p.status="paid";
+      else if(status==="pending_cash") p.status="pending_cash";
+      else if(status==="pending_transfer") p.status="pending_transfer";
+      else p.status=p.paymentMethod==="efectivo"?"pending_cash":"pending_transfer";
       p.updatedAt=now;
-      if(status==="paid") p.paidAt=now;
+      if(status==="paid"){ p.paidAt=now; p.paymentConfirmedAt=now; }
+      if(status==="expired") p.expiredAt=now;
       addAudit(data,"Cambio de estado",`Participación marcada como ${p.status}`,id,p.numbers.join(","));
       save(data); return p;
     }

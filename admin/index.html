@@ -76,7 +76,7 @@
 
 <section id="participantsView" class="view panel" hidden>
 <div class="section-title"><div><p class="eyebrow">Directorio</p><h2>Participantes</h2></div><span id="participantResultCount"></span></div>
-<div class="toolbar participant-toolbar"><select id="participantStatusFilter"><option value="">Todos los estados</option><option value="reserved">Apartados</option><option value="paid">Pagados</option><option value="available">Liberados</option></select><input id="participantSearch" placeholder="Buscar participante, teléfono o número"><select id="participantFilter"><option value="all">Todos</option><option value="reserved">Apartados</option><option value="paid">Pagados</option><option value="released">Liberados</option></select></div>
+<div class="toolbar participant-toolbar"><select id="participantStatusFilter"><option value="">Todos los estados</option><option value="pending_transfer">Pendiente de transferencia</option><option value="pending_cash">Pendiente de efectivo</option><option value="paid">Pagado</option><option value="expired">Expirado</option><option value="released">Liberado</option></select><input id="participantSearch" placeholder="Buscar participante, teléfono o número"><select id="participantFilter"><option value="all">Todos</option><option value="reserved">Pendientes</option><option value="paid">Pagados</option><option value="released">Expirados / liberados</option></select></div>
 <div id="participantCards" class="participant-cards"></div>
 </section>
 
@@ -125,10 +125,10 @@
 <input id="participantId" type="hidden"><p class="eyebrow">Ficha completa</p><h2 id="participantTitle">Participante</h2>
 <div class="participant-grid">
 <div><label>Nombre<input id="participantNameEdit"></label><label>Teléfono<input id="participantPhoneEdit"></label><label>Notas<textarea id="participantNotesEdit"></textarea></label>
-<div class="participant-meta"><p><strong>Números:</strong> <span id="participantNumbers"></span></p><p><strong>Total:</strong> <span id="participantTotal"></span></p><p><strong>Registro:</strong> <span id="participantCreated"></span></p><p><strong>Pago:</strong> <span id="participantPaidAt"></span></p><p><strong>Método:</strong> <span id="participantPaymentMethod"></span></p></div></div>
+<div class="participant-meta"><p><strong>Números:</strong> <span id="participantNumbers"></span></p><p><strong>Total:</strong> <span id="participantTotal"></span></p><p><strong>Reserva:</strong> <span id="participantCreated"></span></p><p><strong>Vencimiento:</strong> <span id="participantExpiresAt"></span></p><p><strong>Estado:</strong> <span id="participantStatus"></span></p><p><strong>Pago confirmado:</strong> <span id="participantPaidAt"></span></p><p><strong>Método:</strong> <span id="participantPaymentMethod"></span></p></div></div>
 <div class="receipt-box"><h3>Comprobante</h3><div id="receiptPreview" class="receipt-preview">El comprobante se revisa en WhatsApp.</div></div>
 </div>
-<div class="participant-actions"><button type="button" id="markPaid">Confirmar pago</button><button type="button" id="downloadTicket" class="secondary-btn">Descargar boleto</button><button type="button" id="shareTicket" class="secondary-btn">Enviar boleto por WhatsApp</button><button type="button" id="markReserved" class="secondary-btn">Marcar apartado</button><button type="button" id="releaseParticipant" class="danger">Liberar números</button><button type="submit">Guardar datos</button></div>
+<div class="participant-actions"><button type="button" id="markPaid">Confirmar pago</button><button type="button" id="downloadTicket" class="secondary-btn">Descargar boleto</button><button type="button" id="shareTicket" class="secondary-btn">Enviar boleto por WhatsApp</button><button type="button" id="markReserved" class="secondary-btn">Restablecer como pendiente</button><button type="button" id="releaseParticipant" class="danger">Liberar números</button><button type="submit">Guardar datos</button></div>
 </form></dialog>
 
 <script src="../shared/config.js"></script>

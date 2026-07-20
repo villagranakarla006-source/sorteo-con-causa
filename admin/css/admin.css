@@ -45,3 +45,5 @@ table tbody tr{transition:background .18s ease}table tbody tr:hover{background:#
 .receipt-admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 input,select,textarea,button{font-size:16px}
 @media(max-width:700px){body{overflow-x:hidden}.participant-actions{grid-template-columns:1fr}.receipt-preview iframe{height:60vh}}
+
+.badge.pending_transfer{background:#fff3cd;color:#7a5200}.badge.pending_cash{background:#ffe5c2;color:#8a3f00}.badge.expired{background:#fde2e2;color:#9d1c1c}.participant-card p{margin:.45rem 0}

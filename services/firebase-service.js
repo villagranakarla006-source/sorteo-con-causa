@@ -46,10 +46,17 @@
       docs.forEach((doc,i)=>{
         if(doc.exists&&doc.data().status!=="available") throw new Error(`El número ${numId(numbers[i])} ya no está disponible.`);
       });
+      const paymentMethod=payload.paymentMethod==="efectivo"?"efectivo":"transferencia";
+      const reservationDate=new Date();
+      const expirationDate=new Date(reservationDate.getTime()+5*24*60*60*1000);
       tx.set(participantRef,{
         name:String(payload.name||"").trim(),phone:String(payload.phone||"").replace(/\D/g,""),numbers,
-        total:Number(payload.total||numbers.length*200),status:"reserved",publicCode,
-        paymentMethod:payload.paymentMethod==="efectivo"?"efectivo":"transferencia",receiptMethod:"whatsapp",
+        total:Number(payload.total||numbers.length*200),
+        status:paymentMethod==="efectivo"?"pending_cash":"pending_transfer",publicCode,
+        paymentMethod,receiptMethod:"whatsapp",
+        reservationAt:firebase.firestore.Timestamp.fromDate(reservationDate),
+        expiresAt:firebase.firestore.Timestamp.fromDate(expirationDate),
+        reminderSent:false,reminderSentAt:null,paymentConfirmedAt:null,ticketGenerated:false,
         receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),
         receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),
         notes:"",createdAt:now(),updatedAt:now()
@@ -93,11 +100,26 @@
     const pRef=db.collection("participants").doc(id);
     await db.runTransaction(async tx=>{
       const pDoc=await tx.get(pRef);if(!pDoc.exists)throw new Error("Participante no encontrado.");
-      const p=pDoc.data(),numberStatus=status==="available"?"available":status;
-      tx.update(pRef,{status:status==="available"?"released":status,paidAt:status==="paid"?now():p.paidAt||null,updatedAt:now()});
+      const p=pDoc.data();
+      const release=status==="available"||status==="expired";
+      const paid=status==="paid";
+      const pending=status==="reserved"||status==="pending_transfer"||status==="pending_cash";
+      const participantStatus=release?(status==="expired"?"expired":"released"):
+        paid?"paid":
+        status==="pending_cash"?"pending_cash":
+        status==="pending_transfer"?"pending_transfer":
+        (p.paymentMethod==="efectivo"?"pending_cash":"pending_transfer");
+      const numberStatus=release?"available":paid?"paid":"reserved";
+      tx.update(pRef,{
+        status:participantStatus,
+        paidAt:paid?now():(p.paidAt||null),
+        paymentConfirmedAt:paid?now():(p.paymentConfirmedAt||null),
+        expiredAt:status==="expired"?now():(p.expiredAt||null),
+        updatedAt:now()
+      });
       (p.numbers||[]).forEach(n=>tx.update(db.collection("numbers").doc(numId(n)),{
-        status:numberStatus,participantId:status==="available"?"":id,participantName:status==="available"?"":p.name,
-        phone:status==="available"?"":p.phone,updatedAt:now()
+        status:numberStatus,participantId:release?"":id,participantName:release?"":p.name,
+        phone:release?"":p.phone,updatedAt:now()
       }));
     });
     const b=db.batch();audit(b,"Estado",`Participante cambiado a ${status}`,id);await b.commit();
