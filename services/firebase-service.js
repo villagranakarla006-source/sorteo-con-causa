@@ -69,8 +69,15 @@
     init();
     const normalized=String(phone||"").replace(/\D/g,"");
     if(normalized.length!==10) throw new Error("Escribe un teléfono de 10 dígitos.");
-    const snap=await db.collection("numbers").where("phone","==",normalized).get();
-    const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    // La colección numbers es pública para consulta y guarda el teléfono
+    // normalizado en cada número apartado. Leemos la colección y filtramos
+    // localmente para evitar fallos de permisos/índices en consultas where.
+    const snap=await db.collection("numbers").get();
+    const rows=snap.docs
+      .map(d=>({id:d.id,...d.data()}))
+      .filter(row=>String(row.phone||"").replace(/\D/g,"")===normalized)
+      .filter(row=>row.status!=="available");
     rows.sort((a,b)=>Number(a.number)-Number(b.number));
     return rows;
   }

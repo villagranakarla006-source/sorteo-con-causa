@@ -1,0 +1,14 @@
+RIFA CON CAUSA — V1.0.3
+Corrección puntual: consulta pública por teléfono.
+
+Cambio realizado:
+- La consulta ya no usa una búsqueda Firestore "where" que podía fallar por reglas o índices.
+- Ahora lee la colección pública de números y filtra localmente por el teléfono normalizado.
+- Solo muestra números activos (apartados, pagados o en revisión).
+- No se modificaron el registro, tablero, panel administrativo ni boleto.
+
+Prueba recomendada:
+1. Registrar o usar un participante existente.
+2. Abrir consulta.html.
+3. Escribir el mismo teléfono de 10 dígitos.
+4. Confirmar que se muestran sus números y estado.
