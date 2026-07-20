@@ -128,7 +128,7 @@
 <div class="participant-meta"><p><strong>Números:</strong> <span id="participantNumbers"></span></p><p><strong>Total:</strong> <span id="participantTotal"></span></p><p><strong>Registro:</strong> <span id="participantCreated"></span></p><p><strong>Pago:</strong> <span id="participantPaidAt"></span></p></div></div>
 <div class="receipt-box"><h3>Comprobante</h3><div id="receiptPreview" class="receipt-preview">El comprobante se revisa en WhatsApp.</div></div>
 </div>
-<div class="participant-actions"><button type="button" id="markPaid">Confirmar pago</button><button type="button" id="markReserved" class="secondary-btn">Marcar apartado</button><button type="button" id="releaseParticipant" class="danger">Liberar números</button><button type="submit">Guardar datos</button></div>
+<div class="participant-actions"><button type="button" id="markPaid">Confirmar pago</button><button type="button" id="downloadTicket" class="secondary-btn">Descargar boleto</button><button type="button" id="shareTicket" class="secondary-btn">Enviar boleto por WhatsApp</button><button type="button" id="markReserved" class="secondary-btn">Marcar apartado</button><button type="button" id="releaseParticipant" class="danger">Liberar números</button><button type="submit">Guardar datos</button></div>
 </form></dialog>
 
 <script src="../shared/config.js"></script>
@@ -138,4 +138,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script src="../services/firebase-config.js"></script>
 <script src="../services/firebase-service.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="js/ticket-generator.js"></script>
 <script src="js/admin-firebase.js"></script></body></html>

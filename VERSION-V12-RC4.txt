@@ -1,0 +1,6 @@
+Rifa con Causa V12.0 RC4
+- Generación de boleto digital al confirmar el pago.
+- Descarga del boleto en PNG.
+- Envío/compartición del boleto por WhatsApp.
+- Boleto personalizado con nombre, números, importe, folio, fecha y QR.
+- Se conserva la sincronización Firebase y las correcciones del panel RC3.
