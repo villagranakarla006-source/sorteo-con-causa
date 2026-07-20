@@ -1,0 +1,2 @@
+V12.0 RC3
+Correcciones: sincronización de apartados y participantes en panel, contadores/progreso sobre 500 números, exportación completa con notas.

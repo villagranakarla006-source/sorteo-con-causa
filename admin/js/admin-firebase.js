@@ -7,8 +7,26 @@ const money=n=>new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN",ma
 const toDate=v=>v?.toDate?v.toDate():v?new Date(v):null;
 const dateFmt=v=>{const d=toDate(v);return d&&!isNaN(d)?d.toLocaleString("es-MX"):"—"};
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-let records=[],participants=[],auditRows=[],draws=[],currentParticipantId="",lastWinnerText="",unsubs=[];
+let records=[],participants=[],participantDocs=[],auditRows=[],draws=[],currentParticipantId="",lastWinnerText="",unsubs=[];
 const data=()=>({numbers:records,participants,audit:auditRows,draws});
+function normalizeRecords(rows){
+  const next=Array.from({length:TOTAL},(_,i)=>({number:i+1,status:"available",participantId:"",participantName:"",phone:"",notes:""}));
+  (rows||[]).forEach(row=>{const n=Number(row.number);if(n>=1&&n<=TOTAL)next[n-1]={...next[n-1],...row,number:n,status:row.status||"available"};});
+  return next;
+}
+function rebuildParticipants(){
+  const byId=new Map((participantDocs||[]).map(p=>[p.id,{...p,numbers:[...(p.numbers||[])]}]));
+  records.filter(r=>r.status!=="available"&&(r.participantId||r.participantName||r.phone)).forEach(r=>{
+    const id=r.participantId||`numero-${r.number}`;
+    const current=byId.get(id)||{id,name:r.participantName||"Participante",phone:r.phone||"",numbers:[],status:r.status,total:0,notes:r.notes||"",createdAt:r.reservedAt||r.updatedAt};
+    if(!current.numbers.includes(r.number))current.numbers.push(r.number);
+    current.name=current.name||r.participantName||"Participante";current.phone=current.phone||r.phone||"";
+    current.notes=current.notes||r.notes||"";current.total=(current.numbers.length||0)*PRICE;
+    if(r.status==="paid")current.status="paid";else if(current.status!=="paid")current.status="reserved";
+    byId.set(id,current);
+  });
+  participants=[...byId.values()].map(p=>({...p,numbers:[...new Set(p.numbers||[])].sort((a,b)=>a-b),total:Number(p.total||((p.numbers||[]).length*PRICE))}));
+}
 function counts(){return{available:records.filter(r=>r.status==="available").length,reserved:records.filter(r=>r.status==="reserved").length,paid:records.filter(r=>r.status==="paid").length}}
 function label(s){return s==="available"?"Disponible":s==="reserved"?"Apartado":s==="paid"?"Pagado":s==="released"?"Liberado":s||"Sin estado"}
 function showView(id){$$('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));$$('.view').forEach(v=>v.hidden=v.id!==id);renderAll()}
@@ -23,7 +41,7 @@ function openEdit(n){const r=records.find(x=>x.number===n);if(!r)return;$('#edit
 function openParticipant(id){const p=participants.find(x=>x.id===id);if(!p)return;currentParticipantId=id;$('#participantId').value=id;$('#participantTitle').textContent=p.name||'Participante';$('#participantNameEdit').value=p.name||'';$('#participantPhoneEdit').value=p.phone||'';$('#participantNotesEdit').value=p.notes||'';$('#participantNumbers').textContent=(p.numbers||[]).map(fmt).join(', ')||'Sin números';$('#participantTotal').textContent=money(p.total);$('#participantCreated').textContent=dateFmt(p.createdAt);$('#participantPaidAt').textContent=dateFmt(p.paidAt);$('#receiptPreview').innerHTML=`<div class="empty-state">El comprobante se recibe y revisa por WhatsApp.<br><a href="https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent('Hola, seguimiento de la Rifa con Causa para '+(p.name||'participante')+', números '+(p.numbers||[]).map(fmt).join(', '))}" target="_blank" rel="noopener">Abrir conversación de WhatsApp</a></div>`;$('#participantDialog').showModal()}
 function showWinner(d){$('#winnerCard').hidden=false;$('#winnerName').textContent=d.participantName||'Participante';$('#winnerNumber').textContent=fmt(d.winnerNumber);$('#winnerPhone').textContent=d.phone||'—';$('#winnerDate').textContent=dateFmt(d.createdAt);lastWinnerText=`Rifa con Causa\nNúmero ganador: ${fmt(d.winnerNumber)}\nParticipante: ${d.participantName||'—'}\nTeléfono: ${d.phone||'—'}\nFecha: ${dateFmt(d.createdAt)}`}
 function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
-function subscribe(){unsubs.forEach(u=>u&&u());unsubs=[RifaFirebase.listenNumbers(v=>{records=v;renderAll()}),RifaFirebase.listenParticipants(v=>{participants=v;renderAll()}),RifaFirebase.listenAudit(v=>{auditRows=v;renderAll()}),RifaFirebase.listenDraws(v=>{draws=v;renderAll()})]}
+function subscribe(){unsubs.forEach(u=>u&&u());unsubs=[RifaFirebase.listenNumbers(v=>{records=normalizeRecords(v);rebuildParticipants();renderAll()}),RifaFirebase.listenParticipants(v=>{participantDocs=v||[];rebuildParticipants();renderAll()}),RifaFirebase.listenAudit(v=>{auditRows=v;renderAll()}),RifaFirebase.listenDraws(v=>{draws=v;renderAll()})]}
 $('#loginForm').onsubmit=async e=>{e.preventDefault();const s=$('#loginStatus');s.textContent='Ingresando…';try{await RifaFirebase.login($('#user').value.trim(),$('#password').value);s.textContent=''}catch(err){s.textContent='No fue posible entrar. Revisa correo y contraseña.'}}
 $('#logout').onclick=()=>RifaFirebase.logout();
 RifaFirebase.onAuth(async user=>{if(user){$('#loginView').hidden=true;$('#dashboardView').hidden=false;try{await RifaFirebase.ensureNumbers();subscribe()}catch(e){alert(e.message)}}else{$('#dashboardView').hidden=true;$('#loginView').hidden=false;unsubs.forEach(u=>u&&u());unsubs=[]}});
@@ -35,6 +53,7 @@ $('#runDraw').onclick=()=>{const eligible=records.filter(r=>r.status==='paid');i
 $('#copyWinner').onclick=async()=>{try{await navigator.clipboard.writeText(lastWinnerText)}catch(_){prompt('Copia el resultado:',lastWinnerText)}};
 $('#printAct').onclick=()=>window.print();$('#search').oninput=renderNumbers;$('#filter').onchange=renderNumbers;$('#participantSearch').oninput=renderParticipants;$('#participantFilter').onchange=renderParticipants;$('#participantStatusFilter').onchange=renderParticipants;
 $('#resetData').onclick=()=>alert('Por seguridad, el borrado completo desde el panel está desactivado en Firebase.');
-$('#exportCsv').onclick=()=>{const rows=[['Número','Estado','Participante','Teléfono'],...records.map(r=>[fmt(r.number),r.status,r.participantName||'',r.phone||''])];download('reporte-rifa.csv','\ufeff'+rows.map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'),'text/csv;charset=utf-8')};
-$('#exportExcel').onclick=$('#exportCsv').onclick;$('#exportHistory').onclick=()=>download('historial-rifa.json',JSON.stringify(auditRows,null,2),'application/json');$('#exportBackup').onclick=()=>download(`respaldo-rifa-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(data(),null,2),'application/json');$('#importBackup').onchange=()=>alert('La importación directa está desactivada en RC2 para proteger los datos en Firebase.');
+function exportRows(){return [['Número','Estado','Participante','Teléfono','Notas','ID participante','Fecha de apartado','Fecha de pago','Última actualización'],...records.map(r=>[fmt(r.number),label(r.status),r.participantName||'',r.phone||'',r.notes||'',r.participantId||'',dateFmt(r.reservedAt),dateFmt(r.paidAt),dateFmt(r.updatedAt)])]}
+$('#exportCsv').onclick=()=>{const rows=exportRows();download('reporte-completo-rifa.csv','\ufeff'+rows.map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'),'text/csv;charset=utf-8')};
+$('#exportExcel').onclick=()=>{const rows=exportRows(),html=`<html><head><meta charset="UTF-8"></head><body><table border="1">${rows.map((row,i)=>`<tr>${row.map(v=>`<${i?'td':'th'}>${esc(v)}</${i?'td':'th'}>`).join('')}</tr>`).join('')}</table></body></html>`;download('reporte-completo-rifa.xls','\ufeff'+html,'application/vnd.ms-excel;charset=utf-8')};$('#exportHistory').onclick=()=>download('historial-rifa.json',JSON.stringify(auditRows,null,2),'application/json');$('#exportBackup').onclick=()=>download(`respaldo-rifa-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(data(),null,2),'application/json');$('#importBackup').onchange=()=>alert('La importación directa está desactivada en RC2 para proteger los datos en Firebase.');
 })();
