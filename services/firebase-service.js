@@ -44,18 +44,17 @@
       const refs=numbers.map(n=>db.collection("numbers").doc(numId(n)));
       const docs=await Promise.all(refs.map(ref=>tx.get(ref)));
       docs.forEach((doc,i)=>{
-        if(!doc.exists) throw new Error(`El número ${numId(numbers[i])} aún no está inicializado. La administradora debe entrar al panel una vez.`);
-        if(doc.data().status!=="available") throw new Error(`El número ${numId(numbers[i])} ya no está disponible.`);
+        if(doc.exists&&doc.data().status!=="available") throw new Error(`El número ${numId(numbers[i])} ya no está disponible.`);
       });
       tx.set(participantRef,{
         name:String(payload.name||"").trim(),phone:String(payload.phone||"").replace(/\D/g,""),numbers,
         total:Number(payload.total||numbers.length*200),status:"reserved",publicCode,receiptMethod:"whatsapp",
         notes:"",createdAt:now(),updatedAt:now()
       });
-      refs.forEach((ref,i)=>tx.update(ref,{
-        status:"reserved",participantId:participantRef.id,participantName:String(payload.name||"").trim(),
+      refs.forEach((ref,i)=>tx.set(ref,{
+        number:numbers[i],status:"reserved",participantId:participantRef.id,participantName:String(payload.name||"").trim(),
         phone:String(payload.phone||"").replace(/\D/g,""),reservedAt:now(),updatedAt:now()
-      }));
+      },{merge:true}));
     });
     return {participantId:participantRef.id,publicCode,numbers};
   }
@@ -63,7 +62,7 @@
     init();let q=db.collection(name);if(orderField)q=q.orderBy(orderField,"desc");
     return q.onSnapshot(s=>callback(s.docs.map(d=>({id:d.id,...d.data()}))),e=>console.error(name,e));
   }
-  function listenNumbers(cb){init();return db.collection("numbers").orderBy("number").onSnapshot(s=>cb(s.docs.map(d=>({id:d.id,...d.data()}))));}
+  function listenNumbers(cb,onError){init();return db.collection("numbers").orderBy("number").onSnapshot(s=>cb(s.docs.map(d=>({id:d.id,...d.data()}))),e=>{console.error("numbers",e);if(onError)onError(e);});}
   const listenParticipants=cb=>listenCollection("participants","createdAt",cb);
   const listenAudit=cb=>listenCollection("audit","at",cb);
   const listenDraws=cb=>listenCollection("draws","createdAt",cb);

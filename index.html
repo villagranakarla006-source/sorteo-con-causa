@@ -214,7 +214,7 @@
     <label>Teléfono de 10 dígitos<input id="participantPhone" inputmode="numeric" autocomplete="tel" maxlength="10" required><small class="input-help">Lo utilizaremos para confirmar tus números.</small></label>
     <div class="payment-box"><strong>Comprobante por WhatsApp</strong><span>Selecciona aquí la imagen o PDF. Después del registro podrás compartirlo por WhatsApp.</span></div>
     <label>Adjuntar comprobante
-      <input id="receiptFile" type="file" accept="image/*,.pdf,application/pdf">
+      <input id="receiptFile" type="file" accept="image/*,.pdf,application/pdf" required>
       <small class="input-help">Puedes tomar una foto o elegir una imagen/PDF. Máximo recomendado: 10 MB.</small>
     </label>
     <div class="payment-box">
@@ -229,9 +229,9 @@
         <span>Tus números ya están apartados en amarillo. Cambiarán a pagados cuando la administradora confirme el comprobante.</span>
       </div>
       <a id="openWhatsappButton" class="button primary full" href="#" target="_blank" rel="noopener">Abrir WhatsApp con mi mensaje</a>
-      <button id="shareReceiptButton" class="button secondary full" type="button">Compartir comprobante</button>
+      <button id="shareReceiptButton" class="button secondary full" type="button">Enviar mensaje y comprobante</button>
       <button id="downloadReceiptButton" class="text-button" type="button">Descargar comprobante</button>
-      <small>En celular, «Compartir comprobante» abre el menú de compartir para elegir WhatsApp. En computadora, abre WhatsApp y adjunta manualmente el archivo seleccionado.</small>
+      <small>En celular, «Enviar mensaje y comprobante» abre el menú para compartir el archivo en WhatsApp. En computadora, abre WhatsApp y adjunta manualmente el comprobante.</small>
     </div>
   </form>
 </dialog>

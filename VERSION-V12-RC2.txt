@@ -1,0 +1,13 @@
+Rifa con Causa — V12.0 RC2
+
+Correcciones principales:
+- Registro de participantes reparado.
+- Comprobante obligatorio antes del registro.
+- Mensaje de agradecimiento aprobado.
+- Botón para enviar mensaje y comprobante por WhatsApp.
+- Botón alternativo para abrir WhatsApp con el mensaje preparado.
+- Los números quedan apartados en amarillo.
+- Firebase puede crear automáticamente los documentos de números que aún no existan.
+- Mejor manejo de errores y estado del formulario.
+
+Nota técnica: los navegadores de computadora no permiten adjuntar automáticamente archivos a WhatsApp Web. La página abre WhatsApp con el mensaje y descarga el comprobante para adjuntarlo con el clip. En teléfonos compatibles se abre el menú nativo para compartir el mensaje y el archivo directamente a WhatsApp.

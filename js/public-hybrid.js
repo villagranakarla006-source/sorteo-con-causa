@@ -1,283 +1,299 @@
 (function(){
- const cfg=window.RIFA_CONFIG||{},TOTAL=cfg.totalNumbers||500,PRICE=cfg.ticketPrice||200,ui=window.RifaUI||{};
- const useFirebase=cfg.mode==="firebase"&&window.RifaFirebase&&RifaFirebase.isConfigured();
- const selectionKey="rifa-selected-v6",selected=new Set(JSON.parse(localStorage.getItem(selectionKey)||"[]"));
- const $=s=>document.querySelector(s),fmt=n=>String(n).padStart(3,"0");
- let records=Array.from({length:TOTAL},(_,i)=>({number:i+1,status:"available"})),activeStart=1;
- const grid=$("#numberGrid"),tabs=$("#rangeTabs"),dialog=$("#registrationDialog");
- let lastReceiptFile=null,lastWhatsappMessage="";
- const receiptShareActions=$("#receiptShareActions");
- const shareReceiptButton=$("#shareReceiptButton");
- const downloadReceiptButton=$("#downloadReceiptButton");
- const openWhatsappButton=$("#openWhatsappButton");
- const receiptFileInput=$("#receiptFile");
+  "use strict";
 
- function downloadReceiptFile(file){
-   if(!file)return;
-   const url=URL.createObjectURL(file),a=document.createElement("a");
-   a.href=url;a.download=file.name||"comprobante";document.body.appendChild(a);a.click();a.remove();
-   setTimeout(()=>URL.revokeObjectURL(url),1000);
- }
- shareReceiptButton?.addEventListener("click",async()=>{
-   if(!lastReceiptFile){alert("Primero selecciona una imagen o PDF del comprobante.");receiptFileInput?.click();return}
-   try{
-     if(navigator.share && (!navigator.canShare || navigator.canShare({files:[lastReceiptFile]}))){
-       await navigator.share({title:"Comprobante — Rifa con Causa",text:lastWhatsappMessage,files:[lastReceiptFile]});
-     }else{
-       downloadReceiptFile(lastReceiptFile);
-       openWhatsappButton?.click();
-       alert("El comprobante se descargó. En WhatsApp, usa el clip para adjuntarlo.");
-     }
-   }catch(err){
-     if(err?.name!=="AbortError"){
-       downloadReceiptFile(lastReceiptFile);
-       alert("No fue posible compartir automáticamente. El archivo se descargó para adjuntarlo manualmente en WhatsApp.");
-     }
-   }
- });
- downloadReceiptButton?.addEventListener("click",()=>downloadReceiptFile(lastReceiptFile));
+  const cfg=window.RIFA_CONFIG||{};
+  const TOTAL=Number(cfg.totalNumbers||500);
+  const PRICE=Number(cfg.ticketPrice||200);
+  const ui=window.RifaUI||{};
+  const firebaseEnabled=cfg.mode==="firebase"&&window.RifaFirebase&&RifaFirebase.isConfigured();
+  const selectionKey="rifa-selected-v12-rc2";
+  const $=selector=>document.querySelector(selector);
+  const fmt=n=>String(Number(n)).padStart(3,"0");
 
- $("#modeBanner").textContent=useFirebase?"Modo Firebase: sincronización en tiempo real":"Modo local: los datos permanecen en este navegador";
- if(useFirebase)$("#modeBanner").classList.add("firebase");
+  let selected=new Set();
+  try{ selected=new Set(JSON.parse(localStorage.getItem(selectionKey)||"[]").map(Number)); }catch(_){ selected=new Set(); }
+  let records=Array.from({length:TOTAL},(_,i)=>({number:i+1,status:"available"}));
+  let activeStart=1;
+  let lastReceiptFile=null;
+  let lastWhatsappMessage="";
+  let lastWhatsappUrl="";
 
- function saveSel(){localStorage.setItem(selectionKey,JSON.stringify([...selected]))}
- function loadLocal(){records=RifaLocalDB.load().numbers}
- function renderTabs(){tabs.innerHTML="";for(let s=1;s<=TOTAL;s+=100){const b=document.createElement("button");b.type="button";b.textContent=`${fmt(s)}–${fmt(Math.min(s+99,TOTAL))}`;b.className=s===activeStart?"active":"";b.onclick=()=>{activeStart=s;renderTabs();renderGrid()};tabs.appendChild(b)}}
- function renderGrid(){
-   const query=(document.querySelector("#numberSearch")?.value||"").replace(/\D/g,"");
-   grid.innerHTML="";
-   const start=query?1:activeStart;
-   const end=query?TOTAL:Math.min(activeStart+99,TOTAL);
-   let visible=0;
-   for(let n=start;n<=end;n++){
-     if(query&&!String(n).padStart(3,"0").includes(query)&&!String(n).includes(query))continue;
-     const r=records[n-1]||{number:n,status:"available"},b=document.createElement("button");
-     b.type="button";b.dataset.number=n;b.className=`number ${r.status}`;
-     if(r.status==="paid")b.innerHTML=`<span class="paid-heart" aria-hidden="true">♥</span><span class="paid-number">${fmt(n)}</span>`;
-     else b.textContent=fmt(n);
-     if(r.status!=="available"){selected.delete(n);b.disabled=true}else{if(selected.has(n))b.classList.add("selected");b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);saveSel();renderGrid();update()}}
-     grid.appendChild(b);visible++;
-   }
-   const status=document.querySelector("#numberSearchStatus");
-   if(query&&status)status.innerHTML=visible?`Se encontraron <strong>${visible}</strong> coincidencias. Selecciona un número disponible para continuar.`:"No se encontraron números con esa búsqueda.";
- }
- function update(){
-   const a=[...selected].sort((x,y)=>x-y);
-   $("#selectedNumbers").textContent=a.length?a.map(fmt).join(", "):"Ninguno";
-   $("#continueButton").disabled=!a.length;
-   const clearButton=$("#clearSelectionButton");
-   if(clearButton)clearButton.disabled=!a.length;
-   const selectedInput=$("#selectedNumbersInput");
-   if(selectedInput)selectedInput.value=a.join(",");
- }
- function resetRegistrationForm({closeDialog=false}={}){
-   const form=$("#registrationForm");
-   form?.reset();
-   $("#participantName")?.setAttribute("value","");
-   $("#participantPhone")?.setAttribute("value","");
-   const status=$("#formStatus");
-   if(status){status.textContent="";status.className="form-status"}
-   lastReceiptFile=null;
-   lastWhatsappMessage="";
-   if(receiptShareActions)receiptShareActions.hidden=true;
-   if(closeDialog&&dialog?.open)dialog.close();
- }
- function clearSelection({clearForm=true,closeDialog=true}={}){
-   selected.clear();
-   saveSel();
-   if(numberSearch)numberSearch.value="";
-   if(numberSearchStatus)numberSearchStatus.textContent="";
-   if(clearForm)resetRegistrationForm({closeDialog});
-   update();
-   renderGrid();
- }
- function openDialog(){
-   const a=[...selected].sort((x,y)=>x-y);
-   const submitButton=$("#submitRegistration");
-   if(submitButton)submitButton.hidden=false;
-   if(receiptShareActions)receiptShareActions.hidden=true;
-   const status=$("#formStatus");
-   if(status){status.textContent="";status.className="form-status"}
-   if(!a.length)return;
-   $("#modalSelectedNumbers").textContent=a.map(fmt).join(", ");
-   $("#ticketCount").textContent=a.length;
-   $("#paymentTotal").textContent=`$${(a.length*PRICE).toLocaleString("es-MX")} MXN`;
-   const selectedInput=$("#selectedNumbersInput");
-   if(selectedInput)selectedInput.value=a.join(",");
-   dialog.showModal();
- }
- $("#continueButton").onclick=openDialog;$("#showPayment").onclick=()=>selected.size?openDialog():$("#tablero").scrollIntoView({behavior:"smooth"});
- $("#clearSelectionButton")?.addEventListener("click",()=>clearSelection({clearForm:true,closeDialog:true}));
- $("#closeDialog").onclick=()=>dialog.close();
- $("#copyClabe").onclick=async()=>{try{ui.setLoading?.($("#submitRegistration"),true,"Registrando…");await navigator.clipboard.writeText(cfg.clabe);$("#copyClabe").textContent="Copiada"}catch(_){prompt("Copia la CLABE:",cfg.clabe)}};
- const numberSearch=$("#numberSearch"),numberSearchStatus=$("#numberSearchStatus");
- numberSearch?.addEventListener("input",()=>{const clean=(numberSearch.value||"").replace(/\D/g,"").slice(0,3);numberSearch.value=clean;renderGrid()});
- numberSearch?.addEventListener("keydown",e=>{if(e.key!=="Enter")return;e.preventDefault();const exact=Number((numberSearch.value||"").replace(/\D/g,""));if(exact<1||exact>TOTAL)return;const record=records[exact-1]||{status:"available"};if(record.status==="available"){selected.add(exact);saveSel();renderGrid();update();numberSearchStatus.innerHTML=`Número <strong>${fmt(exact)}</strong> seleccionado. Ya puedes continuar con el registro.`}});
+  const grid=$("#numberGrid");
+  const tabs=$("#rangeTabs");
+  const dialog=$("#registrationDialog");
+  const form=$("#registrationForm");
+  const receiptFileInput=$("#receiptFile");
+  const receiptShareActions=$("#receiptShareActions");
+  const shareReceiptButton=$("#shareReceiptButton");
+  const downloadReceiptButton=$("#downloadReceiptButton");
+  const openWhatsappButton=$("#openWhatsappButton");
+  const numberSearch=$("#numberSearch");
+  const numberSearchStatus=$("#numberSearchStatus");
 
- $("#registrationForm").onsubmit=async e=>{
-   e.preventDefault();
+  function saveSelection(){ localStorage.setItem(selectionKey,JSON.stringify([...selected])); }
+  function loadLocal(){ if(window.RifaLocalDB) records=RifaLocalDB.load().numbers; }
 
-   const submitButton=$("#submitRegistration");
-   const name=$("#participantName").value.trim();
-   const phone=$("#participantPhone").value.replace(/\D/g,"");
-   const nums=[...selected].sort((a,b)=>a-b);
-   const status=$("#formStatus");
-   const file=receiptFileInput?.files?.[0]||null;
+  function setMode(text,isFirebase=false){
+    const banner=$("#modeBanner");
+    if(!banner)return;
+    banner.textContent=text;
+    banner.classList.toggle("firebase",isFirebase);
+  }
 
-   status.className="form-status";
+  function renderTabs(){
+    tabs.innerHTML="";
+    for(let start=1;start<=TOTAL;start+=100){
+      const button=document.createElement("button");
+      button.type="button";
+      button.textContent=`${fmt(start)}–${fmt(Math.min(start+99,TOTAL))}`;
+      button.className=start===activeStart?"active":"";
+      button.addEventListener("click",()=>{activeStart=start;renderTabs();renderGrid();});
+      tabs.appendChild(button);
+    }
+  }
 
-   if(!nums.length){
-     status.textContent="Selecciona al menos un número.";
-     return;
-   }
-   if(name.length<3){
-     status.textContent="Escribe tu nombre completo.";
-     return;
-   }
-   if(phone.length!==10){
-     status.textContent="Escribe un teléfono de 10 dígitos.";
-     return;
-   }
+  function renderGrid(){
+    const query=(numberSearch?.value||"").replace(/\D/g,"");
+    grid.innerHTML="";
+    const start=query?1:activeStart;
+    const end=query?TOTAL:Math.min(activeStart+99,TOTAL);
+    let visible=0;
 
-   ui.setLoading?.(submitButton,true,"Guardando…");
-   submitButton.disabled=true;
-   status.textContent="Guardando registro y apartando números…";
+    for(let number=start;number<=end;number++){
+      if(query&&!fmt(number).includes(query)&&!String(number).includes(query))continue;
+      const row=records[number-1]||{number,status:"available"};
+      const button=document.createElement("button");
+      button.type="button";
+      button.dataset.number=String(number);
+      button.className=`number ${row.status||"available"}`;
 
-   try{
-     let savedRecord;
+      if(row.status==="paid") button.innerHTML=`<span class="paid-heart" aria-hidden="true">♥</span><span class="paid-number">${fmt(number)}</span>`;
+      else button.textContent=fmt(number);
 
-     if(useFirebase){
-       savedRecord=await RifaFirebase.registerParticipant({
-         name,
-         phone,
-         numbers:nums,
-         total:nums.length*PRICE
-       });
-     }else{
-       if(!window.RifaLocalDB){
-         throw new Error("No se pudo iniciar la base local. Cierra y vuelve a abrir la página.");
-       }
+      if(row.status!=="available"){
+        selected.delete(number);
+        button.disabled=true;
+      }else{
+        if(selected.has(number))button.classList.add("selected");
+        button.addEventListener("click",()=>{
+          selected.has(number)?selected.delete(number):selected.add(number);
+          saveSelection();
+          renderGrid();
+          updateSelectionSummary();
+        });
+      }
+      grid.appendChild(button);
+      visible++;
+    }
+    saveSelection();
+    if(query&&numberSearchStatus){
+      numberSearchStatus.innerHTML=visible?`Se encontraron <strong>${visible}</strong> coincidencias.`:"No se encontraron números con esa búsqueda.";
+    }
+  }
 
-       let receiptData="",receiptName="",receiptType="";
-       if(file){
-         if(file.size>2*1024*1024){
-           throw new Error("En modo local el comprobante debe pesar menos de 2 MB.");
-         }
-         receiptData=await new Promise((resolve,reject)=>{
-           const reader=new FileReader();
-           reader.onload=()=>resolve(reader.result);
-           reader.onerror=()=>reject(new Error("No fue posible leer el comprobante."));
-           reader.readAsDataURL(file);
-         });
-         receiptName=file.name;
-         receiptType=file.type;
-       }
+  function updateSelectionSummary(){
+    const numbers=[...selected].sort((a,b)=>a-b);
+    $("#selectedNumbers").textContent=numbers.length?numbers.map(fmt).join(", "):"Ninguno";
+    $("#continueButton").disabled=!numbers.length;
+    const clear=$("#clearSelectionButton");
+    if(clear)clear.disabled=!numbers.length;
+    const hidden=$("#selectedNumbersInput");
+    if(hidden)hidden.value=numbers.join(",");
+  }
 
-       savedRecord=RifaLocalDB.reserve(nums,{
-         name,
-         phone,
-         total:nums.length*PRICE,
-         receiptData,
-         receiptName,
-         receiptType
-       });
+  function resetForm({close=false}={}){
+    form?.reset();
+    const status=$("#formStatus");
+    if(status){status.textContent="";status.className="form-status";}
+    lastReceiptFile=null;
+    lastWhatsappMessage="";
+    lastWhatsappUrl="";
+    if(receiptShareActions)receiptShareActions.hidden=true;
+    const submit=$("#submitRegistration");
+    if(submit){submit.hidden=false;submit.disabled=false;}
+    if(close&&dialog?.open)dialog.close();
+  }
 
-       const verification=RifaLocalDB.load();
-       const savedParticipant=verification.participants.find(p=>p.id===savedRecord.id);
-       const numbersReserved=nums.every(n=>verification.numbers[n-1]?.status==="reserved");
+  function clearSelection(){
+    selected.clear();
+    saveSelection();
+    if(numberSearch)numberSearch.value="";
+    if(numberSearchStatus)numberSearchStatus.textContent="";
+    resetForm({close:true});
+    updateSelectionSummary();
+    renderGrid();
+  }
 
-       if(!savedParticipant||!numbersReserved){
-         throw new Error("El registro no pudo verificarse correctamente.");
-       }
+  function openDialog(){
+    const numbers=[...selected].sort((a,b)=>a-b);
+    if(!numbers.length)return;
+    resetForm();
+    $("#modalSelectedNumbers").textContent=numbers.map(fmt).join(", ");
+    $("#ticketCount").textContent=String(numbers.length);
+    $("#paymentTotal").textContent=`$${(numbers.length*PRICE).toLocaleString("es-MX")} MXN`;
+    $("#selectedNumbersInput").value=numbers.join(",");
+    dialog.showModal();
+  }
 
-       records=verification.numbers;
-       renderGrid();
-     }
+  function downloadFile(file){
+    if(!file)return;
+    const url=URL.createObjectURL(file);
+    const link=document.createElement("a");
+    link.href=url;
+    link.download=file.name||"comprobante";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }
 
-     const total=nums.length*PRICE;
-     const msg=`¡Gracias de corazón por tu valioso apoyo! 💗\n\nTu participación fue recibida correctamente y significa mucho para nosotros.\nNombre: ${name}\nTeléfono: ${phone}\nNúmeros seleccionados: ${nums.map(fmt).join(", ")}\nTotal: $${total.toLocaleString("es-MX")} MXN\nComprobante: lo enviaré por WhatsApp para revisión.\n\nTus números permanecerán en color amarillo como APARTADOS mientras revisamos el comprobante. Cuando el pago sea confirmado, cambiarán a color rosa/rojo como PAGADOS.\n\nTu generosidad hace una diferencia. Gracias por ser parte de esta causa.`;
+  function buildMessage(name,phone,numbers,total){
+    return `¡Gracias de corazón por tu valioso apoyo! 💗\n\nTu participación fue recibida correctamente y significa mucho para nosotros.\nNombre: ${name}\nTeléfono: ${phone}\nNúmeros seleccionados: ${numbers.map(fmt).join(", ")}\nTotal: $${total.toLocaleString("es-MX")} MXN\nComprobante: adjunto para revisión.\n\nTus números permanecerán en color amarillo como APARTADOS mientras revisamos el comprobante. Cuando el pago sea confirmado, cambiarán a color rosa/rojo como PAGADOS.\n\nTu generosidad hace una diferencia. Gracias por ser parte de esta causa.`;
+  }
 
-     lastReceiptFile=file||null;
-     lastWhatsappMessage=msg;
-     const whatsappUrl=`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(msg)}`;
-     if(openWhatsappButton)openWhatsappButton.href=whatsappUrl;
-     if(receiptShareActions)receiptShareActions.hidden=false;
+  async function shareMessageAndReceipt(){
+    if(!lastReceiptFile){
+      alert("Selecciona primero la imagen o PDF del comprobante.");
+      receiptFileInput?.click();
+      return;
+    }
+    try{
+      if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[lastReceiptFile]}))){
+        await navigator.share({title:"Comprobante — Rifa con Causa",text:lastWhatsappMessage,files:[lastReceiptFile]});
+        return;
+      }
+    }catch(error){
+      if(error?.name==="AbortError")return;
+    }
+    downloadFile(lastReceiptFile);
+    window.open(lastWhatsappUrl,"_blank","noopener");
+    alert("Se abrió WhatsApp y se descargó el comprobante. Usa el clip de WhatsApp para adjuntar el archivo descargado.");
+  }
 
-     selected.clear();
-     saveSel();
-     if(numberSearch)numberSearch.value="";
-     if(numberSearchStatus)numberSearchStatus.textContent="";
-     update();
-     if(!useFirebase){loadLocal();}
-     renderGrid();
+  $("#continueButton")?.addEventListener("click",openDialog);
+  $("#showPayment")?.addEventListener("click",()=>selected.size?openDialog():$("#tablero")?.scrollIntoView({behavior:"smooth"}));
+  $("#clearSelectionButton")?.addEventListener("click",clearSelection);
+  $("#closeDialog")?.addEventListener("click",()=>dialog.close());
+  $("#copyClabe")?.addEventListener("click",async event=>{
+    try{await navigator.clipboard.writeText(cfg.clabe);event.currentTarget.textContent="CLABE copiada";}
+    catch(_){prompt("Copia la CLABE:",cfg.clabe);}
+  });
+  numberSearch?.addEventListener("input",()=>{numberSearch.value=(numberSearch.value||"").replace(/\D/g,"").slice(0,3);renderGrid();});
+  numberSearch?.addEventListener("keydown",event=>{
+    if(event.key!=="Enter")return;
+    event.preventDefault();
+    const exact=Number((numberSearch.value||"").replace(/\D/g,""));
+    if(exact<1||exact>TOTAL)return;
+    const row=records[exact-1]||{status:"available"};
+    if(row.status!=="available"){
+      numberSearchStatus.textContent=`El número ${fmt(exact)} no está disponible.`;
+      return;
+    }
+    selected.add(exact);saveSelection();renderGrid();updateSelectionSummary();
+    numberSearchStatus.innerHTML=`Número <strong>${fmt(exact)}</strong> seleccionado.`;
+  });
+  shareReceiptButton?.addEventListener("click",shareMessageAndReceipt);
+  downloadReceiptButton?.addEventListener("click",()=>downloadFile(lastReceiptFile));
 
-     $("#participantName").value="";
-     $("#participantPhone").value="";
-     submitButton.hidden=true;
+  form?.addEventListener("submit",async event=>{
+    event.preventDefault();
+    const submit=$("#submitRegistration");
+    const status=$("#formStatus");
+    const name=$("#participantName").value.trim();
+    const phone=$("#participantPhone").value.replace(/\D/g,"");
+    const numbers=[...selected].sort((a,b)=>a-b);
+    const file=receiptFileInput?.files?.[0]||null;
 
-     status.className="form-status success";
-     status.innerHTML=`<strong>¡Muchas gracias por participar! 💗</strong><br>Tu registro fue recibido correctamente.<br><strong>Números apartados:</strong> ${nums.map(fmt).join(", ")}.<br><strong>Estatus actual:</strong> pago en verificación. Tus números aparecen en amarillo y cambiarán a rosa/rojo cuando el pago sea confirmado.<br>Ahora abre WhatsApp y envía tu comprobante.`;
+    status.className="form-status";
+    if(!numbers.length){status.textContent="Selecciona al menos un número.";return;}
+    if(name.length<3){status.textContent="Escribe tu nombre completo.";return;}
+    if(phone.length!==10){status.textContent="Escribe un teléfono de 10 dígitos.";return;}
+    if(!file){status.textContent="Adjunta la imagen o PDF de tu comprobante.";receiptFileInput?.focus();return;}
+    if(file.size>10*1024*1024){status.textContent="El comprobante debe pesar menos de 10 MB.";return;}
 
-     ui.toast?.("Participación recibida. Pago en verificación.","success");
-   }catch(err){
-     status.className="form-status error";
-     status.textContent=err.message||"No fue posible guardar el registro.";
-     ui.toast?.(status.textContent,"error");
-   }finally{
-     ui.setLoading?.(submitButton,false);
-     submitButton.disabled=false;
-   }
- };
+    submit.disabled=true;
+    ui.setLoading?.(submit,true,"Registrando…");
+    status.textContent="Guardando tu registro y apartando tus números…";
 
- renderTabs();
- update();
- if(useFirebase){RifaFirebase.listenNumbers(rows=>{records=rows;renderGrid()})}
- else{loadLocal();renderGrid();window.addEventListener("rifa-local-change",()=>{loadLocal();renderGrid()})}
+    try{
+      const total=numbers.length*PRICE;
+      if(firebaseEnabled){
+        await RifaFirebase.registerParticipant({name,phone,numbers,total});
+      }else{
+        if(!window.RifaLocalDB)throw new Error("No fue posible iniciar el registro.");
+        let receiptData="";
+        if(file.size<=2*1024*1024){
+          receiptData=await new Promise((resolve,reject)=>{
+            const reader=new FileReader();
+            reader.onload=()=>resolve(reader.result);
+            reader.onerror=()=>reject(new Error("No fue posible leer el comprobante."));
+            reader.readAsDataURL(file);
+          });
+        }
+        RifaLocalDB.reserve(numbers,{name,phone,total,receiptData,receiptName:file.name,receiptType:file.type});
+        loadLocal();
+      }
+
+      lastReceiptFile=file;
+      lastWhatsappMessage=buildMessage(name,phone,numbers,total);
+      lastWhatsappUrl=`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(lastWhatsappMessage)}`;
+      openWhatsappButton.href=lastWhatsappUrl;
+      receiptShareActions.hidden=false;
+
+      selected.clear();
+      saveSelection();
+      updateSelectionSummary();
+      renderGrid();
+      submit.hidden=true;
+      status.className="form-status success";
+      status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números apartados:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Estatus:</strong> APARTADOS en amarillo, en espera de revisión del comprobante.<br><br>Ahora presiona <strong>Enviar mensaje y comprobante</strong>.`;
+      ui.toast?.("Registro realizado correctamente.","success");
+
+      setTimeout(()=>receiptShareActions.scrollIntoView({behavior:"smooth",block:"nearest"}),100);
+    }catch(error){
+      console.error(error);
+      status.className="form-status error";
+      const message=String(error?.message||"");
+      status.textContent=message.includes("permission")||message.includes("PERMISSION_DENIED")
+        ?"Firebase rechazó el registro. Es necesario habilitar las reglas públicas de registro en Firestore."
+        :message||"No fue posible realizar el registro. Intenta nuevamente.";
+      ui.toast?.(status.textContent,"error");
+    }finally{
+      ui.setLoading?.(submit,false);
+      if(!submit.hidden)submit.disabled=false;
+    }
+  });
+
+  renderTabs();
+  updateSelectionSummary();
+
+  if(firebaseEnabled){
+    setMode("Firebase: sincronización en tiempo real",true);
+    RifaFirebase.listenNumbers(rows=>{
+      if(rows?.length){
+        const normalized=Array.from({length:TOTAL},(_,i)=>({number:i+1,status:"available"}));
+        rows.forEach(row=>{const n=Number(row.number);if(n>=1&&n<=TOTAL)normalized[n-1]=row;});
+        records=normalized;
+      }
+      renderGrid();
+    },()=>{setMode("Sin conexión con Firebase");renderGrid();});
+  }else{
+    setMode("Modo local: datos guardados en este navegador");
+    loadLocal();renderGrid();
+    window.addEventListener("rifa-local-change",()=>{loadLocal();renderGrid();});
+  }
 })();
 
-
-(function enhanceV9(){
- const menuToggle=document.getElementById("menuToggle"),nav=document.getElementById("mainNav");
- menuToggle?.addEventListener("click",()=>{
-   const open=nav.classList.toggle("open");
-   menuToggle.setAttribute("aria-expanded",String(open));
-   menuToggle.textContent=open?"×":"☰";
- });
- nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");menuToggle?.setAttribute("aria-expanded","false");if(menuToggle)menuToggle.textContent="☰"}));
-
- const lightbox=document.getElementById("imageLightbox"),lightboxImage=document.getElementById("lightboxImage"),lightboxCaption=document.getElementById("lightboxCaption");
- const galleryItems=[...document.querySelectorAll("#galeria-premio [data-image]")];
- let galleryIndex=0;
- function openImage(src,label){
-   if(!lightbox)return;
-   const found=galleryItems.findIndex(el=>el.dataset.image===src);
-   galleryIndex=found>=0?found:0;
-   lightboxImage.src=src;
-   if(lightboxCaption)lightboxCaption.textContent=label||galleryItems[galleryIndex]?.querySelector("span")?.textContent||"Dodge Journey 2013";
-   lightbox.showModal();
- }
- function moveGallery(step){
-   if(!galleryItems.length)return;
-   galleryIndex=(galleryIndex+step+galleryItems.length)%galleryItems.length;
-   const item=galleryItems[galleryIndex];
-   lightboxImage.src=item.dataset.image;
-   if(lightboxCaption)lightboxCaption.textContent=item.querySelector("span")?.textContent||"Dodge Journey 2013";
- }
- galleryItems.forEach(el=>el.addEventListener("click",()=>openImage(el.dataset.image,el.querySelector("span")?.textContent)));
- document.getElementById("closeLightbox")?.addEventListener("click",()=>lightbox.close());
- document.getElementById("prevGalleryImage")?.addEventListener("click",()=>moveGallery(-1));
- document.getElementById("nextGalleryImage")?.addEventListener("click",()=>moveGallery(1));
- document.addEventListener("keydown",e=>{if(!lightbox?.open)return;if(e.key==="ArrowLeft")moveGallery(-1);if(e.key==="ArrowRight")moveGallery(1);if(e.key==="Escape")lightbox.close()});
- lightbox?.addEventListener("click",e=>{if(e.target===lightbox)lightbox.close()});
-
- document.getElementById("shareRaffle")?.addEventListener("click",async()=>{
-   const data={title:"Rifa con Causa",text:"Participa para ganar una Dodge Journey 2013. Tu generosidad hace una diferencia. Gracias por ser parte de esta causa.",url:location.href.split("#")[0]};
-   try{
-     if(navigator.share){await navigator.share(data)}
-     else{await navigator.clipboard.writeText(data.url);window.RifaUI?.toast("Enlace copiado para compartir.","success")}
-   }catch(e){if(e.name!=="AbortError")window.RifaUI?.toast("No fue posible compartir.","error")}
- });
-
- const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("visible");observer.unobserve(entry.target)}}),{threshold:.12});
- document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
+(function enhanceSite(){
+  const menuToggle=document.getElementById("menuToggle"),nav=document.getElementById("mainNav");
+  menuToggle?.addEventListener("click",()=>{const open=nav.classList.toggle("open");menuToggle.setAttribute("aria-expanded",String(open));menuToggle.textContent=open?"×":"☰";});
+  nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");menuToggle?.setAttribute("aria-expanded","false");if(menuToggle)menuToggle.textContent="☰";}));
+  document.getElementById("shareRaffle")?.addEventListener("click",async()=>{
+    const data={title:"Rifa con Causa",text:"Participa para ganar una Dodge Journey 2013.",url:location.href.split("#")[0]};
+    try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(data.url);window.RifaUI?.toast("Enlace copiado.","success");}}catch(error){if(error?.name!=="AbortError")window.RifaUI?.toast("No fue posible compartir.","error");}
+  });
+  if("IntersectionObserver" in window){
+    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("visible");observer.unobserve(entry.target);}}),{threshold:.12});
+    document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
+  }else document.querySelectorAll(".reveal").forEach(el=>el.classList.add("visible"));
 })();
