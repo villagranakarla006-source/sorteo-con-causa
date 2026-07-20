@@ -34,20 +34,64 @@
 </main>
 <script src="shared/config.js"></script>
 <script src="shared/ui-utils.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="services/firebase-config.js"></script>
+<script src="services/firebase-service.js"></script>
 <script src="js/local-db.js"></script>
 <script>
 const phone=document.getElementById("lookupPhone"),button=document.getElementById("lookupButton"),root=document.getElementById("lookupResult");
 phone.addEventListener("input",()=>phone.value=RifaUI.normalizePhone(phone.value));
-button.addEventListener("click",()=>{
- const value=RifaUI.normalizePhone(phone.value);
- if(value.length!==10){RifaUI.toast("Escribe un teléfono válido.","error");return}
- const db=RifaLocalDB.load(),matches=(db.participants||[]).filter(p=>String(p.phone||"").replace(/\D/g,"")===value);
- if(!matches.length){root.innerHTML='<div class="empty-state">No encontramos un registro con ese teléfono.</div>';return}
+phone.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();button.click();}});
+
+function dateValue(value){
+ if(!value)return "Fecha no disponible";
+ const date=typeof value.toDate==="function"?value.toDate():new Date(value);
+ return Number.isNaN(date.getTime())?"Fecha no disponible":date.toLocaleString("es-MX");
+}
+
+function renderFirebase(rows){
+ if(!rows.length){root.innerHTML='<div class="empty-state">No encontramos un registro con ese teléfono.</div>';return;}
+ const active=rows.filter(row=>row.status!=="available");
+ if(!active.length){root.innerHTML='<div class="empty-state">No encontramos números activos con ese teléfono.</div>';return;}
+ const paid=active.filter(row=>row.status==="paid");
+ const reserved=active.filter(row=>row.status==="reserved");
+ const other=active.filter(row=>!['paid','reserved'].includes(row.status));
+ const name=active.find(row=>row.participantName)?.participantName||"Participante";
+ const registered=active.map(row=>row.reservedAt).find(Boolean);
+ const groups=[
+  {label:"Pagados",klass:"status-paid",rows:paid},
+  {label:"Apartados",klass:"status-reserved",rows:reserved},
+  {label:"En revisión",klass:"status-other",rows:other}
+ ].filter(group=>group.rows.length);
+ root.innerHTML=`<article class="selection-card" style="margin-bottom:12px"><small>Participante</small><h3>${RifaUI.escape(name)}</h3>${groups.map(group=>`<div style="margin-top:14px"><span class="status-pill ${group.klass}">${group.label}</span><div class="ticket-list">${group.rows.map(row=>`<span>${String(row.number).padStart(3,"0")}</span>`).join("")}</div></div>`).join("")}<p class="input-help">Registrado: ${dateValue(registered)}</p></article>`;
+}
+
+function renderLocal(value){
+ const data=RifaLocalDB.load();
+ const matches=(data.participants||[]).filter(p=>String(p.phone||"").replace(/\D/g,"")===value);
+ if(!matches.length){root.innerHTML='<div class="empty-state">No encontramos un registro con ese teléfono.</div>';return;}
  root.innerHTML=matches.map(p=>{
   const status=p.status||"reserved",label=status==="paid"?"Pagado":status==="reserved"?"Apartado":"En revisión";
   const klass=status==="paid"?"status-paid":status==="reserved"?"status-reserved":"status-other";
-  return `<article class="selection-card" style="margin-bottom:12px"><small>Participante</small><h3>${RifaUI.escape(p.name||"Registro")}</h3><span class="status-pill ${klass}">${label}</span><div class="ticket-list">${(p.numbers||[]).map(n=>`<span>${String(n).padStart(3,"0")}</span>`).join("")}</div><p class="input-help">Registrado: ${new Date(p.createdAt||Date.now()).toLocaleString("es-MX")}</p></article>`
+  return `<article class="selection-card" style="margin-bottom:12px"><small>Participante</small><h3>${RifaUI.escape(p.name||"Registro")}</h3><span class="status-pill ${klass}">${label}</span><div class="ticket-list">${(p.numbers||[]).map(n=>`<span>${String(n).padStart(3,"0")}</span>`).join("")}</div><p class="input-help">Registrado: ${dateValue(p.createdAt)}</p></article>`;
  }).join("");
+}
+
+button.addEventListener("click",async()=>{
+ const value=RifaUI.normalizePhone(phone.value);
+ if(value.length!==10){RifaUI.toast("Escribe un teléfono válido.","error");return;}
+ button.disabled=true;button.textContent="Consultando…";root.innerHTML='<div class="empty-state">Buscando tu participación…</div>';
+ try{
+  if(window.RifaFirebase&&RifaFirebase.isConfigured()){
+   const rows=await RifaFirebase.findParticipationByPhone(value);
+   renderFirebase(rows);
+  }else{renderLocal(value);}
+ }catch(error){
+  console.error(error);
+  root.innerHTML='<div class="empty-state">No pudimos consultar en este momento. Intenta nuevamente.</div>';
+ }finally{button.disabled=false;button.textContent="Consultar";}
 });
 </script>
 </body></html>

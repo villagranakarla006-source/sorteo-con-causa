@@ -1,0 +1,13 @@
+Rifa con Causa v1.0.2
+Corrección urgente de consulta pública por teléfono.
+
+Problema corregido:
+- La página consulta.html solo revisaba el almacenamiento local del navegador.
+- Los registros reales se guardan en Firebase, por eso aparecía “No encontramos un registro” aunque sí existiera.
+
+Cambio realizado:
+- La consulta ahora busca en tiempo real en Firebase usando el teléfono de 10 dígitos.
+- Usa la colección pública de números, la misma fuente que alimenta el tablero.
+- Agrupa los números por estado: Pagados, Apartados y En revisión.
+- No muestra el teléfono ni comprobantes.
+- Mantiene respaldo local solo cuando Firebase no está configurado.

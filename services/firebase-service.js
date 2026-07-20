@@ -65,6 +65,15 @@
     return q.onSnapshot(s=>callback(s.docs.map(d=>({id:d.id,...d.data()}))),e=>console.error(name,e));
   }
   function listenNumbers(cb,onError){init();return db.collection("numbers").orderBy("number").onSnapshot(s=>cb(s.docs.map(d=>({id:d.id,...d.data()}))),e=>{console.error("numbers",e);if(onError)onError(e);});}
+  async function findParticipationByPhone(phone){
+    init();
+    const normalized=String(phone||"").replace(/\D/g,"");
+    if(normalized.length!==10) throw new Error("Escribe un teléfono de 10 dígitos.");
+    const snap=await db.collection("numbers").where("phone","==",normalized).get();
+    const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+    rows.sort((a,b)=>Number(a.number)-Number(b.number));
+    return rows;
+  }
   const listenParticipants=cb=>listenCollection("participants","createdAt",cb);
   const listenAudit=cb=>listenCollection("audit","at",cb);
   const listenDraws=cb=>listenCollection("draws","createdAt",cb);
@@ -93,5 +102,5 @@
   }
   async function updateNumber(number,changes){init();const batch=db.batch();batch.update(db.collection("numbers").doc(numId(number)),{...changes,updatedAt:now()});audit(batch,"Número",`${numId(number)} actualizado`);await batch.commit();}
   async function registerDraw(draw){init();const ref=db.collection("draws").doc(),batch=db.batch();batch.set(ref,{...draw,createdAt:now()});audit(batch,"Sorteo",`Ganador ${numId(draw.winnerNumber)}`,draw.participantId||"");await batch.commit();return{id:ref.id,...draw,createdAt:new Date().toISOString()};}
-  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,updateParticipant,updateNumber,registerDraw};
+  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,updateParticipant,updateNumber,registerDraw};
 })();
