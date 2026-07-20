@@ -9,7 +9,11 @@ function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fil
 function securityCode(participant){const raw=String(participant.id||Date.now()).replace(/[^a-z0-9]/gi,'').toUpperCase().padEnd(12,'X').slice(-12);return `${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`}
 async function createTicket(participant){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1536;const ctx=canvas.getContext('2d');
- const bg=await loadImage('../assets/boleto-confirmacion.png');ctx.drawImage(bg,0,0,1024,1536);
+ const [bg,karlaPhoto]=await Promise.all([
+  loadImage('../assets/boleto-confirmacion.png'),
+  loadImage('../assets/karla-organizadora-original.jpeg')
+ ]);
+ ctx.drawImage(bg,0,0,1024,1536);
  const name=clean(participant.name)||'Participante';
  const nums=(participant.numbers||[]).map(fmt).join(', ');
  const idRaw=String(participant.id||Date.now()).replace(/[^a-z0-9]/gi,'').slice(-6).toUpperCase().padStart(6,'0');
@@ -40,6 +44,20 @@ async function createTicket(participant){
  ctx.fillStyle='#101827';ctx.font='800 25px Arial';ctx.fillText(folio,864,858);
  ctx.fillStyle='#087d80';ctx.font='800 17px Arial';ctx.fillText('CÓDIGO DE SEGURIDAD',864,901);
  ctx.fillStyle='#101827';ctx.font='800 20px Arial';ctx.fillText(code,864,934);
+ // Fotografía real de la organizadora junto al mensaje de concientización.
+ // Se mantiene intacta la estructura original del boleto y solo se integra la imagen.
+ const photoX=760,photoY=1120,photoW=205,photoH=205,photoR=24;
+ ctx.save();
+ ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,photoR);ctx.clip();
+ const srcRatio=karlaPhoto.width/karlaPhoto.height,boxRatio=photoW/photoH;
+ let sx=0,sy=0,sw=karlaPhoto.width,sh=karlaPhoto.height;
+ if(srcRatio>boxRatio){sw=karlaPhoto.height*boxRatio;sx=(karlaPhoto.width-sw)/2}else{sh=karlaPhoto.width/boxRatio;sy=Math.max(0,(karlaPhoto.height-sh)*0.22)}
+ ctx.drawImage(karlaPhoto,sx,sy,sw,sh,photoX,photoY,photoW,photoH);
+ const fade=ctx.createLinearGradient(photoX,photoY,photoX,photoY+photoH);
+ fade.addColorStop(0,'rgba(255,255,255,0)');fade.addColorStop(.82,'rgba(255,255,255,0)');fade.addColorStop(1,'rgba(255,255,255,.32)');
+ ctx.fillStyle=fade;ctx.fillRect(photoX,photoY,photoW,photoH);
+ ctx.restore();
+ ctx.save();ctx.strokeStyle='rgba(10,128,133,.7)';ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,photoR);ctx.stroke();ctx.restore();
  canvas.dataset.folio=folio;canvas.dataset.securityCode=code;return canvas;
 }
 function filename(p,folio){const n=(p.numbers||[]).map(fmt).join('-')||'boleto';return `boleto-${n}-${folio}.png`.replace(/[^a-z0-9.-]/gi,'-')}

@@ -1,0 +1,9 @@
+RIFA CON CAUSA — v1.0.4-dev6
+
+Cambio realizado:
+- Se conserva la estructura actual del boleto de confirmación de pago.
+- Se integra la fotografía real de Karla Villagrana junto a la frase de concientización.
+- Se mantienen los datos dinámicos del participante, folio, código, importe y estado.
+- Continúan disponibles la descarga del boleto y el envío por WhatsApp desde el panel.
+
+No se modificaron el diseño público, la galería, el registro ni los módulos anteriores.
