@@ -223,14 +223,24 @@
     </div>
     <label>Nombre completo<input id="participantName" autocomplete="name" required><small class="input-help">Escribe el nombre que aparecerá en tu registro.</small></label>
     <label>Teléfono de 10 dígitos<input id="participantPhone" inputmode="numeric" autocomplete="tel" maxlength="10" required><small class="input-help">Lo utilizaremos para confirmar tus números.</small></label>
-    <div class="payment-box"><strong>Comprobante por WhatsApp</strong><span>Selecciona aquí la imagen o PDF. Después del registro podrás compartirlo por WhatsApp.</span></div>
-    <label>Adjuntar comprobante
-      <input id="receiptFile" type="file" accept="image/*,.pdf,application/pdf" required>
-      <small class="input-help">Puedes tomar una foto o elegir una imagen/PDF. Máximo recomendado: 10 MB.</small>
-    </label>
-    <div class="payment-box">
-      <span>Banamex · CLABE</span><strong>****5734</strong>
-      <button id="copyClabe" class="text-button" type="button">Copiar CLABE completa</button>
+    <fieldset class="payment-method-fieldset">
+      <legend>Método de pago</legend>
+      <label class="payment-method-option"><input type="radio" name="paymentMethod" value="transferencia" checked> <span><strong>Transferencia</strong><small>Realiza el depósito y adjunta tu comprobante.</small></span></label>
+      <label class="payment-method-option"><input type="radio" name="paymentMethod" value="efectivo"> <span><strong>Efectivo</strong><small>La administradora confirmará el pago cuando lo reciba.</small></span></label>
+    </fieldset>
+    <div id="transferPaymentSection">
+      <div class="payment-box"><strong>Comprobante por WhatsApp</strong><span>Selecciona aquí la imagen o PDF. Después del registro podrás compartirlo por WhatsApp.</span></div>
+      <label>Adjuntar comprobante
+        <input id="receiptFile" type="file" accept="image/*,.pdf,application/pdf" required>
+        <small class="input-help">Puedes tomar una foto o elegir una imagen/PDF. Máximo recomendado: 10 MB.</small>
+      </label>
+      <div class="payment-box">
+        <span>Banamex · CLABE</span><strong>****5734</strong>
+        <button id="copyClabe" class="text-button" type="button">Copiar CLABE completa</button>
+      </div>
+    </div>
+    <div id="cashPaymentSection" class="payment-box" hidden>
+      <strong>Pago en efectivo</strong><span>No necesitas adjuntar comprobante. Tu registro quedará apartado hasta que la administradora confirme el pago.</span>
     </div>
     <button id="submitRegistration" class="button primary full" type="submit">Registrar participación</button>
     <p id="formStatus" class="form-status"></p>

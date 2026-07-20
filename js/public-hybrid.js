@@ -29,6 +29,8 @@
   const openWhatsappButton=$("#openWhatsappButton");
   const numberSearch=$("#numberSearch");
   const numberSearchStatus=$("#numberSearchStatus");
+  const transferPaymentSection=$("#transferPaymentSection");
+  const cashPaymentSection=$("#cashPaymentSection");
 
   function saveSelection(){ localStorage.setItem(selectionKey,JSON.stringify([...selected])); }
   function loadLocal(){ if(window.RifaLocalDB) records=RifaLocalDB.load().numbers; }
@@ -101,8 +103,18 @@
     if(hidden)hidden.value=numbers.join(",");
   }
 
+  function updatePaymentMethodUI(){
+    const method=form?.querySelector('input[name="paymentMethod"]:checked')?.value||"transferencia";
+    const isTransfer=method==="transferencia";
+    if(transferPaymentSection)transferPaymentSection.hidden=!isTransfer;
+    if(cashPaymentSection)cashPaymentSection.hidden=isTransfer;
+    if(receiptFileInput)receiptFileInput.required=isTransfer;
+    if(!isTransfer&&receiptFileInput)receiptFileInput.value="";
+  }
+
   function resetForm({close=false}={}){
     form?.reset();
+    updatePaymentMethodUI();
     const status=$("#formStatus");
     if(status){status.textContent="";status.className="form-status";}
     lastReceiptFile=null;
@@ -192,6 +204,7 @@
     selected.add(exact);saveSelection();renderGrid();updateSelectionSummary();
     numberSearchStatus.innerHTML=`Número <strong>${fmt(exact)}</strong> seleccionado.`;
   });
+  form?.querySelectorAll('input[name="paymentMethod"]').forEach(input=>input.addEventListener("change",updatePaymentMethodUI));
   shareReceiptButton?.addEventListener("click",shareMessageAndReceipt);
   downloadReceiptButton?.addEventListener("click",()=>downloadFile(lastReceiptFile));
 
@@ -202,14 +215,15 @@
     const name=$("#participantName").value.trim();
     const phone=$("#participantPhone").value.replace(/\D/g,"");
     const numbers=[...selected].sort((a,b)=>a-b);
+    const paymentMethod=form.querySelector('input[name="paymentMethod"]:checked')?.value||"transferencia";
     const file=receiptFileInput?.files?.[0]||null;
 
     status.className="form-status";
     if(!numbers.length){status.textContent="Selecciona al menos un número.";return;}
     if(name.length<3){status.textContent="Escribe tu nombre completo.";return;}
     if(phone.length!==10){status.textContent="Escribe un teléfono de 10 dígitos.";return;}
-    if(!file){status.textContent="Adjunta la imagen o PDF de tu comprobante.";receiptFileInput?.focus();return;}
-    if(file.size>10*1024*1024){status.textContent="El comprobante debe pesar menos de 10 MB.";return;}
+    if(paymentMethod==="transferencia"&&!file){status.textContent="Adjunta la imagen o PDF de tu comprobante.";receiptFileInput?.focus();return;}
+    if(file&&file.size>10*1024*1024){status.textContent="El comprobante debe pesar menos de 10 MB.";return;}
 
     submit.disabled=true;
     ui.setLoading?.(submit,true,"Registrando…");
@@ -220,7 +234,7 @@
       let receiptData="";
       // Firestore admite documentos de hasta 1 MB. Guardamos una copia visible en el panel
       // cuando el comprobante es pequeño; el archivo original siempre queda listo para compartir.
-      if(file.size<=600*1024){
+      if(file&&file.size<=600*1024){
         receiptData=await new Promise((resolve,reject)=>{
           const reader=new FileReader();
           reader.onload=()=>resolve(reader.result);
@@ -229,10 +243,10 @@
         });
       }
       if(firebaseEnabled){
-        await RifaFirebase.registerParticipant({name,phone,numbers,total,receiptData,receiptName:file.name,receiptType:file.type,receiptSize:file.size});
+        await RifaFirebase.registerParticipant({name,phone,numbers,total,paymentMethod,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
       }else{
         if(!window.RifaLocalDB)throw new Error("No fue posible iniciar el registro.");
-        if(!receiptData&&file.size<=2*1024*1024){
+        if(file&&!receiptData&&file.size<=2*1024*1024){
           receiptData=await new Promise((resolve,reject)=>{
             const reader=new FileReader();
             reader.onload=()=>resolve(reader.result);
@@ -240,15 +254,17 @@
             reader.readAsDataURL(file);
           });
         }
-        RifaLocalDB.reserve(numbers,{name,phone,total,receiptData,receiptName:file.name,receiptType:file.type});
+        RifaLocalDB.reserve(numbers,{name,phone,total,paymentMethod,receiptData,receiptName:file?.name||"",receiptType:file?.type||""});
         loadLocal();
       }
 
       lastReceiptFile=file;
-      lastWhatsappMessage=buildMessage(name,phone,numbers,total);
+      lastWhatsappMessage=buildMessage(name,phone,numbers,total,paymentMethod);
       lastWhatsappUrl=`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(lastWhatsappMessage)}`;
       openWhatsappButton.href=lastWhatsappUrl;
       receiptShareActions.hidden=false;
+      if(shareReceiptButton)shareReceiptButton.hidden=paymentMethod!=="transferencia";
+      if(downloadReceiptButton)downloadReceiptButton.hidden=paymentMethod!=="transferencia";
 
       selected.clear();
       saveSelection();
@@ -256,7 +272,9 @@
       renderGrid();
       submit.hidden=true;
       status.className="form-status success";
-      status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números apartados:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Estatus:</strong> APARTADOS en amarillo, en espera de revisión del comprobante.<br><br>Ahora presiona <strong>Enviar mensaje y comprobante</strong>.`;
+      const methodLabel=paymentMethod==="efectivo"?"Efectivo":"Transferencia";
+      const nextStep=paymentMethod==="efectivo"?"Ahora presiona <strong>Abrir WhatsApp con mi mensaje</strong> para avisar a la administradora.":"Ahora presiona <strong>Enviar mensaje y comprobante</strong>.";
+      status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números apartados:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Método de pago:</strong> ${methodLabel}<br><strong>Estatus:</strong> APARTADOS en amarillo, en espera de confirmación del pago.<br><br>${nextStep}`;
       ui.toast?.("Registro realizado correctamente.","success");
 
       setTimeout(()=>receiptShareActions.scrollIntoView({behavior:"smooth",block:"nearest"}),100);

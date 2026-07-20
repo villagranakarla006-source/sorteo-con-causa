@@ -1,0 +1,9 @@
+RIFA CON CAUSA — v1.0.4-dev3
+
+Cambios realizados:
+- Selector Transferencia / Efectivo en el registro.
+- El comprobante solo es obligatorio para transferencia.
+- Los datos bancarios se ocultan al elegir efectivo.
+- Firebase y modo local guardan paymentMethod.
+- El panel administrativo muestra el método de pago.
+- No se modificaron imágenes, galería, colores ni estructura general.

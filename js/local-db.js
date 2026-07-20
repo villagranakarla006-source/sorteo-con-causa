@@ -119,6 +119,7 @@
         numbers:[...numbers],
         total:participant.total,
         status:"reserved",
+        paymentMethod:participant.paymentMethod==="efectivo"?"efectivo":"transferencia",
         receiptData:participant.receiptData||"",
         receiptName:participant.receiptName||"",
         receiptType:participant.receiptType||"",

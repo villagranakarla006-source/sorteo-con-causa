@@ -181,3 +181,12 @@ input,select,textarea,button{font-size:16px}
  .number-grid{max-width:100%;overflow:hidden}
  .number{min-width:0}
 }
+
+/* Dev3: selector de método de pago */
+.payment-method-fieldset{border:1px solid rgba(92,45,92,.18);border-radius:16px;padding:14px;margin:14px 0;background:#fff}
+.payment-method-fieldset legend{font-weight:800;padding:0 6px}
+.payment-method-option{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:12px;cursor:pointer}
+.payment-method-option:hover{background:rgba(248,225,239,.45)}
+.payment-method-option input{width:auto;margin-top:4px}
+.payment-method-option span{display:grid;gap:2px}
+.payment-method-option small{font-weight:400;color:#6f6270}
