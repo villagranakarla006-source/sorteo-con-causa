@@ -27,10 +27,12 @@
 </nav>
 
 <section id="dashboardHome" class="view">
-<section class="stats">
+<section class="stats dev7-stats">
 <article><span>Disponibles</span><strong id="available">0</strong><small>boletos sin asignar</small></article>
-<article><span>Apartados</span><strong id="reserved">0</strong><small>pendientes de pago</small></article>
+<article><span>Reservados</span><strong id="reserved">0</strong><small>pendientes de pago</small></article>
 <article><span>Pagados</span><strong id="paid">0</strong><small>participan en el sorteo</small></article>
+<article><span>Expirados</span><strong id="expiredCount">0</strong><small>reservas vencidas o liberadas</small></article>
+<article><span>Participantes</span><strong id="participantCount">0</strong><small>personas registradas</small></article>
 <article><span>Total confirmado</span><strong id="total">$0</strong><small>ingreso registrado</small></article>
 </section>
 
@@ -52,6 +54,18 @@
 <div class="section-title"><div><p class="eyebrow">Actividad</p><h2>Últimos movimientos</h2></div></div>
 <div id="recentActivity" class="activity-list"></div>
 </article>
+</section>
+
+
+<section class="panel dev7-control-panel">
+<div class="section-title"><div><p class="eyebrow">Centro de control</p><h2>Búsqueda y filtros rápidos</h2></div><span id="dashboardResultCount">0 participantes</span></div>
+<div class="dashboard-filters">
+<input id="dashboardSearch" placeholder="Buscar nombre, teléfono, número o folio">
+<select id="dashboardStatusFilter"><option value="all">Todos los estados</option><option value="pending">Pendientes</option><option value="paid">Pagados</option><option value="expired">Expirados / liberados</option></select>
+<select id="dashboardPaymentFilter"><option value="all">Todos los métodos</option><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option></select>
+<button id="dashboardExport" class="secondary-btn">Exportar reporte</button>
+</div>
+<div class="table-wrap"><table class="dashboard-table"><thead><tr><th>Participante</th><th>Números</th><th>Método</th><th>Estado</th><th>Total</th><th>Vencimiento</th><th>Acción</th></tr></thead><tbody id="dashboardParticipantsTable"></tbody></table></div>
 </section>
 
 <section class="panel quick-panel">
@@ -141,4 +155,4 @@
 <script src="../services/firebase-config.js"></script>
 <script src="../services/firebase-service.js"></script>
 <script src="js/ticket-generator.js?v=1.0"></script>
-<script src="js/admin-firebase.js?v=1.0.4-dev5"></script></body></html>
+<script src="js/admin-firebase.js?v=1.0.4-dev7"></script></body></html>

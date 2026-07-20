@@ -9,3 +9,5 @@ Correcciones del flujo de participación:
 - Mensaje de agradecimiento después del registro.
 - Aviso claro de estatus: pago en verificación.
 - Los números quedan apartados en amarillo hasta la confirmación administrativa.
+
+Dev7: Dashboard administrativo integrado.

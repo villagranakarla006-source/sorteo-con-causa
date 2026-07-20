@@ -49,3 +49,16 @@ input,select,textarea,button{font-size:16px}
 .badge.pending_transfer{background:#fff3cd;color:#7a5200}.badge.pending_cash{background:#ffe5c2;color:#8a3f00}.badge.expired{background:#fde2e2;color:#9d1c1c}.participant-card p{margin:.45rem 0}
 
 .automation-alerts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.automation-alert{padding:15px 16px;border-radius:16px;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)}.automation-alert strong,.automation-alert span{display:block}.automation-alert strong{font-size:1.35rem;color:var(--teal)}.automation-alert.warning{border-left:6px solid #e6b800}.automation-alert.danger{border-left:6px solid #c52b4e}.automation-alert.ok{border-left:6px solid var(--teal)}.countdown{font-weight:900;color:var(--teal-dark)}.reminder-due{color:#9a5b00;font-weight:900}.reminder-sent{color:#08734f;font-weight:900}.participant-card .reminder-button{margin-top:8px;width:100%;background:#e8f3f6;color:var(--teal-dark)}@media(max-width:760px){.automation-alerts{grid-template-columns:1fr}}
+
+/* Dev7 — Dashboard administrativo */
+.dev7-stats{grid-template-columns:repeat(6,minmax(0,1fr))}
+.dev7-stats article:nth-child(4) strong{color:#b4234d}
+.dev7-stats article:nth-child(5) strong{color:#6b3cc8}
+.dev7-control-panel{margin-top:18px}
+.dashboard-filters{display:grid;grid-template-columns:minmax(260px,1.6fr) minmax(170px,.7fr) minmax(170px,.7fr) auto;gap:10px;margin-bottom:14px}
+.dashboard-table td:nth-child(2){font-weight:900;color:var(--teal)}
+.dashboard-table .table-action{white-space:nowrap}
+.dashboard-empty{text-align:center;color:var(--muted);padding:24px!important}
+@media(max-width:1100px){.dev7-stats{grid-template-columns:repeat(3,1fr)}.dashboard-filters{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.dev7-stats{grid-template-columns:repeat(2,1fr)}.dashboard-filters{grid-template-columns:1fr}.dashboard-table th:nth-child(3),.dashboard-table td:nth-child(3),.dashboard-table th:nth-child(6),.dashboard-table td:nth-child(6){display:none}}
+@media(max-width:430px){.dev7-stats{grid-template-columns:1fr 1fr}.dev7-stats article{padding:14px}.dev7-stats strong{font-size:1.65rem}}

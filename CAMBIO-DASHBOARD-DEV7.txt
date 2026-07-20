@@ -1,0 +1,12 @@
+RIFA CON CAUSA — DEV7 DASHBOARD ADMINISTRATIVO
+
+Cambios incluidos:
+- Se amplió el resumen principal a 6 indicadores: disponibles, reservados, pagados, expirados/liberados, participantes y recaudación confirmada.
+- Se agregó un centro de control con búsqueda por nombre, teléfono, número y folio/código.
+- Se agregaron filtros rápidos por estado y método de pago.
+- Se agregó una tabla ejecutiva con acceso directo a la ficha del participante.
+- Se agregó exportación CSV del reporte filtrado del dashboard.
+- Se conservan las funciones anteriores: Firebase, recordatorios, liberación de reservas, comprobantes, boletos digitales, sorteo, historial y reportes existentes.
+- Se optimizó la vista para computadora, tableta y teléfono.
+
+Versión: v1.0.4-dev7
