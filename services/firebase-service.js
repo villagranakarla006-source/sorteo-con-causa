@@ -124,6 +124,51 @@
     });
     const b=db.batch();audit(b,"Estado",`Participante cambiado a ${status}`,id);await b.commit();
   }
+
+  async function markReminderSent(id){
+    init();
+    const ref=db.collection("participants").doc(id);
+    const doc=await ref.get();
+    if(!doc.exists) throw new Error("Participante no encontrado.");
+    const batch=db.batch();
+    batch.update(ref,{reminderDue:false,reminderSent:true,reminderSentAt:now(),updatedAt:now()});
+    audit(batch,"Recordatorio","Recordatorio enviado por WhatsApp",id);
+    await batch.commit();
+  }
+  async function processReservationAutomation(){
+    init();
+    if(!auth.currentUser) return {expired:0,reminders:0};
+    const snap=await db.collection("participants").get();
+    const current=new Date();
+    const reminderLimit=new Date(current.getTime()+24*60*60*1000);
+    let expired=0,reminders=0;
+    for(const doc of snap.docs){
+      const p=doc.data();
+      const status=p.status==="reserved"?(p.paymentMethod==="efectivo"?"pending_cash":"pending_transfer"):p.status;
+      if(status!=="pending_transfer"&&status!=="pending_cash") continue;
+      const expires=p.expiresAt?.toDate?p.expiresAt.toDate():(p.expiresAt?new Date(p.expiresAt):null);
+      if(!expires||isNaN(expires)) continue;
+      if(expires<=current){
+        await db.runTransaction(async tx=>{
+          const ref=db.collection("participants").doc(doc.id),fresh=await tx.get(ref);
+          if(!fresh.exists) return;
+          const data=fresh.data(),st=data.status==="reserved"?(data.paymentMethod==="efectivo"?"pending_cash":"pending_transfer"):data.status;
+          if(st!=="pending_transfer"&&st!=="pending_cash") return;
+          tx.update(ref,{status:"expired",expiredAt:now(),releasedAt:now(),updatedAt:now()});
+          (data.numbers||[]).forEach(n=>tx.update(db.collection("numbers").doc(numId(n)),{status:"available",participantId:"",participantName:"",phone:"",updatedAt:now()}));
+        });
+        const batch=db.batch();audit(batch,"Liberación automática","Reserva vencida; números liberados",doc.id);await batch.commit();
+        expired++;
+      }else if(expires<=reminderLimit&&!p.reminderSent&&!p.reminderDue){
+        const batch=db.batch();
+        batch.update(doc.ref,{reminderDue:true,reminderDueAt:now(),updatedAt:now()});
+        audit(batch,"Recordatorio pendiente","La reserva vence en menos de 24 horas",doc.id);
+        await batch.commit();
+        reminders++;
+      }
+    }
+    return {expired,reminders};
+  }
   async function updateParticipant(id,changes){
     init();const ref=db.collection("participants").doc(id),doc=await ref.get();if(!doc.exists)throw new Error("Participante no encontrado.");
     const p=doc.data(),batch=db.batch();batch.update(ref,{...changes,updatedAt:now()});
@@ -132,5 +177,5 @@
   }
   async function updateNumber(number,changes){init();const batch=db.batch();batch.update(db.collection("numbers").doc(numId(number)),{...changes,updatedAt:now()});audit(batch,"Número",`${numId(number)} actualizado`);await batch.commit();}
   async function registerDraw(draw){init();const ref=db.collection("draws").doc(),batch=db.batch();batch.set(ref,{...draw,createdAt:now()});audit(batch,"Sorteo",`Ganador ${numId(draw.winnerNumber)}`,draw.participantId||"");await batch.commit();return{id:ref.id,...draw,createdAt:new Date().toISOString()};}
-  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,updateParticipant,updateNumber,registerDraw};
+  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,markReminderSent,processReservationAutomation,updateParticipant,updateNumber,registerDraw};
 })();

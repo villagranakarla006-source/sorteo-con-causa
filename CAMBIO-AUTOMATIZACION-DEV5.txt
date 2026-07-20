@@ -1,0 +1,15 @@
+RIFA CON CAUSA v1.0.4-dev5
+
+CAMBIOS:
+- Revisión automática de reservas al ingresar al panel administrativo.
+- Liberación de números vencidos y cambio de estado a Expirado.
+- Detección de reservas que vencen en menos de 24 horas.
+- Centro de alertas en el resumen administrativo.
+- Tiempo restante visible en cada participante.
+- Botón para abrir el recordatorio personalizado en WhatsApp.
+- Registro en Firebase de recordatorios enviados y liberaciones automáticas.
+
+IMPORTANTE:
+GitHub Pages no puede enviar mensajes de WhatsApp por sí solo sin un servidor externo.
+El sistema prepara el mensaje y abre WhatsApp para que la administradora confirme el envío.
+La revisión y liberación se ejecutan cuando se abre el panel administrativo.

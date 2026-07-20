@@ -34,6 +34,8 @@
 <article><span>Total confirmado</span><strong id="total">$0</strong><small>ingreso registrado</small></article>
 </section>
 
+<section id="automationAlerts" class="automation-alerts" aria-live="polite"></section>
+
 <section class="dashboard-grid">
 <article class="panel progress-panel">
 <div class="section-title"><div><p class="eyebrow">Avance</p><h2>Progreso de la rifa</h2></div><strong id="progressPercent">0%</strong></div>
@@ -125,10 +127,10 @@
 <input id="participantId" type="hidden"><p class="eyebrow">Ficha completa</p><h2 id="participantTitle">Participante</h2>
 <div class="participant-grid">
 <div><label>Nombre<input id="participantNameEdit"></label><label>Teléfono<input id="participantPhoneEdit"></label><label>Notas<textarea id="participantNotesEdit"></textarea></label>
-<div class="participant-meta"><p><strong>Números:</strong> <span id="participantNumbers"></span></p><p><strong>Total:</strong> <span id="participantTotal"></span></p><p><strong>Reserva:</strong> <span id="participantCreated"></span></p><p><strong>Vencimiento:</strong> <span id="participantExpiresAt"></span></p><p><strong>Estado:</strong> <span id="participantStatus"></span></p><p><strong>Pago confirmado:</strong> <span id="participantPaidAt"></span></p><p><strong>Método:</strong> <span id="participantPaymentMethod"></span></p></div></div>
+<div class="participant-meta"><p><strong>Números:</strong> <span id="participantNumbers"></span></p><p><strong>Total:</strong> <span id="participantTotal"></span></p><p><strong>Reserva:</strong> <span id="participantCreated"></span></p><p><strong>Vencimiento:</strong> <span id="participantExpiresAt"></span></p><p><strong>Estado:</strong> <span id="participantStatus"></span></p><p><strong>Pago confirmado:</strong> <span id="participantPaidAt"></span></p><p><strong>Método:</strong> <span id="participantPaymentMethod"></span></p><p><strong>Recordatorio:</strong> <span id="participantReminderStatus"></span></p></div></div>
 <div class="receipt-box"><h3>Comprobante</h3><div id="receiptPreview" class="receipt-preview">El comprobante se revisa en WhatsApp.</div></div>
 </div>
-<div class="participant-actions"><button type="button" id="markPaid">Confirmar pago</button><button type="button" id="downloadTicket" class="secondary-btn">Descargar boleto</button><button type="button" id="shareTicket" class="secondary-btn">Enviar boleto por WhatsApp</button><button type="button" id="markReserved" class="secondary-btn">Restablecer como pendiente</button><button type="button" id="releaseParticipant" class="danger">Liberar números</button><button type="submit">Guardar datos</button></div>
+<div class="participant-actions"><button type="button" id="sendReminder" class="secondary-btn">Enviar recordatorio por WhatsApp</button><button type="button" id="markPaid">Confirmar pago</button><button type="button" id="downloadTicket" class="secondary-btn">Descargar boleto</button><button type="button" id="shareTicket" class="secondary-btn">Enviar boleto por WhatsApp</button><button type="button" id="markReserved" class="secondary-btn">Restablecer como pendiente</button><button type="button" id="releaseParticipant" class="danger">Liberar números</button><button type="submit">Guardar datos</button></div>
 </form></dialog>
 
 <script src="../shared/config.js"></script>
@@ -139,4 +141,4 @@
 <script src="../services/firebase-config.js"></script>
 <script src="../services/firebase-service.js"></script>
 <script src="js/ticket-generator.js?v=1.0"></script>
-<script src="js/admin-firebase.js"></script></body></html>
+<script src="js/admin-firebase.js?v=1.0.4-dev5"></script></body></html>
