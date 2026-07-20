@@ -217,12 +217,22 @@
 
     try{
       const total=numbers.length*PRICE;
+      let receiptData="";
+      // Firestore admite documentos de hasta 1 MB. Guardamos una copia visible en el panel
+      // cuando el comprobante es pequeño; el archivo original siempre queda listo para compartir.
+      if(file.size<=600*1024){
+        receiptData=await new Promise((resolve,reject)=>{
+          const reader=new FileReader();
+          reader.onload=()=>resolve(reader.result);
+          reader.onerror=()=>reject(new Error("No fue posible leer el comprobante."));
+          reader.readAsDataURL(file);
+        });
+      }
       if(firebaseEnabled){
-        await RifaFirebase.registerParticipant({name,phone,numbers,total});
+        await RifaFirebase.registerParticipant({name,phone,numbers,total,receiptData,receiptName:file.name,receiptType:file.type,receiptSize:file.size});
       }else{
         if(!window.RifaLocalDB)throw new Error("No fue posible iniciar el registro.");
-        let receiptData="";
-        if(file.size<=2*1024*1024){
+        if(!receiptData&&file.size<=2*1024*1024){
           receiptData=await new Promise((resolve,reject)=>{
             const reader=new FileReader();
             reader.onload=()=>resolve(reader.result);

@@ -49,6 +49,8 @@
       tx.set(participantRef,{
         name:String(payload.name||"").trim(),phone:String(payload.phone||"").replace(/\D/g,""),numbers,
         total:Number(payload.total||numbers.length*200),status:"reserved",publicCode,receiptMethod:"whatsapp",
+        receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),
+        receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),
         notes:"",createdAt:now(),updatedAt:now()
       });
       refs.forEach((ref,i)=>tx.set(ref,{

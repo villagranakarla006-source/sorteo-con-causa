@@ -1,0 +1,9 @@
+Rifa con Causa v1.0.1 — cambios urgentes
+
+- Se conserva el mensaje de recepción actual.
+- Se retiró la imagen de ejemplo del boleto de la página pública.
+- El boleto solo puede generarse o enviarse después de confirmar el pago.
+- Al confirmar el pago, WhatsApp se dirige al teléfono registrado por el participante.
+- Los comprobantes pequeños se guardan para visualizarlos en el panel.
+- Los comprobantes grandes siguen listos para compartirse por WhatsApp.
+- Ajustes móviles para evitar zoom automático en campos y desbordamientos.

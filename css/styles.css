@@ -167,3 +167,17 @@ body{overflow-x:hidden}
   .hero-photo img{object-position:center 26%}
   .story-image img{object-position:center 30%}
 }
+
+
+/* Ajustes de lanzamiento: móvil estable y sin zoom automático al enfocar formularios */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+img,video,canvas{max-width:100%;height:auto}
+input,select,textarea,button{font-size:16px}
+.ticket-info-card--text-only{grid-template-columns:1fr!important;max-width:850px;margin-inline:auto}
+@media(max-width:700px){
+ body{overflow-x:hidden}
+ .section{padding-left:16px;padding-right:16px}
+ .dialog-card{padding:22px 16px}
+ .number-grid{max-width:100%;overflow:hidden}
+ .number{min-width:0}
+}

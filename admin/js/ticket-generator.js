@@ -48,7 +48,7 @@ async function shareTicket(p){
  const c=await createTicket(p);const blob=await new Promise(r=>c.toBlob(r,'image/png',.95));const file=new File([blob],filename(p,c.dataset.folio),{type:'image/png'});const nums=(p.numbers||[]).map(fmt).join(', ');
  const msg=`Hola ${clean(p.name)||'participante'} 💗\n\nTu pago fue verificado correctamente. Tus números ${nums} ya están confirmados como PAGADOS.\n\nFolio: ${c.dataset.folio}\nCódigo de seguridad: ${c.dataset.securityCode}\n\nTe compartimos tu boleto digital de participación. Gracias por apoyar esta causa.`;
  try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({title:'Boleto digital — Rifa con Causa',text:msg,files:[file]});return}}catch(e){if(e?.name==='AbortError')return}
- const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);window.open(`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(msg)}`,'_blank','noopener');alert('Se descargó el boleto y se abrió WhatsApp. Adjunta la imagen descargada usando el clip.');
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);const phone=String(p.phone||'').replace(/\D/g,'');const whatsappPhone=phone.length===10?'52'+phone:phone;window.open(`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(msg)}`,'_blank','noopener');alert('Se descargó el boleto y se abrió WhatsApp. Adjunta la imagen descargada usando el clip.');
 }
 window.RifaTicket={createTicket,downloadTicket,shareTicket};
 })();
