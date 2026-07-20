@@ -5,11 +5,11 @@
 <body>
 <section id="loginView" class="login-view">
 <form id="loginForm" class="login-card">
-<p class="eyebrow">Rifa con Causa</p><h1>Panel privado</h1><div class="mode-note">Versión Definitiva RC2 · Firebase</div>
+<p class="eyebrow">Rifa con Causa</p><h1>Panel privado</h1><div class="mode-note">Rifa con Causa v1.0 · Firebase</div>
 <label>Correo electrónico<input id="user" type="email" required autocomplete="username"></label>
 <label>Contraseña<input id="password" type="password" required autocomplete="current-password"></label>
 <button>Entrar al panel</button><p id="loginStatus" class="form-status"></p>
-<small>Usuario: <b>admin</b> · Contraseña: <b>Rifa2026</b></small>
+<small>Acceso exclusivo para administración.</small>
 </form></section>
 
 <section id="dashboardView" hidden>
@@ -99,7 +99,7 @@
 </div>
 <div id="winnerCard" class="winner-card" hidden>
 <p class="eyebrow">Resultado</p><h3 id="winnerName"></h3><p>Número ganador: <b id="winnerNumber"></b></p><p>Teléfono: <span id="winnerPhone"></span></p><p>Fecha: <span id="winnerDate"></span></p>
-<button id="copyWinner" class="secondary-btn">Copiar resultado</button><button id="printAct" class="secondary-btn">Imprimir acta</button><a href="../public/consulta.html" target="_blank" class="secondary-btn" style="display:inline-block;text-decoration:none;border-radius:999px;padding:11px 17px;font-weight:800">Consulta pública</a><a href="../public/ganador.html" target="_blank" class="secondary-btn" style="display:inline-block;text-decoration:none;border-radius:999px;padding:11px 17px;font-weight:800">Vista pública</a>
+<button id="copyWinner" class="secondary-btn">Copiar resultado</button><button id="printAct" class="secondary-btn">Imprimir acta</button><a href="../consulta.html" target="_blank" class="secondary-btn" style="display:inline-block;text-decoration:none;border-radius:999px;padding:11px 17px;font-weight:800">Consulta pública</a><a href="../ganador.html" target="_blank" class="secondary-btn" style="display:inline-block;text-decoration:none;border-radius:999px;padding:11px 17px;font-weight:800">Vista pública</a>
 </div>
 </article>
 </div>
@@ -138,6 +138,5 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script src="../services/firebase-config.js"></script>
 <script src="../services/firebase-service.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="js/ticket-generator.js?v=12-rc5"></script>
+<script src="js/ticket-generator.js?v=1.0"></script>
 <script src="js/admin-firebase.js"></script></body></html>

@@ -1,0 +1,15 @@
+RIFA CON CAUSA v1.0
+
+Versión final basada en V12 RC5.
+
+Cambios de cierre:
+- Boleto digital dinámico sin QR.
+- Folio y código de seguridad visibles.
+- Descarga del boleto en PNG.
+- Envío asistido por WhatsApp.
+- Integración con confirmación de pago.
+- Enlaces públicos corregidos.
+- Dependencia externa de QR eliminada.
+- Identificación de versión actualizada a v1.0.
+
+Publicación: subir el contenido de esta carpeta a la raíz del repositorio de GitHub Pages.

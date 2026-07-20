@@ -31,15 +31,15 @@ async function createTicket(participant){
  drawField('CÓDIGO DE SEGURIDAD:',code,430,740,250);
  drawField('IMPORTE:',`$${total.toLocaleString('es-MX',{minimumFractionDigits:2})} MXN`,430,835,250);
  drawField('ESTADO:','PAGO CONFIRMADO',430,915,250,true);
- // QR verificable por teléfono.
- const base=location.origin+location.pathname.replace(/admin\/index\.html$|admin\/$|admin\.html$/,'');
- const verifyUrl=`${base}consulta.html?telefono=${encodeURIComponent(clean(participant.phone||''))}`;
+ // Panel de autenticidad sin QR (v1.0 estable).
  ctx.fillStyle='rgba(255,255,255,.99)';rounded(ctx,730,575,266,385,22);ctx.strokeStyle='#0c8b91';ctx.lineWidth=2;ctx.strokeRect(731,576,264,383);
- ctx.fillStyle='#0b7f82';rounded(ctx,752,594,223,50,12);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 25px Arial';ctx.fillText('VERIFICA TU BOLETO',864,627);
- const holder=document.createElement('div');holder.style.position='fixed';holder.style.left='-9999px';document.body.appendChild(holder);
- new QRCode(holder,{text:verifyUrl,width:190,height:190,correctLevel:QRCode.CorrectLevel.H});
- await new Promise(r=>setTimeout(r,100));const qr=holder.querySelector('canvas, img');if(qr)ctx.drawImage(qr,770,660,190,190);holder.remove();
- ctx.textAlign='center';ctx.fillStyle='#1d2939';ctx.font='600 17px Arial';ctx.fillText('Escanea para consultar',864,884);ctx.fillText('tu participación',864,908);
+ ctx.fillStyle='#0b7f82';rounded(ctx,752,594,223,50,12);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 24px Arial';ctx.fillText('BOLETO OFICIAL',864,627);
+ ctx.fillStyle='#164e63';ctx.font='800 19px Arial';ctx.fillText('RIFA CON CAUSA',864,688);
+ ctx.fillStyle='#1d2939';ctx.font='700 17px Arial';ctx.fillText('Conserva este boleto',864,737);ctx.fillText('hasta el día del sorteo.',864,764);
+ ctx.fillStyle='#087d80';ctx.font='800 18px Arial';ctx.fillText('FOLIO DE CONTROL',864,820);
+ ctx.fillStyle='#101827';ctx.font='800 25px Arial';ctx.fillText(folio,864,858);
+ ctx.fillStyle='#087d80';ctx.font='800 17px Arial';ctx.fillText('CÓDIGO DE SEGURIDAD',864,901);
+ ctx.fillStyle='#101827';ctx.font='800 20px Arial';ctx.fillText(code,864,934);
  canvas.dataset.folio=folio;canvas.dataset.securityCode=code;return canvas;
 }
 function filename(p,folio){const n=(p.numbers||[]).map(fmt).join('-')||'boleto';return `boleto-${n}-${folio}.png`.replace(/[^a-z0-9.-]/gi,'-')}
