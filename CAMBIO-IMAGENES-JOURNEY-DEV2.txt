@@ -1,0 +1,11 @@
+Rifa con Causa v1.0.4-dev2
+
+Cambios realizados:
+- Se reemplazó la imagen frontal principal de la Dodge Journey 2013.
+- Se reemplazó la imagen trasera principal de la Dodge Journey 2013.
+- Se conservaron todas las imágenes complementarias existentes de la galería.
+- No se modificaron textos, colores, botones, estructura ni funcionamiento de la página pública.
+
+Archivos reemplazados:
+- assets/journey-frontal-real.jpeg
+- assets/journey-trasera-real.jpeg
