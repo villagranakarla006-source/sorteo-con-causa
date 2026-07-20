@@ -1,0 +1,16 @@
+Rifa con Causa v1.0 RC1.1
+
+Cambios incluidos:
+- Pantalla de bienvenida de aproximadamente 2.3 segundos.
+- Fotografía de la organizadora al inicio.
+- Mensajes: “Gracias por apoyar esta causa” y “Tu participación es esperanza de vida”.
+- Orden del inicio: presentación, Journey, tablero y contenido restante.
+- Vista previa para compartir mediante etiquetas Open Graph.
+- Escala fija en dispositivos móviles y bloqueo de zoom accidental.
+- Pie de página: © 2026 Rifa con Causa.
+
+Se conserva:
+- Disponibles en blanco.
+- Reservados en amarillo.
+- Pagados con corazón rosa.
+- Lógica de Firebase, registro, pagos, boleto y dashboard.
