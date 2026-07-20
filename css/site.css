@@ -18,3 +18,10 @@ dialog{border:0;border-radius:24px;padding:0;width:min(620px,calc(100% - 22px));
 .status-waiting{border:1px solid #f2c94c;background:#fff9df}
 .receipt-share-actions{display:grid;gap:.75rem;margin-top:1rem}
 #receiptFile{padding:.75rem;background:#fff;border:1px dashed #c8a3b7;border-radius:12px}
+
+
+/* RC5: boleto digital */
+.ticket-info-card{display:grid;grid-template-columns:minmax(260px,420px) 1fr;gap:32px;align-items:center;background:#fff;border:1px solid #d8ecee;border-radius:28px;padding:28px;box-shadow:0 18px 50px rgba(14,82,91,.12)}
+.ticket-info-card img{width:100%;max-height:520px;object-fit:cover;object-position:top;border-radius:20px;border:1px solid #d9eef0;box-shadow:0 12px 32px rgba(13,72,86,.16)}
+.ticket-info-card h3{font-size:clamp(1.5rem,3vw,2.1rem);margin:0 0 12px;color:#073f52}.ticket-info-card p{line-height:1.7;color:#36515d}.ticket-info-card .button{margin-top:10px}
+@media(max-width:760px){.ticket-info-card{grid-template-columns:1fr;padding:18px}.ticket-info-card img{max-height:420px}}

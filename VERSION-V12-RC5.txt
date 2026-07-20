@@ -1,0 +1,6 @@
+Rifa con Causa V12.0 RC5
+- Boleto digital final integrado al panel administrativo.
+- Datos dinámicos: nombre, números, folio, código de seguridad, importe, fecha y estado.
+- QR de consulta de participación.
+- Descarga y envío por WhatsApp.
+- Página pública con sección informativa del boleto digital.
