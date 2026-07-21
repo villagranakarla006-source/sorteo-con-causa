@@ -1,0 +1,6 @@
+Rifa con Causa v1.0.2 — Corrección de limpieza
+
+- Se añadió versionado a firebase-config.js y firebase-service.js para evitar que GitHub Pages/navegador reutilicen una versión anterior.
+- Se conserva deleteParticipant() para eliminar el registro y liberar sus números.
+- Se conserva resetRaffleData() para borrar participantes, sorteos e historial y reinicializar los 500 números.
+- El panel muestra una instrucción clara si detecta archivos antiguos en caché.
