@@ -336,10 +336,14 @@
   document.getElementById("shareRaffle")?.addEventListener("click",()=>{
     const url="https://villagranakarla006-source.github.io/sorteo-con-causa/";
     const text=[
-      "💗 Te invito a conocer Rifa con Causa.",
-      "🚙 El premio es una Dodge Journey 2013.",
-      "Tu apoyo representa esperanza de vida.",
+      "Hola. 💗",
+      "",
+      "Quiero invitarte a apoyar una causa muy especial.",
+      "",
+      "Además de ayudar, puedes participar para ganar una Dodge Journey 2013.",
+      "",
       "Elige tu número aquí:",
+      "",
       url
     ].join("\n");
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,"_blank","noopener");

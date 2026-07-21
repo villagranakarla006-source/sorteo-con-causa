@@ -1,0 +1,11 @@
+RC1.3.3 — Presentación del enlace en WhatsApp
+
+- Se agregó una imagen horizontal optimizada de 1200 x 630 para la vista previa del enlace.
+- Se actualizaron las etiquetas Open Graph usadas por WhatsApp.
+- El título de la vista previa ahora destaca la Dodge Journey 2013.
+- La descripción es más humana y menos automatizada.
+- El botón ahora dice “Compartir por WhatsApp”.
+- El botón abre directamente WhatsApp con un mensaje cordial y el enlace público.
+- No se modificaron Firebase, registros, pagos, comprobantes, tablero ni panel administrativo.
+
+Nota: WhatsApp puede conservar en caché una vista previa anterior durante un tiempo. El nuevo nombre de imagen ayuda a forzar la actualización.

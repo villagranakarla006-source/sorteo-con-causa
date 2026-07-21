@@ -1,0 +1,12 @@
+RIFA CON CAUSA — VERSIÓN 1.0 ESTABLE
+Edición de lanzamiento
+
+Cambios finales de presentación del enlace:
+- Título Open Graph: 💗 Gana una Dodge Journey 2013 | Rifa con Causa
+- Descripción optimizada para WhatsApp y redes sociales.
+- Imagen horizontal de vista previa.
+- Botón: 💬 Compartir esta causa por WhatsApp
+- Mensaje listo para compartir.
+- Actualización de caché en recursos públicos.
+
+Se conservan sin cambios Firebase, panel administrativo, registros, pagos, comprobantes, boletos, consulta y exportación.
