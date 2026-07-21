@@ -1,0 +1,21 @@
+Rifa con Causa v1.0.3 — corrección administrativa incremental
+
+Base: Rifa-con-Causa-v1.0-ESTABLE-Release-Final
+
+Archivos modificados únicamente:
+- admin/index.html
+- admin/js/admin-firebase.js
+- services/firebase-service.js
+
+Cambios:
+- Eliminar participante y liberar sus números.
+- Función de limpieza de pruebas disponible en el panel administrativo.
+- Versionado de scripts administrativos para evitar caché antigua.
+
+El panel público se conserva sin cambios respecto a la versión estable final:
+- index.html
+- consulta.html
+- ganador.html
+- css/
+- js/
+- assets/
