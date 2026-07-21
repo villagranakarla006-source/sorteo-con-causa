@@ -1,0 +1,10 @@
+Rifa con Causa v1.0 RC1.3.1
+
+Corrección aplicada al panel público:
+- Eliminado el bloque con el precio del boleto debajo de la galería.
+- Eliminada la sección informativa sobre verificación y entrega del boleto.
+- Eliminado el bloque “Un número puede cambiarlo todo”.
+- Se mantienen el premio, galería, tablero, registro, pago, Firebase y panel administrativo.
+- Se agregaron versiones a CSS y JavaScript para evitar que el navegador muestre archivos antiguos en caché.
+
+Para publicar en GitHub Pages, reemplazar todos los archivos del repositorio con el contenido de este ZIP y confirmar los cambios en la rama main.

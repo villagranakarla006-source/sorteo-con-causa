@@ -3,11 +3,12 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
+<!-- Versión pública RC1.3.1: limpieza informativa y actualización de caché -->
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <title>Rifa con Causa — Dodge Journey 2013</title>
 <meta content="Participa en Rifa con Causa y elige tu número para ganar una Dodge Journey 2013." name="description"/>
-<link href="css/styles.css" rel="stylesheet"/>
-<link href="shared/ui-utils.css" rel="stylesheet"/>
+<link href="css/styles.css?v=1.0-rc1.3.1" rel="stylesheet"/>
+<link href="shared/ui-utils.css?v=1.0-rc1.3.1" rel="stylesheet"/>
 <meta content="website" property="og:type"/><meta content="Rifa con Causa — Participa por una Dodge Journey 2013" property="og:title"/><meta content="Elige tus números y apoya esta causa. Cada participación representa esperanza de vida." property="og:description"/><meta content="https://villagranakarla006-source.github.io/sorteo-con-causa/" property="og:url"/><meta content="https://villagranakarla006-source.github.io/sorteo-con-causa/assets/journey-poster-sin-motor.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="#07879a" name="theme-color"/></head>
 <body><div aria-hidden="true" class="splash-screen" id="splashScreen">
 <div class="splash-screen__card">
@@ -79,9 +80,7 @@
 </button>
 </div>
 </div>
-<div class="gallery-notice">
-<strong>Premio principal:</strong> Dodge Journey 2013 · <strong>Boleto:</strong> $200 MXN
-  </div>
+
 </section><section class="section board-section" id="tablero">
 <div class="section-heading split">
 <div><p class="eyebrow">Elige tu suerte</p><h2>Selecciona tus números</h2><p>Elige tus números favoritos y participa por una Dodge Journey 2013. Los números disponibles permanecen en blanco.</p></div>
@@ -116,20 +115,6 @@
 
 
 
-<section class="section ticket-info-section reveal">
-<div class="section-heading"><p class="eyebrow">Confirmación segura</p><h2>Tu boleto se entrega después de verificar el pago</h2></div>
-<div class="ticket-info-card ticket-info-card--text-only">
-<div>
-<h3>Primero revisamos tu comprobante</h3>
-<p>Tu registro quedará apartado. Cuando la administradora confirme el pago, generará tu boleto personalizado y te lo enviará al número de WhatsApp que registraste.</p>
-<a class="button secondary" href="consulta.html">Consultar mi participación</a>
-</div>
-</div>
-</section>
-<section class="final-cta reveal">
-<div><p class="eyebrow">Hazlo posible</p><h2>Un número puede cambiarlo todo</h2><p>Participa hoy y comparte esta rifa con familiares y amigos.</p></div>
-<a class="button primary" href="#tablero">Elegir números</a>
-</section>
 <section class="section story-section reveal">
 <div class="story-image"><img alt="Karla, organizadora, junto a la frase Juntos somos más fuertes" loading="lazy" src="assets/karla-organizadora-original.jpeg"/></div>
 <div class="story-copy">
@@ -186,17 +171,17 @@
 <div class="payment-box" hidden="" id="cashPaymentSection">
 <strong>Pago en efectivo</strong><span>No necesitas adjuntar comprobante. Tu registro quedará apartado hasta que la administradora confirme el pago.</span>
 </div>
-<button class="button primary full" id="submitRegistration" type="submit">Registrar participación</button>
+<button class="button primary full" id="submitRegistration" type="submit">Registrar</button>
 <p class="form-status" id="formStatus"></p>
 <div class="receipt-share-actions" hidden="" id="receiptShareActions">
 <div class="payment-box status-waiting">
 <strong>Pago en verificación</strong>
 <span>Tus números ya están apartados en amarillo. Cambiarán a pagados cuando la administradora confirme el comprobante.</span>
 </div>
-<a class="button primary full" href="#" id="openWhatsappButton" rel="noopener" target="_blank">Abrir WhatsApp con mi mensaje</a>
-<button class="button secondary full" id="shareReceiptButton" type="button">Enviar mensaje y comprobante</button>
+<a class="button secondary full" href="#" id="openWhatsappButton" rel="noopener" target="_blank">Abrir WhatsApp: enviar solo mensaje</a>
+<button class="button primary full whatsapp-main-action" id="shareReceiptButton" type="button">Abrir WhatsApp: enviar mensaje y comprobante</button>
 <button class="text-button" id="downloadReceiptButton" type="button">Descargar comprobante</button>
-<small>En celular, «Enviar mensaje y comprobante» abre el menú para compartir el archivo en WhatsApp. En computadora, abre WhatsApp y adjunta manualmente el comprobante.</small>
+<small>En celular, «Abrir WhatsApp: enviar mensaje y comprobante» abre el menú para compartir el archivo en WhatsApp. En computadora, abre WhatsApp y adjunta manualmente el comprobante.</small>
 </div>
 </form>
 </dialog>
@@ -209,7 +194,7 @@
 <script src="services/firebase-service.js"></script>
 <script src="js/local-db.js"></script>
 <script src="js/gallery.js"></script>
-<script src="js/public-hybrid.js?v=12-rc5"></script>
+<script src="js/public-hybrid.js?v=1.0-rc1.3.1"></script>
 <script>(function(){
   const splash=document.getElementById("splashScreen");
   if(!splash)return;

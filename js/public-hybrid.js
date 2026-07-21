@@ -267,7 +267,20 @@
       lastWhatsappUrl=`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(lastWhatsappMessage)}`;
       openWhatsappButton.href=lastWhatsappUrl;
       receiptShareActions.hidden=false;
-      if(shareReceiptButton)shareReceiptButton.hidden=paymentMethod!=="transferencia";
+      if(shareReceiptButton){
+        shareReceiptButton.hidden=paymentMethod!=="transferencia";
+        shareReceiptButton.className=paymentMethod==="transferencia"
+          ? "button primary full whatsapp-main-action whatsapp-main-action--active"
+          : "button secondary full";
+      }
+      if(openWhatsappButton){
+        openWhatsappButton.className=paymentMethod==="transferencia"
+          ? "button secondary full whatsapp-secondary-action"
+          : "button primary full whatsapp-main-action whatsapp-main-action--active";
+        openWhatsappButton.textContent=paymentMethod==="transferencia"
+          ? "Abrir WhatsApp: enviar solo mensaje"
+          : "Abrir WhatsApp con mi mensaje";
+      }
       if(downloadReceiptButton)downloadReceiptButton.hidden=paymentMethod!=="transferencia";
 
       selected.clear();
@@ -277,7 +290,7 @@
       submit.hidden=true;
       status.className="form-status success";
       const methodLabel=paymentMethod==="efectivo"?"Efectivo":"Transferencia";
-      const nextStep=paymentMethod==="efectivo"?"Ahora presiona <strong>Abrir WhatsApp con mi mensaje</strong> para avisar a la administradora.":"Ahora presiona <strong>Enviar mensaje y comprobante</strong>.";
+      const nextStep=paymentMethod==="efectivo"?"Ahora presiona <strong>Abrir WhatsApp: enviar solo mensaje</strong> para avisar a la administradora.":"Ahora presiona el botón resaltado <strong>Abrir WhatsApp: enviar mensaje y comprobante</strong>.";
       status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números apartados:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Método de pago:</strong> ${methodLabel}<br><strong>Estatus:</strong> APARTADOS en amarillo, en espera de confirmación del pago.<br><br>${nextStep}`;
       ui.toast?.("Registro realizado correctamente.","success");
 

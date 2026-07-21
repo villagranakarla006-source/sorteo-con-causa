@@ -1,0 +1,8 @@
+Rifa con Causa v1.0 RC1.3.2
+
+- El botón “Registrar participación” ahora dice “Registrar”.
+- Para transferencia con comprobante, el botón principal resaltado ahora es:
+  “Abrir WhatsApp: enviar mensaje y comprobante”.
+- El botón que envía únicamente el mensaje pasa a estilo secundario.
+- Para pago en efectivo, el botón de WhatsApp con mensaje conserva el estilo principal.
+- No se modificó Firebase, panel administrativo, estados, pagos ni boletos.

@@ -239,3 +239,11 @@ footer{display:flex;justify-content:center;text-align:center;padding:24px 6vw}fo
 .story-cause-message{margin-top:20px}
 @media(max-width:850px){.hero--prize-first{grid-template-columns:1fr;min-height:auto;padding-top:34px;gap:30px}.hero-prize-frame{width:min(92vw,650px)}.hero--prize-first .hero-copy{text-align:center}.hero--prize-first .hero-actions{justify-content:center}}
 @media(max-width:560px){.hero--prize-first{padding:26px 16px 44px}.hero-prize-frame{width:100%;border-radius:24px;border-width:5px}.hero--prize-first .hero-actions{display:grid}.hero--prize-first .hero-actions .button{width:100%}.range-tabs{display:grid;grid-template-columns:1fr 1fr;gap:9px}.range-tabs button{width:100%;padding:12px 8px}.number-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px}.number{border-radius:9px;font-size:.78rem;min-width:0}.paid-heart{font-size:1rem}.paid-number{font-size:.62rem}.board-shell{padding:12px}.board-main{min-width:0}}
+
+/* RC1.3.2: acción principal de WhatsApp con comprobante */
+.receipt-share-actions{display:grid;gap:10px}
+.whatsapp-main-action{font-size:1.02rem;min-height:54px;text-align:center}
+.whatsapp-main-action--active{box-shadow:0 0 0 4px rgba(234,40,104,.16),0 16px 34px rgba(234,40,104,.38);animation:whatsappActionPulse 1.45s ease-in-out 3}
+.whatsapp-secondary-action{opacity:.82;box-shadow:none}
+@keyframes whatsappActionPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+@media (prefers-reduced-motion:reduce){.whatsapp-main-action--active{animation:none}}
