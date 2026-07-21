@@ -1,0 +1,13 @@
+RIFA CON CAUSA — RC1.3
+
+Cambios aplicados únicamente al panel público:
+- Se eliminó el bloque con “500 números disponibles”.
+- Se eliminó el bloque con “$200 por número”.
+- Se eliminó el bloque con “En vivo por Facebook Live”.
+- Se eliminó el bloque con “Registro seguro con comprobante”.
+- Se eliminó completamente la sección informativa “Proceso sencillo / Participa en cuatro pasos”.
+- Se retiraron del menú los enlaces a secciones eliminadas.
+- Se eliminó la etiqueta superior “500 oportunidades · $200 MXN”.
+- El botón ahora dice “Continuar con mi participación”.
+
+No se modificaron Firebase, el panel administrativo, los registros, pagos, WhatsApp, boletos ni estados de números.
