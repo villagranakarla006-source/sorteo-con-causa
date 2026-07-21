@@ -1,0 +1,12 @@
+RIFA CON CAUSA — v1.1.2 ESTABLE
+
+Corrección aplicada:
+- Se corrigió el error "paymentMethod is not defined" al registrar una participación.
+- La función que construye la notificación de WhatsApp ahora recibe explícitamente el método de pago.
+- Se actualizó la versión del script público para evitar que el navegador use una copia anterior en caché.
+
+Archivos modificados:
+- js/public-hybrid.js
+- index.html
+
+No se modificaron el diseño público, Firebase, el tablero, el panel administrativo ni el boleto.

@@ -218,7 +218,7 @@
     setTimeout(()=>URL.revokeObjectURL(url),1500);
   }
 
-  function buildMessage(name,phone,numbers,total){
+  function buildMessage(name,phone,numbers,total,paymentMethod){
     return `Hola. 💗\n\nEnvío notificación de registro.\nNombre: ${name}\nTeléfono: ${phone}\nNúmeros seleccionados: ${numbers.map(fmt).join(", ")}\nTotal: $${total.toLocaleString("es-MX")} MXN\nMétodo de pago: ${paymentMethod==="efectivo"?"Efectivo":"Transferencia"}.\n\nMis números quedaron APARTADOS en amarillo, en espera de confirmación.\n\nGracias por apoyar esta causa, tu participación es esperanza de vida.`;
   }
 
