@@ -24,8 +24,6 @@
   const form=$("#registrationForm");
   const receiptFileInput=$("#receiptFile");
   const receiptShareActions=$("#receiptShareActions");
-  const shareReceiptButton=$("#shareReceiptButton");
-  const downloadReceiptButton=$("#downloadReceiptButton");
   const openWhatsappButton=$("#openWhatsappButton");
   const numberSearch=$("#numberSearch");
   const numberSearchStatus=$("#numberSearchStatus");
@@ -221,7 +219,7 @@
   }
 
   function buildMessage(name,phone,numbers,total){
-    return `¡Gracias de corazón por tu valioso apoyo! 💗\n\nTu participación fue recibida correctamente y significa mucho para nosotros.\nNombre: ${name}\nTeléfono: ${phone}\nNúmeros seleccionados: ${numbers.map(fmt).join(", ")}\nTotal: $${total.toLocaleString("es-MX")} MXN\nComprobante: adjunto para revisión.\n\nTus números permanecerán en color amarillo como APARTADOS mientras revisamos el comprobante. Cuando el pago sea confirmado, cambiarán a color rosa/rojo como PAGADOS.\n\nTu generosidad hace una diferencia. Gracias por ser parte de esta causa.`;
+    return `Hola. 💗\n\nEnvío notificación de registro.\nNombre: ${name}\nTeléfono: ${phone}\nNúmeros seleccionados: ${numbers.map(fmt).join(", ")}\nTotal: $${total.toLocaleString("es-MX")} MXN\nMétodo de pago: ${paymentMethod==="efectivo"?"Efectivo":"Transferencia"}.\n\nMis números quedaron APARTADOS en amarillo, en espera de confirmación.\n\nGracias por apoyar esta causa, tu participación es esperanza de vida.`;
   }
 
   async function shareMessageAndReceipt(){
@@ -266,8 +264,6 @@
     numberSearchStatus.innerHTML=`Número <strong>${fmt(exact)}</strong> seleccionado.`;
   });
   form?.querySelectorAll('input[name="paymentMethod"]').forEach(input=>input.addEventListener("change",updatePaymentMethodUI));
-  shareReceiptButton?.addEventListener("click",shareMessageAndReceipt);
-  downloadReceiptButton?.addEventListener("click",()=>downloadFile(lastReceiptFile));
 
   form?.addEventListener("submit",async event=>{
     event.preventDefault();
@@ -293,7 +289,7 @@
     try{
       const total=numbers.length*PRICE;
       // Guarda una copia optimizada del comprobante para mostrarla en la ficha administrativa.
-      // El archivo original continúa disponible para compartirlo por WhatsApp.
+      // El comprobante se guarda únicamente para revisión administrativa.
       let receiptData=await prepareReceiptForPanel(file);
       if(firebaseEnabled){
         await RifaFirebase.registerParticipant({name,phone,numbers,total,paymentMethod,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
@@ -316,21 +312,11 @@
       lastWhatsappUrl=`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(lastWhatsappMessage)}`;
       openWhatsappButton.href=lastWhatsappUrl;
       receiptShareActions.hidden=false;
-      if(shareReceiptButton){
-        shareReceiptButton.hidden=paymentMethod!=="transferencia";
-        shareReceiptButton.className=paymentMethod==="transferencia"
-          ? "button primary full whatsapp-main-action whatsapp-main-action--active"
-          : "button secondary full";
-      }
       if(openWhatsappButton){
-        openWhatsappButton.className=paymentMethod==="transferencia"
-          ? "button secondary full whatsapp-secondary-action"
-          : "button primary full whatsapp-main-action whatsapp-main-action--active";
-        openWhatsappButton.textContent=paymentMethod==="transferencia"
-          ? "Abrir WhatsApp: enviar solo mensaje"
-          : "Abrir WhatsApp con mi mensaje";
+        openWhatsappButton.className="button primary full whatsapp-main-action whatsapp-main-action--active";
+        openWhatsappButton.textContent="Enviar notificación de registro";
+        openWhatsappButton.href=lastWhatsappUrl;
       }
-      if(downloadReceiptButton)downloadReceiptButton.hidden=paymentMethod!=="transferencia";
 
       selected.clear();
       saveSelection();
@@ -339,7 +325,7 @@
       submit.hidden=true;
       status.className="form-status success";
       const methodLabel=paymentMethod==="efectivo"?"Efectivo":"Transferencia";
-      const nextStep=paymentMethod==="efectivo"?"Ahora presiona <strong>Abrir WhatsApp: enviar solo mensaje</strong> para avisar a la administradora.":"Ahora presiona el botón resaltado <strong>Abrir WhatsApp: enviar mensaje y comprobante</strong>.";
+      const nextStep="Ahora presiona el botón resaltado <strong>Enviar notificación de registro</strong>.";
       status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números apartados:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Método de pago:</strong> ${methodLabel}<br><strong>Estatus:</strong> APARTADOS en amarillo, en espera de confirmación del pago.<br><br>${nextStep}`;
       ui.toast?.("Registro realizado correctamente.","success");
 

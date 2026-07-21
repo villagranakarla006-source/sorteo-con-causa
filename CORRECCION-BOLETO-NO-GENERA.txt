@@ -1,0 +1,9 @@
+CORRECCIÓN: BOLETO NO GENERABA NI DESCARGABA
+
+- Se evita que la imagen remota del comprobante contamine el canvas por CORS.
+- El comprobante se carga primero mediante fetch/blob seguro.
+- Si la miniatura no puede cargarse, el boleto se genera de todos modos con la leyenda "Comprobante verificado".
+- Se reemplazó toDataURL por toBlob para una descarga más estable en celular y computadora.
+- Se agregó compatibilidad para navegadores sin CanvasRenderingContext2D.roundRect.
+- Se añadieron mensajes claros si ocurre un error durante generación, descarga o envío.
+- No se modificó el panel público ni la conexión Firebase.

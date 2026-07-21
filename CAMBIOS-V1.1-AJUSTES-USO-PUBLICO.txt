@@ -1,0 +1,9 @@
+RIFA CON CAUSA v1.1 — AJUSTES DESPUÉS DE PUBLICACIÓN
+
+1. Se conserva la corrección de generación y descarga del boleto.
+2. Se eliminó la opción “enviar mensaje y comprobante” del panel público.
+3. Después del registro aparece un solo botón destacado: “Enviar notificación de registro”.
+4. Se corrigió la descarga del comprobante desde el panel administrativo, incluyendo comprobantes guardados como Data URL.
+5. Se agregó “Eliminar ficha liberada”, visible únicamente en fichas con estado Liberado o Expirado.
+
+No se modificaron el tablero, Firebase en tiempo real, colores ni diseño general del panel público.

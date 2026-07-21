@@ -170,7 +170,7 @@
 <label class="payment-method-option"><input name="paymentMethod" type="radio" value="efectivo"/> <span><strong>Efectivo</strong><small>La administradora confirmará el pago cuando lo reciba.</small></span></label>
 </fieldset>
 <div id="transferPaymentSection">
-<div class="payment-box"><strong>Comprobante por WhatsApp</strong><span>Selecciona aquí la imagen o PDF. Después del registro podrás compartirlo por WhatsApp.</span></div>
+<div class="payment-box"><strong>Comprobante de pago</strong><span>Selecciona aquí la imagen o PDF. Se guardará con tu registro para que la administradora pueda revisarlo.</span></div>
 <label>Adjuntar comprobante
         <input accept="image/*,.pdf,application/pdf" id="receiptFile" required="" type="file"/>
 <small class="input-help">Puedes tomar una foto o elegir una imagen/PDF. Máximo recomendado: 10 MB.</small>
@@ -190,10 +190,8 @@
 <strong>Pago en verificación</strong>
 <span>Tus números ya están apartados en amarillo. Cambiarán a pagados cuando la administradora confirme el comprobante.</span>
 </div>
-<a class="button secondary full" href="#" id="openWhatsappButton" rel="noopener" target="_blank">Abrir WhatsApp: enviar solo mensaje</a>
-<button class="button primary full whatsapp-main-action" id="shareReceiptButton" type="button">Abrir WhatsApp: enviar mensaje y comprobante</button>
-<button class="text-button" id="downloadReceiptButton" type="button">Descargar comprobante</button>
-<small>En celular, «Abrir WhatsApp: enviar mensaje y comprobante» abre el menú para compartir el archivo en WhatsApp. En computadora, abre WhatsApp y adjunta manualmente el comprobante.</small>
+<a class="button primary full whatsapp-main-action whatsapp-main-action--active" href="#" id="openWhatsappButton" rel="noopener" target="_blank">Enviar notificación de registro</a>
+<small>Presiona este único botón para avisar por WhatsApp que tu registro fue realizado.</small>
 </div>
 </form>
 </dialog>
@@ -206,7 +204,7 @@
 <script src="services/firebase-service.js"></script>
 <script src="js/local-db.js"></script>
 <script src="js/gallery.js"></script>
-<script src="js/public-hybrid.js?v=1.0-final"></script>
+<script src="js/public-hybrid.js?v=1.1-ajustes-publicos"></script>
 <script>(function(){
   const splash=document.getElementById("splashScreen");
   if(!splash)return;

@@ -169,6 +169,20 @@
     }
     return {expired,reminders};
   }
+
+  async function deleteParticipant(id){
+    init();
+    if(!auth.currentUser) throw new Error("Inicia sesión como administradora.");
+    const ref=db.collection("participants").doc(id);
+    const doc=await ref.get();
+    if(!doc.exists) throw new Error("La ficha ya no existe.");
+    const p=doc.data();
+    if(!["released","expired"].includes(p.status)) throw new Error("Solo se pueden eliminar fichas liberadas o expiradas.");
+    const batch=db.batch();
+    batch.delete(ref);
+    audit(batch,"Ficha eliminada",`Se eliminó una ficha liberada/expirada de ${p.name||"participante"}`,id);
+    await batch.commit();
+  }
   async function updateParticipant(id,changes){
     init();const ref=db.collection("participants").doc(id),doc=await ref.get();if(!doc.exists)throw new Error("Participante no encontrado.");
     const p=doc.data(),batch=db.batch();batch.update(ref,{...changes,updatedAt:now()});
@@ -177,5 +191,5 @@
   }
   async function updateNumber(number,changes){init();const batch=db.batch();batch.update(db.collection("numbers").doc(numId(number)),{...changes,updatedAt:now()});audit(batch,"Número",`${numId(number)} actualizado`);await batch.commit();}
   async function registerDraw(draw){init();const ref=db.collection("draws").doc(),batch=db.batch();batch.set(ref,{...draw,createdAt:now()});audit(batch,"Sorteo",`Ganador ${numId(draw.winnerNumber)}`,draw.participantId||"");await batch.commit();return{id:ref.id,...draw,createdAt:new Date().toISOString()};}
-  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,markReminderSent,processReservationAutomation,updateParticipant,updateNumber,registerDraw};
+  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,markReminderSent,processReservationAutomation,updateParticipant,deleteParticipant,updateNumber,registerDraw};
 })();
