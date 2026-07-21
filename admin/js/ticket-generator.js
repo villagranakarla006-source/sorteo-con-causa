@@ -10,7 +10,7 @@ async function createTicket(participant){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1536;const ctx=canvas.getContext('2d');
  const [bg,karlaPhoto]=await Promise.all([
   loadImage('../assets/boleto-confirmacion.png'),
-  loadImage('../assets/karla-organizadora-original.jpeg')
+  loadImage('../assets/karla-organizadora-sin-fondo.png')
  ]);
  ctx.drawImage(bg,0,0,1024,1536);
  const name=clean(participant.name)||'Participante';
@@ -31,29 +31,35 @@ async function createTicket(participant){
  drawField('IMPORTE:',`$${total.toLocaleString('es-MX',{minimumFractionDigits:2})} MXN`,430,660,250);
  drawField('ESTADO:','PAGO CONFIRMADO',430,790,250,true);
 
- // Panel oficial simplificado, sin folio ni código.
+ // El recuadro derecho muestra el comprobante verificado dentro del boleto.
  ctx.fillStyle='rgba(255,255,255,.99)';rounded(ctx,730,575,266,385,22);ctx.strokeStyle='#0c8b91';ctx.lineWidth=2;ctx.strokeRect(731,576,264,383);
- ctx.fillStyle='#0b7f82';rounded(ctx,752,594,223,50,12);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 24px Arial';ctx.fillText('BOLETO OFICIAL',864,627);
- ctx.fillStyle='#164e63';ctx.font='800 19px Arial';ctx.fillText('RIFA CON CAUSA',864,688);
- ctx.fillStyle='#1d2939';ctx.font='700 17px Arial';ctx.fillText('Conserva este boleto',864,748);ctx.fillText('hasta el día del sorteo.',864,777);
- ctx.fillStyle='#087d80';ctx.font='800 18px Arial';ctx.fillText('PAGO VERIFICADO',864,848);
- ctx.fillStyle='#16832c';ctx.font='800 24px Arial';ctx.fillText('CONFIRMADO',864,888);
+ ctx.fillStyle='#0b7f82';rounded(ctx,744,594,238,50,12);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 20px Arial';ctx.fillText('COMPROBANTE VERIFICADO',863,626);
+ const receipt=participant.receiptData||participant.receiptUrl||participant.comprobanteData||participant.comprobanteUrl||'';
+ const receiptType=clean(participant.receiptType).toLowerCase();
+ const isPdf=receiptType.includes('pdf')||String(receipt).startsWith('data:application/pdf');
+ if(receipt&&!isPdf){
+  try{
+   const receiptImg=await loadImage(receipt);
+   const boxX=750,boxY=660,boxW=226,boxH=260;
+   ctx.save();ctx.beginPath();ctx.roundRect(boxX,boxY,boxW,boxH,12);ctx.clip();
+   const rr=receiptImg.width/receiptImg.height,br=boxW/boxH;let dx=boxX,dy=boxY,dw=boxW,dh=boxH;
+   if(rr>br){dh=boxW/rr;dy=boxY+(boxH-dh)/2}else{dw=boxH*rr;dx=boxX+(boxW-dw)/2}
+   ctx.fillStyle='#f5f7fa';ctx.fillRect(boxX,boxY,boxW,boxH);ctx.drawImage(receiptImg,dx,dy,dw,dh);ctx.restore();
+   ctx.strokeStyle='#e84c7f';ctx.lineWidth=2;ctx.strokeRect(boxX,boxY,boxW,boxH);
+  }catch(e){
+   ctx.fillStyle='#164e63';ctx.font='800 19px Arial';ctx.fillText('COMPROBANTE',863,755);ctx.fillText('NO DISPONIBLE',863,787);
+  }
+ }else{
+  ctx.fillStyle='#164e63';ctx.font='800 18px Arial';ctx.fillText(isPdf?'COMPROBANTE PDF':'SIN COMPROBANTE',863,755);
+  ctx.fillStyle='#16832c';ctx.font='800 22px Arial';ctx.fillText('PAGO CONFIRMADO',863,815);
+ }
 
- // Fotografía integrada sin recuadro: bordes suavizados sobre el boleto.
- const photoX=748,photoY=1105,photoW=230,photoH=225;
+ // Fotografía de Karla recortada, sin fondo ni recuadro.
+ const photoX=742,photoY=1070,photoW=250,photoH=270;
  ctx.save();
- const srcRatio=karlaPhoto.width/karlaPhoto.height,boxRatio=photoW/photoH;
- let sx=0,sy=0,sw=karlaPhoto.width,sh=karlaPhoto.height;
- if(srcRatio>boxRatio){sw=karlaPhoto.height*boxRatio;sx=(karlaPhoto.width-sw)/2}else{sh=karlaPhoto.width/boxRatio;sy=Math.max(0,(karlaPhoto.height-sh)*0.22)}
- ctx.drawImage(karlaPhoto,sx,sy,sw,sh,photoX,photoY,photoW,photoH);
- // Fundidos suaves para que la foto forme parte del diseño, sin marco visible.
- const fades=[
-  [photoX,photoY,photoX+32,photoY,'rgba(255,255,255,.94)','rgba(255,255,255,0)',photoX,photoY,34,photoH],
-  [photoX+photoW,photoY,photoX+photoW-32,photoY,'rgba(255,255,255,.94)','rgba(255,255,255,0)',photoX+photoW-34,photoY,34,photoH],
-  [photoX,photoY,photoX,photoY+30,'rgba(255,255,255,.9)','rgba(255,255,255,0)',photoX,photoY,photoW,32],
-  [photoX,photoY+photoH,photoX,photoY+photoH-38,'rgba(255,255,255,.96)','rgba(255,255,255,0)',photoX,photoY+photoH-40,photoW,40]
- ];
- fades.forEach(([x0,y0,x1,y1,c0,c1,x,y,w,h])=>{const g=ctx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,c0);g.addColorStop(1,c1);ctx.fillStyle=g;ctx.fillRect(x,y,w,h)});
+ // Recorte centrado en rostro y cabello para integrarlo en el espacio original.
+ const sx=220,sy=175,sw=Math.min(790,karlaPhoto.width-220),sh=Math.min(1040,karlaPhoto.height-175);
+ ctx.globalAlpha=.98;ctx.drawImage(karlaPhoto,sx,sy,sw,sh,photoX,photoY,photoW,photoH);
  ctx.restore();
  return canvas;
 }

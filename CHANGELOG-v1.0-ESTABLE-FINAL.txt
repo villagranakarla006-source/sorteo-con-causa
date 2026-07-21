@@ -18,3 +18,10 @@ Cambios realizados sobre v1.0.5:
 - Se agregaron acciones “Ver en grande” y “Descargar comprobante”.
 
 No se modificaron la portada, galería, tablero, frases, precio, WhatsApp ni la configuración de Firebase.
+
+AJUSTE FINAL DEL BOLETO (21-07-2026)
+- El recuadro derecho que decía “Boleto oficial” ahora muestra la miniatura del comprobante verificado.
+- La miniatura se obtiene del comprobante guardado en la ficha del participante.
+- Para comprobantes PDF se muestra una indicación de comprobante PDF confirmado.
+- La fotografía de Karla utiliza un archivo PNG sin fondo y se integra sin marco.
+- Se conserva el diseño base aprobado, sin folio ni código de seguridad.
