@@ -1,0 +1,6 @@
+Rifa con Causa v1.1.1 — Corrección de notificación WhatsApp
+
+- El botón “Enviar notificación de registro” abre exclusivamente el WhatsApp configurado de la organizadora: 52 686 425 7896.
+- Se abre en la misma pestaña para evitar bloqueos de ventanas emergentes en navegadores móviles.
+- El mensaje se genera únicamente después de completar correctamente el registro.
+- No se modificó Firebase, el tablero ni el diseño del panel público.

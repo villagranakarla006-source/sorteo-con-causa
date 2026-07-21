@@ -241,6 +241,17 @@
     alert("Se abrió WhatsApp y se descargó el comprobante. Usa el clip de WhatsApp para adjuntar el archivo descargado.");
   }
 
+  openWhatsappButton?.addEventListener("click",event=>{
+    event.preventDefault();
+    if(!lastWhatsappUrl){
+      alert("Primero completa tu registro para generar la notificación.");
+      return;
+    }
+    // Abrir siempre el chat de la organizadora en la misma pestaña.
+    // Esto evita que los navegadores móviles bloqueen la ventana emergente.
+    window.location.assign(lastWhatsappUrl);
+  });
+
   $("#continueButton")?.addEventListener("click",openDialog);
   $("#showPayment")?.addEventListener("click",()=>selected.size?openDialog():$("#tablero")?.scrollIntoView({behavior:"smooth"}));
   $("#clearSelectionButton")?.addEventListener("click",clearSelection);
