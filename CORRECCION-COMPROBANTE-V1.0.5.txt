@@ -1,0 +1,18 @@
+CORRECCIÓN PUNTUAL DEL COMPROBANTE
+
+Base: Restauración Estable Firebase aprobada.
+
+Archivos modificados:
+- js/public-hybrid.js
+- index.html (solo versión de caché del script)
+
+No se modificaron ni eliminaron:
+- imagen de Karla
+- frases de agradecimiento y concientización
+- botón Compartir esta causa por WhatsApp
+- tablero por bloques
+- costo del boleto
+- conexión Firebase en tiempo real
+
+Cambio funcional:
+Las imágenes de comprobante se optimizan en el navegador y se guardan en Firestore para que aparezcan en la ficha administrativa. Los PDF se guardan cuando su tamaño permite respetar el límite de Firestore.

@@ -151,6 +151,63 @@
     dialog.showModal();
   }
 
+  async function prepareReceiptForPanel(file){
+    if(!file)return "";
+    const type=String(file.type||"").toLowerCase();
+
+    // Los PDF pequeños pueden guardarse directamente en Firestore.
+    if(type.includes("pdf")){
+      if(file.size>500*1024)return "";
+      return await new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onload=()=>resolve(String(reader.result||""));
+        reader.onerror=()=>reject(new Error("No fue posible leer el comprobante."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Las fotografías se reducen antes de guardarlas para respetar el límite de Firestore.
+    if(type.startsWith("image/")){
+      const objectUrl=URL.createObjectURL(file);
+      try{
+        const image=await new Promise((resolve,reject)=>{
+          const img=new Image();
+          img.onload=()=>resolve(img);
+          img.onerror=()=>reject(new Error("No fue posible procesar la imagen del comprobante."));
+          img.src=objectUrl;
+        });
+        const maxSide=1280;
+        const scale=Math.min(1,maxSide/Math.max(image.naturalWidth||image.width,image.naturalHeight||image.height));
+        const canvas=document.createElement("canvas");
+        canvas.width=Math.max(1,Math.round((image.naturalWidth||image.width)*scale));
+        canvas.height=Math.max(1,Math.round((image.naturalHeight||image.height)*scale));
+        const ctx=canvas.getContext("2d",{alpha:false});
+        ctx.fillStyle="#fff";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(image,0,0,canvas.width,canvas.height);
+
+        let quality=.82;
+        let data=canvas.toDataURL("image/jpeg",quality);
+        while(data.length>620000&&quality>.42){
+          quality-=.08;
+          data=canvas.toDataURL("image/jpeg",quality);
+        }
+        if(data.length>700000)throw new Error("La imagen del comprobante es demasiado grande. Toma una captura más ligera e inténtalo de nuevo.");
+        return data;
+      }finally{
+        URL.revokeObjectURL(objectUrl);
+      }
+    }
+
+    if(file.size>500*1024)return "";
+    return await new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(String(reader.result||""));
+      reader.onerror=()=>reject(new Error("No fue posible leer el comprobante."));
+      reader.readAsDataURL(file);
+    });
+  }
+
   function downloadFile(file){
     if(!file)return;
     const url=URL.createObjectURL(file);
@@ -235,19 +292,11 @@
 
     try{
       const total=numbers.length*PRICE;
-      let receiptData="";
-      // Firestore admite documentos de hasta 1 MB. Guardamos una copia visible en el panel
-      // cuando el comprobante es pequeño; el archivo original siempre queda listo para compartir.
-      if(file&&file.size<=600*1024){
-        receiptData=await new Promise((resolve,reject)=>{
-          const reader=new FileReader();
-          reader.onload=()=>resolve(reader.result);
-          reader.onerror=()=>reject(new Error("No fue posible leer el comprobante."));
-          reader.readAsDataURL(file);
-        });
-      }
+      // Guarda una copia optimizada del comprobante para mostrarla en la ficha administrativa.
+      // El archivo original continúa disponible para compartirlo por WhatsApp.
+      let receiptData=await prepareReceiptForPanel(file);
       if(firebaseEnabled){
-        await RifaFirebase.registerParticipant({name,phone,numbers,total,paymentMethod,receiptFile:file,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
+        await RifaFirebase.registerParticipant({name,phone,numbers,total,paymentMethod,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
       }else{
         if(!window.RifaLocalDB)throw new Error("No fue posible iniciar el registro.");
         if(file&&!receiptData&&file.size<=2*1024*1024){
