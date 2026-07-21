@@ -333,9 +333,16 @@
   const menuToggle=document.getElementById("menuToggle"),nav=document.getElementById("mainNav");
   menuToggle?.addEventListener("click",()=>{const open=nav.classList.toggle("open");menuToggle.setAttribute("aria-expanded",String(open));menuToggle.textContent=open?"×":"☰";});
   nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");menuToggle?.setAttribute("aria-expanded","false");if(menuToggle)menuToggle.textContent="☰";}));
-  document.getElementById("shareRaffle")?.addEventListener("click",async()=>{
-    const data={title:"Rifa con Causa",text:"Participa para ganar una Dodge Journey 2013.",url:location.href.split("#")[0]};
-    try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(data.url);window.RifaUI?.toast("Enlace copiado.","success");}}catch(error){if(error?.name!=="AbortError")window.RifaUI?.toast("No fue posible compartir.","error");}
+  document.getElementById("shareRaffle")?.addEventListener("click",()=>{
+    const url="https://villagranakarla006-source.github.io/sorteo-con-causa/";
+    const text=[
+      "💗 Te invito a conocer Rifa con Causa.",
+      "🚙 El premio es una Dodge Journey 2013.",
+      "Tu apoyo representa esperanza de vida.",
+      "Elige tu número aquí:",
+      url
+    ].join("\n");
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,"_blank","noopener");
   });
   if("IntersectionObserver" in window){
     const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("visible");observer.unobserve(entry.target);}}),{threshold:.12});
