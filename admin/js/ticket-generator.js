@@ -6,7 +6,6 @@ const clean=s=>String(s??'').trim();
 const loadImage=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src});
 function fitText(ctx,text,maxWidth,startSize,minSize=18){let size=startSize;do{ctx.font=`700 ${size}px Arial`;if(ctx.measureText(text).width<=maxWidth)return size;size-=2}while(size>=minSize);return minSize}
 function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
-function securityCode(participant){const raw=String(participant.id||Date.now()).replace(/[^a-z0-9]/gi,'').toUpperCase().padEnd(12,'X').slice(-12);return `${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`}
 async function createTicket(participant){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1536;const ctx=canvas.getContext('2d');
  const [bg,karlaPhoto]=await Promise.all([
@@ -16,14 +15,12 @@ async function createTicket(participant){
  ctx.drawImage(bg,0,0,1024,1536);
  const name=clean(participant.name)||'Participante';
  const nums=(participant.numbers||[]).map(fmt).join(', ');
- const idRaw=String(participant.id||Date.now()).replace(/[^a-z0-9]/gi,'').slice(-6).toUpperCase().padStart(6,'0');
- const folio=`RCC-${idRaw}`;
- const code=participant.publicCode?`${clean(participant.publicCode).toUpperCase()}-${idRaw}`:securityCode(participant);
  const paidAt=participant.paidAt?.toDate?participant.paidAt.toDate():participant.paidAt?new Date(participant.paidAt):new Date();
  const date=paidAt.toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
  const time=paidAt.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
  const total=Number(participant.total||((participant.numbers||[]).length*Number(cfg.ticketPrice||200)));
- // Cubre los datos de ejemplo del diseño y escribe los datos reales.
+
+ // Datos reales del participante. Se eliminaron folio y código de seguridad.
  ctx.fillStyle='rgba(255,255,255,.985)';rounded(ctx,28,575,686,385,22);
  ctx.strokeStyle='#0c8b91';ctx.lineWidth=2;ctx.strokeRect(29,576,684,383);
  ctx.beginPath();ctx.moveTo(390,598);ctx.lineTo(390,935);ctx.strokeStyle='#50aeb2';ctx.setLineDash([5,5]);ctx.stroke();ctx.setLineDash([]);
@@ -31,40 +28,40 @@ async function createTicket(participant){
  drawField('PARTICIPANTE:',name,75,625,285);
  drawField('NÚMERO(S) ASIGNADO(S):',nums,75,740,285);
  drawField('FECHA DE CONFIRMACIÓN:',date,75,855,285);ctx.fillStyle='#101827';ctx.font='700 22px Arial';ctx.fillText(time,75,927);
- drawField('FOLIO:',folio,430,625,250);
- drawField('CÓDIGO DE SEGURIDAD:',code,430,740,250);
- drawField('IMPORTE:',`$${total.toLocaleString('es-MX',{minimumFractionDigits:2})} MXN`,430,835,250);
- drawField('ESTADO:','PAGO CONFIRMADO',430,915,250,true);
- // Panel de autenticidad sin QR (v1.0 estable).
+ drawField('IMPORTE:',`$${total.toLocaleString('es-MX',{minimumFractionDigits:2})} MXN`,430,660,250);
+ drawField('ESTADO:','PAGO CONFIRMADO',430,790,250,true);
+
+ // Panel oficial simplificado, sin folio ni código.
  ctx.fillStyle='rgba(255,255,255,.99)';rounded(ctx,730,575,266,385,22);ctx.strokeStyle='#0c8b91';ctx.lineWidth=2;ctx.strokeRect(731,576,264,383);
  ctx.fillStyle='#0b7f82';rounded(ctx,752,594,223,50,12);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 24px Arial';ctx.fillText('BOLETO OFICIAL',864,627);
  ctx.fillStyle='#164e63';ctx.font='800 19px Arial';ctx.fillText('RIFA CON CAUSA',864,688);
- ctx.fillStyle='#1d2939';ctx.font='700 17px Arial';ctx.fillText('Conserva este boleto',864,737);ctx.fillText('hasta el día del sorteo.',864,764);
- ctx.fillStyle='#087d80';ctx.font='800 18px Arial';ctx.fillText('FOLIO DE CONTROL',864,820);
- ctx.fillStyle='#101827';ctx.font='800 25px Arial';ctx.fillText(folio,864,858);
- ctx.fillStyle='#087d80';ctx.font='800 17px Arial';ctx.fillText('CÓDIGO DE SEGURIDAD',864,901);
- ctx.fillStyle='#101827';ctx.font='800 20px Arial';ctx.fillText(code,864,934);
- // Fotografía real de la organizadora junto al mensaje de concientización.
- // Se mantiene intacta la estructura original del boleto y solo se integra la imagen.
- const photoX=760,photoY=1120,photoW=205,photoH=205,photoR=24;
+ ctx.fillStyle='#1d2939';ctx.font='700 17px Arial';ctx.fillText('Conserva este boleto',864,748);ctx.fillText('hasta el día del sorteo.',864,777);
+ ctx.fillStyle='#087d80';ctx.font='800 18px Arial';ctx.fillText('PAGO VERIFICADO',864,848);
+ ctx.fillStyle='#16832c';ctx.font='800 24px Arial';ctx.fillText('CONFIRMADO',864,888);
+
+ // Fotografía integrada sin recuadro: bordes suavizados sobre el boleto.
+ const photoX=748,photoY=1105,photoW=230,photoH=225;
  ctx.save();
- ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,photoR);ctx.clip();
  const srcRatio=karlaPhoto.width/karlaPhoto.height,boxRatio=photoW/photoH;
  let sx=0,sy=0,sw=karlaPhoto.width,sh=karlaPhoto.height;
  if(srcRatio>boxRatio){sw=karlaPhoto.height*boxRatio;sx=(karlaPhoto.width-sw)/2}else{sh=karlaPhoto.width/boxRatio;sy=Math.max(0,(karlaPhoto.height-sh)*0.22)}
  ctx.drawImage(karlaPhoto,sx,sy,sw,sh,photoX,photoY,photoW,photoH);
- const fade=ctx.createLinearGradient(photoX,photoY,photoX,photoY+photoH);
- fade.addColorStop(0,'rgba(255,255,255,0)');fade.addColorStop(.82,'rgba(255,255,255,0)');fade.addColorStop(1,'rgba(255,255,255,.32)');
- ctx.fillStyle=fade;ctx.fillRect(photoX,photoY,photoW,photoH);
+ // Fundidos suaves para que la foto forme parte del diseño, sin marco visible.
+ const fades=[
+  [photoX,photoY,photoX+32,photoY,'rgba(255,255,255,.94)','rgba(255,255,255,0)',photoX,photoY,34,photoH],
+  [photoX+photoW,photoY,photoX+photoW-32,photoY,'rgba(255,255,255,.94)','rgba(255,255,255,0)',photoX+photoW-34,photoY,34,photoH],
+  [photoX,photoY,photoX,photoY+30,'rgba(255,255,255,.9)','rgba(255,255,255,0)',photoX,photoY,photoW,32],
+  [photoX,photoY+photoH,photoX,photoY+photoH-38,'rgba(255,255,255,.96)','rgba(255,255,255,0)',photoX,photoY+photoH-40,photoW,40]
+ ];
+ fades.forEach(([x0,y0,x1,y1,c0,c1,x,y,w,h])=>{const g=ctx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,c0);g.addColorStop(1,c1);ctx.fillStyle=g;ctx.fillRect(x,y,w,h)});
  ctx.restore();
- ctx.save();ctx.strokeStyle='rgba(10,128,133,.7)';ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,photoR);ctx.stroke();ctx.restore();
- canvas.dataset.folio=folio;canvas.dataset.securityCode=code;return canvas;
+ return canvas;
 }
-function filename(p,folio){const n=(p.numbers||[]).map(fmt).join('-')||'boleto';return `boleto-${n}-${folio}.png`.replace(/[^a-z0-9.-]/gi,'-')}
-async function downloadTicket(p){const c=await createTicket(p);const a=document.createElement('a');a.href=c.toDataURL('image/png',.95);a.download=filename(p,c.dataset.folio);a.click();return c}
+function filename(p){const n=(p.numbers||[]).map(fmt).join('-')||'boleto';return `boleto-${n}-confirmado.png`.replace(/[^a-z0-9.-]/gi,'-')}
+async function downloadTicket(p){const c=await createTicket(p);const a=document.createElement('a');a.href=c.toDataURL('image/png',.95);a.download=filename(p);a.click();return c}
 async function shareTicket(p){
- const c=await createTicket(p);const blob=await new Promise(r=>c.toBlob(r,'image/png',.95));const file=new File([blob],filename(p,c.dataset.folio),{type:'image/png'});const nums=(p.numbers||[]).map(fmt).join(', ');
- const msg=`Hola ${clean(p.name)||'participante'} 💗\n\nTu pago fue verificado correctamente. Tus números ${nums} ya están confirmados como PAGADOS.\n\nFolio: ${c.dataset.folio}\nCódigo de seguridad: ${c.dataset.securityCode}\n\nTe compartimos tu boleto digital de participación. Gracias por apoyar esta causa.`;
+ const c=await createTicket(p);const blob=await new Promise(r=>c.toBlob(r,'image/png',.95));const file=new File([blob],filename(p),{type:'image/png'});const nums=(p.numbers||[]).map(fmt).join(', ');
+ const msg=`Hola ${clean(p.name)||'participante'} 💗\n\nTu pago fue verificado correctamente. Tus números ${nums} ya están confirmados como PAGADOS.\n\nTe compartimos tu boleto digital de participación. Gracias por apoyar esta causa.`;
  try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({title:'Boleto digital — Rifa con Causa',text:msg,files:[file]});return}}catch(e){if(e?.name==='AbortError')return}
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);const phone=String(p.phone||'').replace(/\D/g,'');const whatsappPhone=phone.length===10?'52'+phone:phone;window.open(`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(msg)}`,'_blank','noopener');alert('Se descargó el boleto y se abrió WhatsApp. Adjunta la imagen descargada usando el clip.');
 }

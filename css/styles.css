@@ -247,3 +247,10 @@ footer{display:flex;justify-content:center;text-align:center;padding:24px 6vw}fo
 .whatsapp-secondary-action{opacity:.82;box-shadow:none}
 @keyframes whatsappActionPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
 @media (prefers-reduced-motion:reduce){.whatsapp-main-action--active{animation:none}}
+
+/* v1.0 FINAL — acceso permanente a consulta en móvil */
+.mobile-consulta{display:none}
+@media(max-width:760px){
+  body{padding-bottom:74px}
+  .mobile-consulta{display:flex;position:fixed;right:16px;bottom:16px;z-index:70;align-items:center;justify-content:center;min-height:48px;padding:0 18px;border-radius:999px;background:#087f85;color:#fff;font-weight:900;box-shadow:0 12px 28px rgba(8,127,133,.32);text-decoration:none}
+}

@@ -1,0 +1,20 @@
+RIFA CON CAUSA — v1.0 ESTABLE FINAL
+
+Cambios realizados sobre v1.0.5:
+
+1. BOLETO DIGITAL
+- Se eliminaron Folio y Código de seguridad del diseño.
+- Se eliminaron Folio y Código de seguridad del mensaje de WhatsApp.
+- La fotografía de Karla se integra sin recuadro, con bordes suaves.
+- El nombre del archivo del boleto ya no contiene folio.
+
+2. CONSULTA EN MÓVIL
+- Se agregó un botón fijo “🔍 Consulta” visible en teléfonos.
+- El botón abre consulta.html.
+
+3. COMPROBANTE EN PANEL ADMINISTRATIVO
+- Se redujo más el tamaño de imágenes antes de guardarlas en Firestore.
+- El panel reconoce receiptData y campos alternativos de versiones anteriores.
+- Se agregaron acciones “Ver en grande” y “Descargar comprobante”.
+
+No se modificaron la portada, galería, tablero, frases, precio, WhatsApp ni la configuración de Firebase.

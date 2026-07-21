@@ -176,7 +176,7 @@
           img.onerror=()=>reject(new Error("No fue posible procesar la imagen del comprobante."));
           img.src=objectUrl;
         });
-        const maxSide=1280;
+        const maxSide=1100;
         const scale=Math.min(1,maxSide/Math.max(image.naturalWidth||image.width,image.naturalHeight||image.height));
         const canvas=document.createElement("canvas");
         canvas.width=Math.max(1,Math.round((image.naturalWidth||image.width)*scale));
@@ -186,13 +186,13 @@
         ctx.fillRect(0,0,canvas.width,canvas.height);
         ctx.drawImage(image,0,0,canvas.width,canvas.height);
 
-        let quality=.82;
+        let quality=.78;
         let data=canvas.toDataURL("image/jpeg",quality);
-        while(data.length>620000&&quality>.42){
+        while(data.length>420000&&quality>.36){
           quality-=.08;
           data=canvas.toDataURL("image/jpeg",quality);
         }
-        if(data.length>700000)throw new Error("La imagen del comprobante es demasiado grande. Toma una captura más ligera e inténtalo de nuevo.");
+        if(data.length>500000)throw new Error("La imagen del comprobante es demasiado grande. Toma una captura más ligera e inténtalo de nuevo.");
         return data;
       }finally{
         URL.revokeObjectURL(objectUrl);
