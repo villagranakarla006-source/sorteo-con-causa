@@ -85,7 +85,7 @@
 <div class="toolbar">
 <input id="search" placeholder="Buscar número, nombre o teléfono">
 <select id="filter"><option value="all">Todos</option><option value="available">Disponible</option><option value="reserved">Apartado</option><option value="paid">Pagado</option></select>
-<button id="exportCsv">CSV</button><button id="exportExcel">Excel</button><button id="resetData" class="danger">Limpiar pruebas</button>
+<button id="exportCsv">CSV</button><button id="exportExcel">Excel</button><button id="resetData" class="danger">Reiniciar</button>
 </div>
 <div class="table-wrap"><table><thead><tr><th>Número</th><th>Estado</th><th>Participante</th><th>Teléfono</th><th>Actualización</th><th>Acción</th></tr></thead><tbody id="table"></tbody></table></div>
 </section>
@@ -144,7 +144,7 @@
 <div class="participant-meta"><p><strong>Números:</strong> <span id="participantNumbers"></span></p><p><strong>Total:</strong> <span id="participantTotal"></span></p><p><strong>Reserva:</strong> <span id="participantCreated"></span></p><p><strong>Vencimiento:</strong> <span id="participantExpiresAt"></span></p><p><strong>Estado:</strong> <span id="participantStatus"></span></p><p><strong>Pago confirmado:</strong> <span id="participantPaidAt"></span></p><p><strong>Método:</strong> <span id="participantPaymentMethod"></span></p><p><strong>Recordatorio:</strong> <span id="participantReminderStatus"></span></p></div></div>
 <div class="receipt-box"><h3>Comprobante</h3><div id="receiptPreview" class="receipt-preview">El comprobante se revisa en WhatsApp.</div></div>
 </div>
-<div class="participant-actions"><button type="button" id="sendReminder" class="secondary-btn">Enviar recordatorio por WhatsApp</button><button type="button" id="markPaid">Confirmar pago</button><button type="button" id="downloadTicket" class="secondary-btn">Descargar boleto</button><button type="button" id="shareTicket" class="secondary-btn">Enviar boleto por WhatsApp</button><button type="button" id="markReserved" class="secondary-btn">Restablecer como pendiente</button><button type="button" id="releaseParticipant" class="danger">Eliminar participante y liberar números</button><button type="submit">Guardar datos</button></div>
+<div class="participant-actions"><button type="button" id="sendReminder" class="secondary-btn">Enviar recordatorio por WhatsApp</button><button type="button" id="markPaid">Confirmar pago</button><button type="button" id="downloadTicket" class="secondary-btn">Descargar boleto</button><button type="button" id="shareTicket" class="secondary-btn">Enviar boleto por WhatsApp</button><button type="button" id="markReserved" class="secondary-btn">Restablecer como pendiente</button><button type="button" id="releaseParticipant" class="danger">Liberar números</button><button type="submit">Guardar datos</button></div>
 </form></dialog>
 
 <script src="../shared/config.js"></script>
@@ -152,7 +152,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-<script src="../services/firebase-config.js?v=1.0.2"></script>
-<script src="../services/firebase-service.js?v=1.0.2"></script>
+<script src="../services/firebase-config.js"></script>
+<script src="../services/firebase-service.js"></script>
 <script src="js/ticket-generator.js?v=1.0"></script>
-<script src="js/admin-firebase.js?v=1.0.2-limpieza-cache"></script></body></html>
+<script src="js/admin-firebase.js?v=1.0.4-dev7"></script></body></html>

@@ -1,0 +1,10 @@
+RIFA CON CAUSA — RESTAURACIÓN ESTABLE
+
+Cambios realizados:
+- Restaurado el tablero público por bloques de 100 números.
+- Restaurada la conexión Firebase en tiempo real.
+- Corregido un error de sintaxis en el mensaje de compartir por WhatsApp que impedía ejecutar el tablero.
+- Restaurada la fotografía de Karla y las frases de agradecimiento.
+- Restaurado el botón para compartir la causa por WhatsApp.
+- Conservado el costo de $200 MXN debajo de la primera imagen de la Journey.
+- No se modificaron datos ni registros de Firebase.

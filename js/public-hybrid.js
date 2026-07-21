@@ -336,14 +336,11 @@
   document.getElementById("shareRaffle")?.addEventListener("click",()=>{
     const url="https://villagranakarla006-source.github.io/sorteo-con-causa/";
     const text=[
-      "Hola. 💗
-
-Cada número tiene un costo de $200 MXN y podrás participar para ganar una Dodge Journey 2013.
-",
+      "Hola. 💗",
       "",
       "Quiero invitarte a apoyar una causa muy especial.",
       "",
-      "Además de ayudar, puedes participar para ganar una Dodge Journey 2013.",
+      "Cada número tiene un costo de $200 MXN y podrás participar para ganar una Dodge Journey 2013.",
       "",
       "Elige tu número aquí:",
       "",

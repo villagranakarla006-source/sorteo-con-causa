@@ -5,7 +5,6 @@
   let app,auth,db;
   const now=()=>firebase.firestore.FieldValue.serverTimestamp();
   const numId=n=>String(Number(n)).padStart(3,"0");
-  const TOTAL_NUMBERS=500;
 
   function init(){
     if(!ready) throw new Error("Firebase todavía no está configurado.");
@@ -177,53 +176,6 @@
     audit(batch,"Participante","Datos actualizados",id);await batch.commit();
   }
   async function updateNumber(number,changes){init();const batch=db.batch();batch.update(db.collection("numbers").doc(numId(number)),{...changes,updatedAt:now()});audit(batch,"Número",`${numId(number)} actualizado`);await batch.commit();}
-
-  async function deleteParticipant(id){
-    init();
-    if(!auth.currentUser) throw new Error("Inicia sesión como administradora.");
-    const pRef=db.collection("participants").doc(id);
-    const pDoc=await pRef.get();
-    if(!pDoc.exists) return;
-    const p=pDoc.data();
-    const batch=db.batch();
-    (p.numbers||[]).forEach(n=>batch.set(db.collection("numbers").doc(numId(n)),{
-      number:Number(n),status:"available",participantId:"",participantName:"",phone:"",notes:"",updatedAt:now()
-    }));
-    batch.delete(pRef);
-    audit(batch,"Eliminación",`Participante eliminado y ${(p.numbers||[]).length} número(s) liberado(s)`,id);
-    await batch.commit();
-  }
-
-  async function deleteCollection(name){
-    while(true){
-      const snap=await db.collection(name).limit(400).get();
-      if(snap.empty) break;
-      const batch=db.batch();
-      snap.docs.forEach(doc=>batch.delete(doc.ref));
-      await batch.commit();
-      if(snap.size<400) break;
-    }
-  }
-
-  async function resetRaffleData(){
-    init();
-    if(!auth.currentUser) throw new Error("Inicia sesión como administradora.");
-    await deleteCollection("participants");
-    await deleteCollection("draws");
-    await deleteCollection("audit");
-    for(let start=1;start<=TOTAL_NUMBERS;start+=400){
-      const batch=db.batch();
-      for(let n=start;n<Math.min(start+400,TOTAL_NUMBERS+1);n++){
-        batch.set(db.collection("numbers").doc(numId(n)),{
-          number:n,status:"available",participantId:"",participantName:"",phone:"",notes:"",updatedAt:now()
-        });
-      }
-      await batch.commit();
-    }
-    await db.collection("settings").doc("raffle").set({initialized:true,totalNumbers:TOTAL_NUMBERS,ticketPrice:200,updatedAt:now()},{merge:true});
-    return {numbers:TOTAL_NUMBERS};
-  }
-
   async function registerDraw(draw){init();const ref=db.collection("draws").doc(),batch=db.batch();batch.set(ref,{...draw,createdAt:now()});audit(batch,"Sorteo",`Ganador ${numId(draw.winnerNumber)}`,draw.participantId||"");await batch.commit();return{id:ref.id,...draw,createdAt:new Date().toISOString()};}
-  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,markReminderSent,processReservationAutomation,updateParticipant,updateNumber,deleteParticipant,resetRaffleData,registerDraw};
+  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,markReminderSent,processReservationAutomation,updateParticipant,updateNumber,registerDraw};
 })();
