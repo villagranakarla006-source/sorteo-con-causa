@@ -1,0 +1,6 @@
+Rifa con Causa v1.0.1 — Corrección de limpieza del panel
+
+- El botón de liberar ahora elimina el registro del participante y libera sus números.
+- Se activó “Limpiar pruebas” con doble confirmación.
+- La limpieza elimina participantes, sorteos e historial y restablece los 500 números como disponibles.
+- Se conserva la configuración de Firebase y el resto del sitio sin cambios.
