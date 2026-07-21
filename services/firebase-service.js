@@ -12,6 +12,7 @@
       app=firebase.apps.length?firebase.app():firebase.initializeApp(cfg);
       auth=firebase.auth();
       db=firebase.firestore();
+      storage=firebase.storage();
       db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
     }
   }
@@ -40,6 +41,14 @@
     if(!numbers.length) throw new Error("Selecciona al menos un número.");
     const participantRef=db.collection("participants").doc();
     const publicCode=Math.random().toString(36).slice(2,8).toUpperCase();
+    let receiptUrl=String(payload.receiptUrl||"");
+    const receiptFile=payload.receiptFile||null;
+    if(receiptFile){
+      const safeName=String(receiptFile.name||"comprobante").replace(/[^a-zA-Z0-9._-]+/g,"-");
+      const storageRef=storage.ref().child(`receipts/${participantRef.id}/${Date.now()}-${safeName}`);
+      const uploaded=await storageRef.put(receiptFile,{contentType:receiptFile.type||"application/octet-stream"});
+      receiptUrl=await uploaded.ref.getDownloadURL();
+    }
     await db.runTransaction(async tx=>{
       const refs=numbers.map(n=>db.collection("numbers").doc(numId(n)));
       const docs=await Promise.all(refs.map(ref=>tx.get(ref)));
@@ -57,7 +66,7 @@
         reservationAt:firebase.firestore.Timestamp.fromDate(reservationDate),
         expiresAt:firebase.firestore.Timestamp.fromDate(expirationDate),
         reminderSent:false,reminderSentAt:null,paymentConfirmedAt:null,ticketGenerated:false,
-        receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),
+        receiptUrl,receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),
         receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),
         notes:"",createdAt:now(),updatedAt:now()
       });

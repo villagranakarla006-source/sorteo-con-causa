@@ -247,7 +247,7 @@
         });
       }
       if(firebaseEnabled){
-        await RifaFirebase.registerParticipant({name,phone,numbers,total,paymentMethod,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
+        await RifaFirebase.registerParticipant({name,phone,numbers,total,paymentMethod,receiptFile:file,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
       }else{
         if(!window.RifaLocalDB)throw new Error("No fue posible iniciar el registro.");
         if(file&&!receiptData&&file.size<=2*1024*1024){
