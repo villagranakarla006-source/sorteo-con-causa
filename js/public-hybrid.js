@@ -13,7 +13,7 @@
   let selected=new Set();
   try{ selected=new Set(JSON.parse(localStorage.getItem(selectionKey)||"[]").map(Number)); }catch(_){ selected=new Set(); }
   let records=Array.from({length:TOTAL},(_,i)=>({number:i+1,status:"available"}));
-  let activeStart=1;
+  let activeStart=null;
   let lastReceiptFile=null;
   let lastWhatsappMessage="";
   let lastWhatsappUrl="";
@@ -57,6 +57,10 @@
   function renderGrid(){
     const query=(numberSearch?.value||"").replace(/\D/g,"");
     grid.innerHTML="";
+    if(!query&&!activeStart){
+      grid.innerHTML='<p class="range-prompt">Selecciona un bloque para mostrar sus números.</p>';
+      return;
+    }
     const start=query?1:activeStart;
     const end=query?TOTAL:Math.min(activeStart+99,TOTAL);
     let visible=0;

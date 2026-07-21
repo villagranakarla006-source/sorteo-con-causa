@@ -25,30 +25,26 @@
 </a>
 <button aria-expanded="false" aria-label="Abrir menú" class="menu-toggle" id="menuToggle" type="button">☰</button><nav id="mainNav">
 <a href="#galeria-premio">Galería</a>
-<a href="#premio">Premio</a>
+<a href="#galeria-premio">Premio</a>
 <a href="#tablero">Números</a>
 <a href="#como-participar">Cómo participar</a><a href="consulta.html">Consultar registro</a>
 <a class="nav-cta" href="#tablero">Elegir número</a>
 </nav>
 </header>
-<main><section class="hero hero--organizer-first" id="inicio">
-<div class="hero-portrait-wrap">
-<div class="hero-portrait-frame">
-<img alt="Fotografía de la organizadora de Rifa con Causa" loading="eager" src="assets/karla-organizadora-original.jpeg"/>
+<main><section class="hero hero--prize-first" id="inicio">
+<div class="hero-prize-wrap">
+<div class="hero-prize-frame">
+<img alt="Dodge Journey 2013, premio principal de Rifa con Causa" loading="eager" src="assets/journey-frontal-real.jpeg"/>
 </div>
 </div>
 <div class="hero-copy">
 <span class="hero-tag">🎟️ 500 oportunidades · $200 MXN</span>
 <p class="eyebrow">Rifa con causa</p>
-<h1>Juntos somos <span>más fuertes</span></h1>
-<p class="hero-text">Esta rifa nace con esperanza, compromiso y el deseo de sumar apoyo. Cada participación forma parte de una comunidad que decide ayudar.</p>
-<div class="cause-message">
-<strong>Gracias por apoyar esta causa.</strong>
-<span>Tu participación es esperanza de vida.</span>
-</div>
+<h1>Dodge Journey <span>2013</span></h1>
+<p class="hero-text">Conoce el premio, elige tus números favoritos y participa apoyando esta causa.</p>
 <div class="hero-actions">
 <a class="button primary" href="#galeria-premio">Conocer el premio</a>
-<a class="button secondary" href="#tablero">Elegir mis números</a>
+<a class="button secondary" href="#tablero">Elegir número</a>
 </div>
 </div>
 </section><section class="vehicle-gallery section reveal" id="galeria-premio">
@@ -126,19 +122,6 @@
 <div><strong>En vivo</strong><span>por Facebook Live</span></div>
 <div><strong>Seguro</strong><span>registro con comprobante</span></div>
 </section>
-<section class="section prize-section" id="premio">
-<div class="section-heading">
-<p class="eyebrow">El premio</p>
-<h2>Una camioneta para nuevas historias</h2>
-<p>La protagonista de esta causa es una Dodge Journey 2013. La fecha del sorteo se anunciará cuando todos los números estén asignados.</p>
-</div>
-<div class="feature-grid">
-<article><span>01</span><h3>Premio real</h3><p>Dodge Journey 2013, presentada como premio principal de la campaña.</p></article>
-<article><span>02</span><h3>Participación clara</h3><p>Selecciona tus números, registra tus datos y adjunta tu comprobante.</p></article>
-<article><span>03</span><h3>Sorteo transparente</h3><p>La transmisión se realizará en vivo y el ganador se publicará oficialmente.</p></article>
-</div>
-</section>
-
 <section class="section steps-section" id="como-participar">
 <div class="section-heading"><p class="eyebrow">Proceso sencillo</p><h2>Participa en cuatro pasos</h2></div>
 <div class="steps">
@@ -158,22 +141,23 @@
 </div>
 </div>
 </section>
+<section class="final-cta reveal">
+<div><p class="eyebrow">Hazlo posible</p><h2>Un número puede cambiarlo todo</h2><p>Participa hoy y comparte esta rifa con familiares y amigos.</p></div>
+<a class="button primary" href="#tablero">Elegir números</a>
+</section>
 <section class="section story-section reveal">
 <div class="story-image"><img alt="Karla, organizadora, junto a la frase Juntos somos más fuertes" loading="lazy" src="assets/karla-organizadora-original.jpeg"/></div>
 <div class="story-copy">
 <p class="eyebrow">Detrás de la causa</p>
 <h2>Juntos somos más fuertes</h2>
-<p>Esta rifa nace con esperanza, compromiso y el deseo de sumar apoyo. Cada participación forma parte de una comunidad que decide ayudar.</p>
+<p>Esta rifa nace con esperanza y el deseo de sumar apoyo. Cada participación forma parte de una comunidad que decide ayudar.</p>
 <blockquote>“Gracias por compartir, participar y acompañarme en esta causa.”</blockquote>
+<div class="cause-message story-cause-message"><strong>Gracias por apoyar esta causa.</strong><span>Tu participación es esperanza de vida.</span></div>
 <div class="share-actions">
 <button class="button primary" id="shareRaffle" type="button">Compartir la rifa</button>
 <a class="button secondary" href="https://wa.me/526864257896" rel="noopener" target="_blank">Contactar por WhatsApp</a>
 </div>
 </div>
-</section>
-<section class="final-cta reveal">
-<div><p class="eyebrow">Hazlo posible</p><h2>Un número puede cambiarlo todo</h2><p>Participa hoy y comparte esta rifa con familiares y amigos.</p></div>
-<a class="button primary" href="#tablero">Elegir números</a>
 </section>
 </main>
 <footer><p>© 2026 Rifa con Causa</p></footer>
@@ -250,6 +234,6 @@
       splash.classList.add("splash-screen--hide");
       document.documentElement.classList.remove("splash-active");
       window.setTimeout(function(){splash.remove();},650);
-    },2300);
+    },5000);
   });
 })();</script></body></html>
