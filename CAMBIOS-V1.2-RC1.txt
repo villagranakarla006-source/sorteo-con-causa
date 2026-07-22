@@ -1,0 +1,20 @@
+RIFA CON CAUSA — v1.2 RC1
+
+CAMBIOS IMPLEMENTADOS
+- El comprobante ya no es obligatorio al registrar una transferencia.
+- Los números pueden quedar apartados como pago pendiente.
+- Nuevo botón "Completar pago de un registro existente".
+- Búsqueda del registro pendiente mediante teléfono.
+- Carga posterior del comprobante sin volver a registrar los números.
+- Estado administrativo "Comprobante recibido".
+- Campo libre "Colaborador (opcional)" en el registro.
+- Colaborador visible y editable en la ficha administrativa.
+- Colaborador incluido en las exportaciones CSV y Excel.
+- Indicador visible de boleto enviado/no enviado.
+- Fecha de envío y contador de reenvíos del boleto.
+- Filtros de boleto enviado y boleto no enviado.
+- El botón de WhatsApp marca el boleto como enviado después de ejecutarse.
+
+IMPORTANTE
+Para usar "Completar pago" en Firebase, revisa y publica las reglas incluidas
+en firestore.rules.example desde la consola de Firebase.

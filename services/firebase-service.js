@@ -52,11 +52,12 @@
       tx.set(participantRef,{
         name:String(payload.name||"").trim(),phone:String(payload.phone||"").replace(/\D/g,""),numbers,
         total:Number(payload.total||numbers.length*200),
-        status:paymentMethod==="efectivo"?"pending_cash":"pending_transfer",publicCode,
-        paymentMethod,receiptMethod:"whatsapp",
+        status:payload.receiptData?"receipt_received":(paymentMethod==="efectivo"?"pending_cash":"pending_transfer"),publicCode,
+        paymentMethod,receiptMethod:"panel",collaborator:String(payload.collaborator||"").trim(),
         reservationAt:firebase.firestore.Timestamp.fromDate(reservationDate),
         expiresAt:firebase.firestore.Timestamp.fromDate(expirationDate),
         reminderSent:false,reminderSentAt:null,paymentConfirmedAt:null,ticketGenerated:false,
+        ticketSent:false,ticketSentAt:null,ticketResendCount:0,
         receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),
         receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),
         notes:"",createdAt:now(),updatedAt:now()
@@ -125,6 +126,35 @@
     const b=db.batch();audit(b,"Estado",`Participante cambiado a ${status}`,id);await b.commit();
   }
 
+
+  async function completePaymentByPhone(payload){
+    init();
+    const phone=String(payload.phone||"").replace(/\D/g,"");
+    if(phone.length!==10) throw new Error("Escribe un teléfono de 10 dígitos.");
+    const numbersSnap=await db.collection("numbers").get();
+    const rows=numbersSnap.docs.map(d=>({id:d.id,...d.data()})).filter(r=>String(r.phone||"").replace(/\D/g,"")===phone&&r.status==="reserved");
+    const participantIds=[...new Set(rows.map(r=>r.participantId).filter(Boolean))];
+    if(!participantIds.length) throw new Error("No encontramos un registro pendiente con ese teléfono.");
+    const id=participantIds[0],ref=db.collection("participants").doc(id),doc=await ref.get();
+    if(!doc.exists) throw new Error("No encontramos la ficha del participante.");
+    const p=doc.data();
+    if(["paid","released","expired"].includes(p.status)) throw new Error("Este registro ya no admite comprobantes.");
+    const batch=db.batch();
+    batch.update(ref,{paymentMethod:"transferencia",status:"receipt_received",receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),receiptReceivedAt:now(),updatedAt:now()});
+    audit(batch,"Comprobante recibido","El participante completó el pago desde el sitio",id);
+    await batch.commit();
+    return {participantId:id,name:p.name||"Participante",numbers:p.numbers||rows.map(r=>r.number),total:p.total||rows.length*200};
+  }
+  async function markTicketSent(id,isResend=false){
+    init();
+    const ref=db.collection("participants").doc(id),doc=await ref.get();
+    if(!doc.exists)throw new Error("Participante no encontrado.");
+    const p=doc.data(),batch=db.batch();
+    batch.update(ref,{ticketGenerated:true,ticketSent:true,ticketSentAt:now(),ticketResendCount:Number(p.ticketResendCount||0)+(isResend?1:0),updatedAt:now()});
+    audit(batch,isResend?"Boleto reenviado":"Boleto enviado",isResend?"Boleto digital reenviado por WhatsApp":"Boleto digital enviado por WhatsApp",id);
+    await batch.commit();
+  }
+
   async function markReminderSent(id){
     init();
     const ref=db.collection("participants").doc(id);
@@ -145,7 +175,7 @@
     for(const doc of snap.docs){
       const p=doc.data();
       const status=p.status==="reserved"?(p.paymentMethod==="efectivo"?"pending_cash":"pending_transfer"):p.status;
-      if(status!=="pending_transfer"&&status!=="pending_cash") continue;
+      if(status!=="pending_transfer"&&status!=="pending_cash"&&status!=="receipt_received") continue;
       const expires=p.expiresAt?.toDate?p.expiresAt.toDate():(p.expiresAt?new Date(p.expiresAt):null);
       if(!expires||isNaN(expires)) continue;
       if(expires<=current){
@@ -153,7 +183,7 @@
           const ref=db.collection("participants").doc(doc.id),fresh=await tx.get(ref);
           if(!fresh.exists) return;
           const data=fresh.data(),st=data.status==="reserved"?(data.paymentMethod==="efectivo"?"pending_cash":"pending_transfer"):data.status;
-          if(st!=="pending_transfer"&&st!=="pending_cash") return;
+          if(st!=="pending_transfer"&&st!=="pending_cash"&&st!=="receipt_received") return;
           tx.update(ref,{status:"expired",expiredAt:now(),releasedAt:now(),updatedAt:now()});
           (data.numbers||[]).forEach(n=>tx.update(db.collection("numbers").doc(numId(n)),{status:"available",participantId:"",participantName:"",phone:"",updatedAt:now()}));
         });
@@ -191,5 +221,5 @@
   }
   async function updateNumber(number,changes){init();const batch=db.batch();batch.update(db.collection("numbers").doc(numId(number)),{...changes,updatedAt:now()});audit(batch,"Número",`${numId(number)} actualizado`);await batch.commit();}
   async function registerDraw(draw){init();const ref=db.collection("draws").doc(),batch=db.batch();batch.set(ref,{...draw,createdAt:now()});audit(batch,"Sorteo",`Ganador ${numId(draw.winnerNumber)}`,draw.participantId||"");await batch.commit();return{id:ref.id,...draw,createdAt:new Date().toISOString()};}
-  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,markReminderSent,processReservationAutomation,updateParticipant,deleteParticipant,updateNumber,registerDraw};
+  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,completePaymentByPhone,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,markTicketSent,markReminderSent,processReservationAutomation,updateParticipant,deleteParticipant,updateNumber,registerDraw};
 })();

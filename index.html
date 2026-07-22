@@ -164,15 +164,16 @@
 </div>
 <label>Nombre completo<input autocomplete="name" id="participantName" required=""/><small class="input-help">Escribe el nombre que aparecerá en tu registro.</small></label>
 <label>Teléfono de 10 dígitos<input autocomplete="tel" id="participantPhone" inputmode="numeric" maxlength="10" required=""/><small class="input-help">Lo utilizaremos para confirmar tus números.</small></label>
+<label>Colaborador (opcional)<input id="participantCollaborator" maxlength="80" placeholder="Nombre de quien te invitó"/><small class="input-help">Puedes dejar este espacio vacío y continuar normalmente.</small></label>
 <fieldset class="payment-method-fieldset">
 <legend>Método de pago</legend>
-<label class="payment-method-option"><input checked="" name="paymentMethod" type="radio" value="transferencia"/> <span><strong>Transferencia</strong><small>Realiza el depósito y adjunta tu comprobante.</small></span></label>
+<label class="payment-method-option"><input checked="" name="paymentMethod" type="radio" value="transferencia"/> <span><strong>Transferencia</strong><small>Puedes apartar ahora y subir tu comprobante más tarde.</small></span></label>
 <label class="payment-method-option"><input name="paymentMethod" type="radio" value="efectivo"/> <span><strong>Efectivo</strong><small>La administradora confirmará el pago cuando lo reciba.</small></span></label>
 </fieldset>
 <div id="transferPaymentSection">
 <div class="payment-box"><strong>Comprobante de pago</strong><span>Selecciona aquí la imagen o PDF. Se guardará con tu registro para que la administradora pueda revisarlo.</span></div>
 <label>Adjuntar comprobante
-        <input accept="image/*,.pdf,application/pdf" id="receiptFile" required="" type="file"/>
+        <input accept="image/*,.pdf,application/pdf" id="receiptFile" type="file"/>
 <small class="input-help">Puedes tomar una foto o elegir una imagen/PDF. Máximo recomendado: 10 MB.</small>
 </label>
 <div class="payment-box">
@@ -184,6 +185,7 @@
 <strong>Pago en efectivo</strong><span>No necesitas adjuntar comprobante. Tu registro quedará apartado hasta que la administradora confirme el pago.</span>
 </div>
 <button class="button primary full" id="submitRegistration" type="submit">Registrar</button>
+<button class="button secondary full" id="openCompletePayment" type="button">Completar pago de un registro existente</button>
 <p class="form-status" id="formStatus"></p>
 <div class="receipt-share-actions" hidden="" id="receiptShareActions">
 <div class="payment-box status-waiting">
@@ -195,6 +197,18 @@
 </div>
 </form>
 </dialog>
+<dialog id="completePaymentDialog">
+<form autocomplete="off" id="completePaymentForm">
+<button class="dialog-close" id="closeCompletePayment" type="button">×</button>
+<p class="eyebrow">Completar pago</p><h2>Sube tu comprobante</h2>
+<label>Teléfono de 10 dígitos<input id="completePaymentPhone" inputmode="numeric" maxlength="10" required/><small class="input-help">Debe ser el mismo teléfono usado en el registro.</small></label>
+<button class="button secondary full" id="findPendingRegistration" type="button">Buscar registro</button>
+<div class="payment-box" id="pendingRegistrationSummary" hidden></div>
+<label id="completeReceiptLabel" hidden>Adjuntar comprobante<input accept="image/*,.pdf,application/pdf" id="completeReceiptFile" type="file"/><small class="input-help">Imagen o PDF de hasta 10 MB.</small></label>
+<button class="button primary full" id="submitCompletePayment" type="submit" hidden>Guardar comprobante</button>
+<p class="form-status" id="completePaymentStatus"></p>
+</form>
+</dialog>
 <script src="shared/config.js"></script>
 <script src="shared/ui-utils.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -204,7 +218,7 @@
 <script src="services/firebase-service.js"></script>
 <script src="js/local-db.js"></script>
 <script src="js/gallery.js"></script>
-<script src="js/public-hybrid.js?v=1.1.2-estable"></script>
+<script src="js/public-hybrid.js?v=1.2.0-rc1"></script>
 <script>(function(){
   const splash=document.getElementById("splashScreen");
   if(!splash)return;

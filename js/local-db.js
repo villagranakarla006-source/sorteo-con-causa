@@ -120,8 +120,9 @@
         phone:participant.phone,
         numbers:[...numbers],
         total:participant.total,
-        status:paymentMethod==="efectivo"?"pending_cash":"pending_transfer",
+        status:participant.receiptData?"receipt_received":(paymentMethod==="efectivo"?"pending_cash":"pending_transfer"),
         paymentMethod,
+        collaborator:participant.collaborator||"",
         receiptData:participant.receiptData||"",
         receiptName:participant.receiptName||"",
         receiptType:participant.receiptType||"",
@@ -133,6 +134,9 @@
         reminderSentAt:"",
         paymentConfirmedAt:"",
         ticketGenerated:false,
+        ticketSent:false,
+        ticketSentAt:"",
+        ticketResendCount:0,
         updatedAt:now,
         paidAt:""
       };

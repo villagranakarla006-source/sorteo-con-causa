@@ -110,7 +110,7 @@
     const isTransfer=method==="transferencia";
     if(transferPaymentSection)transferPaymentSection.hidden=!isTransfer;
     if(cashPaymentSection)cashPaymentSection.hidden=isTransfer;
-    if(receiptFileInput)receiptFileInput.required=isTransfer;
+    if(receiptFileInput)receiptFileInput.required=false;
     if(!isTransfer&&receiptFileInput)receiptFileInput.value="";
   }
 
@@ -284,13 +284,13 @@
     const phone=$("#participantPhone").value.replace(/\D/g,"");
     const numbers=[...selected].sort((a,b)=>a-b);
     const paymentMethod=form.querySelector('input[name="paymentMethod"]:checked')?.value||"transferencia";
+    const collaborator=(document.querySelector("#participantCollaborator")?.value||"").trim();
     const file=receiptFileInput?.files?.[0]||null;
 
     status.className="form-status";
     if(!numbers.length){status.textContent="Selecciona al menos un número.";return;}
     if(name.length<3){status.textContent="Escribe tu nombre completo.";return;}
     if(phone.length!==10){status.textContent="Escribe un teléfono de 10 dígitos.";return;}
-    if(paymentMethod==="transferencia"&&!file){status.textContent="Adjunta la imagen o PDF de tu comprobante.";receiptFileInput?.focus();return;}
     if(file&&file.size>10*1024*1024){status.textContent="El comprobante debe pesar menos de 10 MB.";return;}
 
     submit.disabled=true;
@@ -303,7 +303,7 @@
       // El comprobante se guarda únicamente para revisión administrativa.
       let receiptData=await prepareReceiptForPanel(file);
       if(firebaseEnabled){
-        await RifaFirebase.registerParticipant({name,phone,numbers,total,paymentMethod,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
+        await RifaFirebase.registerParticipant({name,phone,numbers,total,paymentMethod,collaborator,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
       }else{
         if(!window.RifaLocalDB)throw new Error("No fue posible iniciar el registro.");
         if(file&&!receiptData&&file.size<=2*1024*1024){
@@ -314,7 +314,7 @@
             reader.readAsDataURL(file);
           });
         }
-        RifaLocalDB.reserve(numbers,{name,phone,total,paymentMethod,receiptData,receiptName:file?.name||"",receiptType:file?.type||""});
+        RifaLocalDB.reserve(numbers,{name,phone,total,paymentMethod,collaborator,receiptData,receiptName:file?.name||"",receiptType:file?.type||""});
         loadLocal();
       }
 
@@ -337,7 +337,8 @@
       status.className="form-status success";
       const methodLabel=paymentMethod==="efectivo"?"Efectivo":"Transferencia";
       const nextStep="Ahora presiona el botón resaltado <strong>Enviar notificación de registro</strong>.";
-      status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números apartados:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Método de pago:</strong> ${methodLabel}<br><strong>Estatus:</strong> APARTADOS en amarillo, en espera de confirmación del pago.<br><br>${nextStep}`;
+      const receiptState=file?"Comprobante recibido para revisión.":(paymentMethod==="transferencia"?"Pago pendiente. Podrás volver después con el botón Completar pago.":"Pago pendiente en efectivo.");
+      status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números apartados:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Método de pago:</strong> ${methodLabel}<br><strong>Estatus:</strong> ${receiptState}<br>${collaborator?`<strong>Colaborador:</strong> ${collaborator}<br>`:""}<br>${nextStep}`;
       ui.toast?.("Registro realizado correctamente.","success");
 
       setTimeout(()=>receiptShareActions.scrollIntoView({behavior:"smooth",block:"nearest"}),100);
@@ -353,6 +354,44 @@
       ui.setLoading?.(submit,false);
       if(!submit.hidden)submit.disabled=false;
     }
+  });
+
+  const completeDialog=$("#completePaymentDialog");
+  const completeForm=$("#completePaymentForm");
+  let pendingLookup=null;
+  $("#openCompletePayment")?.addEventListener("click",()=>completeDialog?.showModal());
+  $("#closeCompletePayment")?.addEventListener("click",()=>completeDialog?.close());
+  $("#findPendingRegistration")?.addEventListener("click",async()=>{
+    const phone=( $("#completePaymentPhone")?.value||"" ).replace(/\D/g,"");
+    const status=$("#completePaymentStatus");
+    status.textContent="Buscando registro…";
+    try{
+      if(!firebaseEnabled)throw new Error("Esta función requiere conexión con Firebase.");
+      const rows=await RifaFirebase.findParticipationByPhone(phone);
+      const pending=rows.filter(r=>r.status==="reserved"&&r.participantId);
+      if(!pending.length)throw new Error("No encontramos números pendientes con ese teléfono.");
+      pendingLookup={phone,participantId:pending[0].participantId,numbers:pending.map(r=>Number(r.number)).sort((a,b)=>a-b),name:pending[0].participantName||"Participante"};
+      $("#pendingRegistrationSummary").hidden=false;
+      $("#pendingRegistrationSummary").innerHTML=`<strong>${pendingLookup.name}</strong><span>Números: ${pendingLookup.numbers.map(fmt).join(", ")}</span><span>Total: $${(pendingLookup.numbers.length*PRICE).toLocaleString("es-MX")} MXN</span>`;
+      $("#completeReceiptLabel").hidden=false;
+      $("#submitCompletePayment").hidden=false;
+      status.textContent="Registro encontrado. Adjunta el comprobante.";
+    }catch(error){pendingLookup=null;$("#pendingRegistrationSummary").hidden=true;$("#completeReceiptLabel").hidden=true;$("#submitCompletePayment").hidden=true;status.textContent=error.message||"No fue posible buscar el registro.";}
+  });
+  completeForm?.addEventListener("submit",async event=>{
+    event.preventDefault();
+    const status=$("#completePaymentStatus"),file=$("#completeReceiptFile")?.files?.[0];
+    if(!pendingLookup){status.textContent="Busca primero tu registro.";return;}
+    if(!file){status.textContent="Adjunta una imagen o PDF del comprobante.";return;}
+    if(file.size>10*1024*1024){status.textContent="El comprobante debe pesar menos de 10 MB.";return;}
+    const button=$("#submitCompletePayment");button.disabled=true;status.textContent="Guardando comprobante…";
+    try{
+      const receiptData=await prepareReceiptForPanel(file);
+      const result=await RifaFirebase.completePaymentByPhone({phone:pendingLookup.phone,receiptData,receiptName:file.name||"",receiptType:file.type||"",receiptSize:file.size||0});
+      const message=`Hola. 💗\n\nEnvío mi comprobante de pago.\nNombre: ${result.name}\nTeléfono: ${pendingLookup.phone}\nNúmeros: ${(result.numbers||pendingLookup.numbers).map(fmt).join(", ")}\nTotal: $${Number(result.total||pendingLookup.numbers.length*PRICE).toLocaleString("es-MX")} MXN.\n\nGracias por apoyar esta causa, tu participación es esperanza de vida.`;
+      status.innerHTML="<strong>Comprobante guardado correctamente.</strong><br>Se abrirá WhatsApp para enviar la notificación.";
+      setTimeout(()=>window.location.assign(`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(message)}`),500);
+    }catch(error){status.textContent=error.message||"No fue posible guardar el comprobante.";button.disabled=false;}
   });
 
   renderTabs();
