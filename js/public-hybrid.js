@@ -103,6 +103,8 @@
     const reserve=$("#reserveNumbersButton");
     if(payNow)payNow.disabled=!numbers.length;
     if(reserve)reserve.disabled=!numbers.length;
+    const actionHelp=$("#boardActionHelp");
+    if(actionHelp)actionHelp.textContent=numbers.length?"Elige cómo deseas continuar con los números seleccionados.":"Primero selecciona uno o más números para pagar o apartar.";
     const clear=$("#clearSelectionButton");
     if(clear)clear.disabled=!numbers.length;
     const hidden=$("#selectedNumbersInput");
@@ -395,26 +397,63 @@ Gracias por apoyar esta causa, tu participación es esperanza de vida.`
   const completeDialog=$("#completePaymentDialog");
   const completeForm=$("#completePaymentForm");
   let pendingLookup=null;
+
+  function selectedPendingIds(){
+    return [...document.querySelectorAll('input[name="pendingParticipant"]:checked')].map(input=>input.value);
+  }
+  function updatePendingSelectionSummary(){
+    if(!pendingLookup)return;
+    const ids=selectedPendingIds();
+    const selectedRecords=pendingLookup.records.filter(record=>ids.includes(record.participantId));
+    const totalNumbers=selectedRecords.reduce((sum,record)=>sum+record.numbers.length,0);
+    const total=totalNumbers*PRICE;
+    const totalBox=$("#pendingSelectedTotal");
+    if(totalBox)totalBox.textContent=`Seleccionados: ${selectedRecords.length} apartado(s) · ${totalNumbers} número(s) · $${total.toLocaleString("es-MX")} MXN`;
+    const submit=$("#submitCompletePayment");
+    if(submit)submit.disabled=!ids.length;
+  }
+
   $("#openCompletePayment")?.addEventListener("click",()=>completeDialog?.showModal());
   $("#closeCompletePayment")?.addEventListener("click",()=>completeDialog?.close());
   $("#findPendingRegistration")?.addEventListener("click",async()=>{
     const phone=( $("#completePaymentPhone")?.value||"" ).replace(/\D/g,"");
     const status=$("#completePaymentStatus");
-    status.textContent="Buscando registro…";
+    status.textContent="Buscando apartados…";
     try{
       if(!firebaseEnabled)throw new Error("Esta función requiere conexión con Firebase.");
       const rows=await RifaFirebase.findParticipationByPhone(phone);
       const pending=rows.filter(r=>r.status==="reserved"&&r.participantId);
       if(!pending.length)throw new Error("No encontramos números pendientes con ese teléfono.");
-      pendingLookup={phone,participantId:pending[0].participantId,numbers:pending.map(r=>Number(r.number)).sort((a,b)=>a-b),name:pending[0].participantName||"Participante"};
-      $("#pendingRegistrationSummary").hidden=false;
-      $("#pendingRegistrationSummary").innerHTML=`<strong>${pendingLookup.name}</strong><span>Números: ${pendingLookup.numbers.map(fmt).join(", ")}</span><span>Total: $${(pendingLookup.numbers.length*PRICE).toLocaleString("es-MX")} MXN</span>`;
+
+      const grouped=new Map();
+      pending.forEach(row=>{
+        if(!grouped.has(row.participantId))grouped.set(row.participantId,{participantId:row.participantId,name:row.participantName||"Participante",numbers:[]});
+        grouped.get(row.participantId).numbers.push(Number(row.number));
+      });
+      const records=[...grouped.values()].map(record=>({...record,numbers:record.numbers.sort((a,b)=>a-b)}));
+      pendingLookup={phone,records,name:records[0]?.name||"Participante"};
+
+      const summary=$("#pendingRegistrationSummary");
+      summary.hidden=false;
+      summary.innerHTML=`<div class="pending-registration-total"><strong>${pendingLookup.name}</strong><br>Encontramos ${records.length} apartado(s) pendiente(s).</div>${records.map((record,index)=>`<label class="pending-registration-option"><input type="checkbox" name="pendingParticipant" value="${record.participantId}" checked><span><strong>Apartado ${index+1}</strong><span>Números: ${record.numbers.map(fmt).join(", ")}</span><span>Total: $${(record.numbers.length*PRICE).toLocaleString("es-MX")} MXN</span></span></label>`).join("")}<label class="pending-registration-option"><input type="checkbox" id="selectAllPending" checked><span><strong>Seleccionar todos</strong><span>Marca o desmarca todos los apartados pendientes.</span></span></label><div class="pending-registration-total" id="pendingSelectedTotal"></div>`;
+      summary.querySelectorAll('input[name="pendingParticipant"]').forEach(input=>input.addEventListener("change",()=>{
+        const all=[...summary.querySelectorAll('input[name="pendingParticipant"]')];
+        const selectAll=$("#selectAllPending");
+        if(selectAll)selectAll.checked=all.every(item=>item.checked);
+        updatePendingSelectionSummary();
+      }));
+      $("#selectAllPending")?.addEventListener("change",event=>{
+        summary.querySelectorAll('input[name="pendingParticipant"]').forEach(input=>input.checked=event.currentTarget.checked);
+        updatePendingSelectionSummary();
+      });
+
       $("#completePaymentMethodFieldset").hidden=false;
       $("#completeReceiptLabel").hidden=false;
       $("#submitCompletePayment").hidden=false;
       updateCompletePaymentMethodUI();
-      status.textContent="Registro encontrado. Elige cómo realizarás el pago.";
-    }catch(error){pendingLookup=null;$("#pendingRegistrationSummary").hidden=true;$("#completePaymentMethodFieldset").hidden=true;$("#completeReceiptLabel").hidden=true;$("#submitCompletePayment").hidden=true;status.textContent=error.message||"No fue posible buscar el registro.";}
+      updatePendingSelectionSummary();
+      status.textContent="Selecciona uno, varios o todos los apartados que deseas pagar.";
+    }catch(error){pendingLookup=null;$("#pendingRegistrationSummary").hidden=true;$("#completePaymentMethodFieldset").hidden=true;$("#completeReceiptLabel").hidden=true;$("#submitCompletePayment").hidden=true;status.textContent=error.message||"No fue posible buscar los apartados.";}
   });
   function updateCompletePaymentMethodUI(){
     const method=completeForm?.querySelector('input[name="completePaymentMethod"]:checked')?.value||"transferencia";
@@ -427,19 +466,22 @@ Gracias por apoyar esta causa, tu participación es esperanza de vida.`
 
   completeForm?.addEventListener("submit",async event=>{
     event.preventDefault();
-    const status=$("#completePaymentStatus"),file=$("#completeReceiptFile")?.files?.[0];
+    const status=$("#completePaymentStatus"),file=$("#completeReceiptFile")?.files?.[0]||null;
     const paymentMethod=completeForm.querySelector('input[name="completePaymentMethod"]:checked')?.value||"transferencia";
-    if(!pendingLookup){status.textContent="Busca primero tu registro.";return;}
+    const participantIds=selectedPendingIds();
+    if(!pendingLookup){status.textContent="Busca primero tus apartados.";return;}
+    if(!participantIds.length){status.textContent="Selecciona al menos un apartado pendiente.";return;}
     if(paymentMethod==="transferencia"&&!file){status.textContent="Adjunta una imagen o PDF del comprobante.";return;}
-    if(file.size>10*1024*1024){status.textContent="El comprobante debe pesar menos de 10 MB.";return;}
-    const button=$("#submitCompletePayment");button.disabled=true;status.textContent="Guardando comprobante…";
+    if(file&&file.size>10*1024*1024){status.textContent="El comprobante debe pesar menos de 10 MB.";return;}
+    const button=$("#submitCompletePayment");button.disabled=true;status.textContent=paymentMethod==="transferencia"?"Guardando comprobante…":"Registrando notificación de pago en efectivo…";
     try{
-      const receiptData=await prepareReceiptForPanel(file);
-      const result=await RifaFirebase.completePaymentByPhone({phone:pendingLookup.phone,receiptData,receiptName:file.name||"",receiptType:file.type||"",receiptSize:file.size||0});
-      const message=`Hola. 💗\n\nEnvío mi comprobante de pago.\nNombre: ${result.name}\nTeléfono: ${pendingLookup.phone}\nNúmeros: ${(result.numbers||pendingLookup.numbers).map(fmt).join(", ")}\nTotal: $${Number(result.total||pendingLookup.numbers.length*PRICE).toLocaleString("es-MX")} MXN.\n\nGracias por apoyar esta causa, tu participación es esperanza de vida.`;
-      status.innerHTML="<strong>Comprobante guardado correctamente.</strong><br>Se abrirá WhatsApp para enviar la notificación.";
+      const receiptData=file?await prepareReceiptForPanel(file):"";
+      const result=await RifaFirebase.completePaymentByPhone({phone:pendingLookup.phone,participantIds,paymentMethod,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
+      const methodText=paymentMethod==="efectivo"?"pago en efectivo":"comprobante de pago";
+      const message=`Hola. 💗\n\nEnvío notificación de ${methodText}.\nNombre: ${result.name}\nTeléfono: ${pendingLookup.phone}\nNúmeros: ${(result.numbers||[]).map(fmt).join(", ")}\nTotal: $${Number(result.total||0).toLocaleString("es-MX")} MXN.\n\nGracias por apoyar esta causa, tu participación es esperanza de vida.`;
+      status.innerHTML=`<strong>${paymentMethod==="transferencia"?"Comprobante guardado":"Notificación registrada"} correctamente.</strong><br>Se abrirá WhatsApp para avisar a la organizadora.`;
       setTimeout(()=>window.location.assign(`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(message)}`),500);
-    }catch(error){status.textContent=error.message||"No fue posible guardar el comprobante.";button.disabled=false;}
+    }catch(error){status.textContent=error.message||"No fue posible completar el pago.";button.disabled=false;}
   });
 
   renderTabs();

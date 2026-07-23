@@ -115,10 +115,15 @@
 <div class="selection-card">
 <small>Tu selección</small>
 <strong id="selectedNumbers">Ninguno</strong>
+<div class="board-action-heading">
+<strong>¿Qué deseas hacer?</strong>
+<span>Selecciona una opción para continuar.</span>
+</div>
 <div class="selection-actions payment-path-actions">
-<button class="button primary" disabled id="payNowButton" type="button">Pagar ahora</button>
-<button class="button secondary" disabled id="reserveNumbersButton" type="button">Apartar números</button>
-<button class="button secondary full" id="openCompletePayment" type="button">Pagos pendientes</button>
+<button class="board-action-card board-action-card--pay" disabled id="payNowButton" type="button"><strong>PAGAR AHORA</strong><span>Si realizarás tu pago en este momento.</span></button>
+<button class="board-action-card board-action-card--reserve" disabled id="reserveNumbersButton" type="button"><strong>APARTAR NÚMEROS</strong><span>Reserva tus números hasta por 7 días y paga después.</span></button>
+<button class="board-action-card board-action-card--complete" id="openCompletePayment" type="button"><strong>COMPLETAR PAGO</strong><span>Si ya tienes un apartado, ingresa tu teléfono para finalizar el pago.</span></button>
+<p class="board-action-help" id="boardActionHelp">Primero selecciona uno o más números para pagar o apartar.</p>
 <button class="text-button" disabled id="clearSelectionButton" type="button">Limpiar selección</button>
 </div>
 </div>
@@ -207,7 +212,7 @@
 <p class="input-help">Ingresa el mismo número telefónico con el que realizaste el apartado.</p>
 <label>Teléfono de 10 dígitos<input id="completePaymentPhone" inputmode="numeric" maxlength="10" required/><small class="input-help">Debe ser el mismo teléfono usado en el registro.</small></label>
 <button class="button secondary full" id="findPendingRegistration" type="button">Buscar registro</button>
-<div class="payment-box" id="pendingRegistrationSummary" hidden></div>
+<div class="pending-registration-list" id="pendingRegistrationSummary" hidden></div>
 <fieldset class="payment-method-fieldset" id="completePaymentMethodFieldset" hidden>
 <legend>¿Cómo realizarás el pago?</legend>
 <label class="payment-method-option"><input checked name="completePaymentMethod" type="radio" value="transferencia"/> <span><strong>Transferencia</strong><small>Adjunta el comprobante para notificar tu pago.</small></span></label>
@@ -227,7 +232,7 @@
 <script src="services/firebase-service.js"></script>
 <script src="js/local-db.js"></script>
 <script src="js/gallery.js"></script>
-<script src="js/public-hybrid.js?v=1.2.0-rc2"></script>
+<script src="js/public-hybrid.js?v=1.2.0-rc3"></script>
 <script>(function(){
   const splash=document.getElementById("splashScreen");
   if(!splash)return;

@@ -41,12 +41,8 @@
     const phone=String(payload.phone||"").replace(/\D/g,"");
     if(phone.length!==10) throw new Error("Escribe un teléfono de 10 dígitos.");
 
-    // Un teléfono solo puede tener un expediente activo. Así evitamos fichas duplicadas.
-    const activeSnap=await db.collection("numbers").get();
-    const activeForPhone=activeSnap.docs.map(d=>d.data()).some(row=>
-      String(row.phone||"").replace(/\D/g,"")===phone && row.status!=="available"
-    );
-    if(activeForPhone) throw new Error('Ya existe un registro activo con este teléfono. Usa el botón "Pagos pendientes" para continuar.');
+    // El mismo teléfono puede crear varios apartados independientes.
+    // La disponibilidad de cada número sigue validándose dentro de la transacción.
 
     const participantRef=db.collection("participants").doc();
     const publicCode=Math.random().toString(36).slice(2,8).toUpperCase();
@@ -149,19 +145,29 @@
     if(phone.length!==10) throw new Error("Escribe un teléfono de 10 dígitos.");
     const paymentMethod=payload.paymentMethod==="efectivo"?"efectivo":"transferencia";
     if(paymentMethod==="transferencia"&&!payload.receiptData) throw new Error("Adjunta el comprobante de transferencia.");
-    const numbersSnap=await db.collection("numbers").get();
-    const rows=numbersSnap.docs.map(d=>({id:d.id,...d.data()})).filter(r=>String(r.phone||"").replace(/\D/g,"")===phone&&r.status==="reserved");
-    const participantIds=[...new Set(rows.map(r=>r.participantId).filter(Boolean))];
-    if(!participantIds.length) throw new Error("No encontramos un registro pendiente con ese teléfono.");
-    const id=participantIds[0],ref=db.collection("participants").doc(id);
+
+    const requestedIds=[...new Set((payload.participantIds||[]).map(String).filter(Boolean))];
+    if(!requestedIds.length) throw new Error("Selecciona al menos un apartado pendiente.");
+
+    const participantDocs=await Promise.all(requestedIds.map(id=>db.collection("participants").doc(id).get()));
+    const valid=participantDocs.filter(doc=>doc.exists).map(doc=>({id:doc.id,...doc.data()})).filter(p=>
+      String(p.phone||"").replace(/\D/g,"")===phone && ["pending_payment","reserved"].includes(String(p.status||""))
+    );
+    if(!valid.length) throw new Error("No encontramos apartados pendientes seleccionados con ese teléfono.");
+
     const batch=db.batch();
-    const changes={paymentMethod,registrationMode:"reserve",updatedAt:now()};
-    if(paymentMethod==="transferencia") Object.assign(changes,{status:"receipt_received",receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),receiptReceivedAt:now()});
-    else Object.assign(changes,{status:"pending_cash",receiptData:"",receiptName:"",receiptType:"",receiptSize:0});
-    batch.update(ref,changes);
-    audit(batch,paymentMethod==="transferencia"?"Comprobante recibido":"Pago en efectivo notificado",paymentMethod==="transferencia"?"El participante completó el pago por transferencia desde el sitio":"El participante notificó pago en efectivo desde el sitio",id);
+    const allNumbers=[];
+    valid.forEach(p=>{
+      const changes={paymentMethod,registrationMode:"reserve",updatedAt:now()};
+      if(paymentMethod==="transferencia") Object.assign(changes,{status:"receipt_received",receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),receiptReceivedAt:now()});
+      else Object.assign(changes,{status:"pending_cash",receiptData:"",receiptName:"",receiptType:"",receiptSize:0});
+      batch.update(db.collection("participants").doc(p.id),changes);
+      audit(batch,paymentMethod==="transferencia"?"Comprobante recibido":"Pago en efectivo notificado",paymentMethod==="transferencia"?"El participante completó el pago por transferencia desde el sitio":"El participante notificó pago en efectivo desde el sitio",p.id);
+      (p.numbers||[]).forEach(n=>allNumbers.push(Number(n)));
+    });
     await batch.commit();
-    return {participantId:id,name:rows[0]?.participantName||"Participante",numbers:rows.map(r=>r.number),total:rows.length*200,paymentMethod};
+    allNumbers.sort((a,b)=>a-b);
+    return {participantIds:valid.map(p=>p.id),name:valid[0]?.name||"Participante",numbers:allNumbers,total:allNumbers.length*200,paymentMethod};
   }
   async function markTicketSent(id,isResend=false){
     init();
