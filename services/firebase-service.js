@@ -38,33 +38,49 @@
     init();
     const numbers=[...new Set((payload.numbers||[]).map(Number))].sort((a,b)=>a-b);
     if(!numbers.length) throw new Error("Selecciona al menos un número.");
+    const phone=String(payload.phone||"").replace(/\D/g,"");
+    if(phone.length!==10) throw new Error("Escribe un teléfono de 10 dígitos.");
+
+    // Un teléfono solo puede tener un expediente activo. Así evitamos fichas duplicadas.
+    const activeSnap=await db.collection("numbers").get();
+    const activeForPhone=activeSnap.docs.map(d=>d.data()).some(row=>
+      String(row.phone||"").replace(/\D/g,"")===phone && row.status!=="available"
+    );
+    if(activeForPhone) throw new Error('Ya existe un registro activo con este teléfono. Usa el botón "Pagos pendientes" para continuar.');
+
     const participantRef=db.collection("participants").doc();
     const publicCode=Math.random().toString(36).slice(2,8).toUpperCase();
+    const registrationMode=payload.registrationMode==="reserve"?"reserve":"pay_now";
+    const paymentMethod=registrationMode==="reserve"?"":(payload.paymentMethod==="efectivo"?"efectivo":"transferencia");
+    if(registrationMode==="pay_now"&&paymentMethod==="transferencia"&&!payload.receiptData){
+      throw new Error("Para pagar por transferencia debes adjuntar el comprobante.");
+    }
     await db.runTransaction(async tx=>{
       const refs=numbers.map(n=>db.collection("numbers").doc(numId(n)));
       const docs=await Promise.all(refs.map(ref=>tx.get(ref)));
       docs.forEach((doc,i)=>{
         if(doc.exists&&doc.data().status!=="available") throw new Error(`El número ${numId(numbers[i])} ya no está disponible.`);
       });
-      const paymentMethod=payload.paymentMethod==="efectivo"?"efectivo":"transferencia";
       const reservationDate=new Date();
-      const expirationDate=new Date(reservationDate.getTime()+5*24*60*60*1000);
+      const expirationDate=new Date(reservationDate.getTime()+7*24*60*60*1000);
+      const status=registrationMode==="reserve"?"pending_payment":
+        (paymentMethod==="transferencia"?"receipt_received":"pending_cash");
       tx.set(participantRef,{
-        name:String(payload.name||"").trim(),phone:String(payload.phone||"").replace(/\D/g,""),numbers,
-        total:Number(payload.total||numbers.length*200),
-        status:payload.receiptData?"receipt_received":(paymentMethod==="efectivo"?"pending_cash":"pending_transfer"),publicCode,
-        paymentMethod,receiptMethod:"panel",collaborator:String(payload.collaborator||"").trim(),
+        name:String(payload.name||"").trim(),phone,numbers,
+        total:Number(payload.total||numbers.length*200),status,publicCode,
+        registrationMode,paymentMethod,receiptMethod:"panel",collaborator:String(payload.collaborator||"").trim(),
         reservationAt:firebase.firestore.Timestamp.fromDate(reservationDate),
         expiresAt:firebase.firestore.Timestamp.fromDate(expirationDate),
         reminderSent:false,reminderSentAt:null,paymentConfirmedAt:null,ticketGenerated:false,
         ticketSent:false,ticketSentAt:null,ticketResendCount:0,
         receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),
         receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),
+        receiptReceivedAt:payload.receiptData?now():null,
         notes:"",createdAt:now(),updatedAt:now()
       });
       refs.forEach((ref,i)=>tx.set(ref,{
         number:numbers[i],status:"reserved",participantId:participantRef.id,participantName:String(payload.name||"").trim(),
-        phone:String(payload.phone||"").replace(/\D/g,""),reservedAt:now(),updatedAt:now()
+        phone,reservedAt:now(),updatedAt:now()
       },{merge:true}));
     });
     return {participantId:participantRef.id,publicCode,numbers};
@@ -131,19 +147,21 @@
     init();
     const phone=String(payload.phone||"").replace(/\D/g,"");
     if(phone.length!==10) throw new Error("Escribe un teléfono de 10 dígitos.");
+    const paymentMethod=payload.paymentMethod==="efectivo"?"efectivo":"transferencia";
+    if(paymentMethod==="transferencia"&&!payload.receiptData) throw new Error("Adjunta el comprobante de transferencia.");
     const numbersSnap=await db.collection("numbers").get();
     const rows=numbersSnap.docs.map(d=>({id:d.id,...d.data()})).filter(r=>String(r.phone||"").replace(/\D/g,"")===phone&&r.status==="reserved");
     const participantIds=[...new Set(rows.map(r=>r.participantId).filter(Boolean))];
     if(!participantIds.length) throw new Error("No encontramos un registro pendiente con ese teléfono.");
-    const id=participantIds[0],ref=db.collection("participants").doc(id),doc=await ref.get();
-    if(!doc.exists) throw new Error("No encontramos la ficha del participante.");
-    const p=doc.data();
-    if(["paid","released","expired"].includes(p.status)) throw new Error("Este registro ya no admite comprobantes.");
+    const id=participantIds[0],ref=db.collection("participants").doc(id);
     const batch=db.batch();
-    batch.update(ref,{paymentMethod:"transferencia",status:"receipt_received",receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),receiptReceivedAt:now(),updatedAt:now()});
-    audit(batch,"Comprobante recibido","El participante completó el pago desde el sitio",id);
+    const changes={paymentMethod,registrationMode:"reserve",updatedAt:now()};
+    if(paymentMethod==="transferencia") Object.assign(changes,{status:"receipt_received",receiptData:String(payload.receiptData||""),receiptName:String(payload.receiptName||""),receiptType:String(payload.receiptType||""),receiptSize:Number(payload.receiptSize||0),receiptReceivedAt:now()});
+    else Object.assign(changes,{status:"pending_cash",receiptData:"",receiptName:"",receiptType:"",receiptSize:0});
+    batch.update(ref,changes);
+    audit(batch,paymentMethod==="transferencia"?"Comprobante recibido":"Pago en efectivo notificado",paymentMethod==="transferencia"?"El participante completó el pago por transferencia desde el sitio":"El participante notificó pago en efectivo desde el sitio",id);
     await batch.commit();
-    return {participantId:id,name:p.name||"Participante",numbers:p.numbers||rows.map(r=>r.number),total:p.total||rows.length*200};
+    return {participantId:id,name:rows[0]?.participantName||"Participante",numbers:rows.map(r=>r.number),total:rows.length*200,paymentMethod};
   }
   async function markTicketSent(id,isResend=false){
     init();
@@ -175,7 +193,7 @@
     for(const doc of snap.docs){
       const p=doc.data();
       const status=p.status==="reserved"?(p.paymentMethod==="efectivo"?"pending_cash":"pending_transfer"):p.status;
-      if(status!=="pending_transfer"&&status!=="pending_cash"&&status!=="receipt_received") continue;
+      if(status!=="pending_payment"&&status!=="pending_transfer"&&status!=="pending_cash"&&status!=="receipt_received") continue;
       const expires=p.expiresAt?.toDate?p.expiresAt.toDate():(p.expiresAt?new Date(p.expiresAt):null);
       if(!expires||isNaN(expires)) continue;
       if(expires<=current){
@@ -183,7 +201,7 @@
           const ref=db.collection("participants").doc(doc.id),fresh=await tx.get(ref);
           if(!fresh.exists) return;
           const data=fresh.data(),st=data.status==="reserved"?(data.paymentMethod==="efectivo"?"pending_cash":"pending_transfer"):data.status;
-          if(st!=="pending_transfer"&&st!=="pending_cash"&&st!=="receipt_received") return;
+          if(st!=="pending_payment"&&st!=="pending_transfer"&&st!=="pending_cash"&&st!=="receipt_received") return;
           tx.update(ref,{status:"expired",expiredAt:now(),releasedAt:now(),updatedAt:now()});
           (data.numbers||[]).forEach(n=>tx.update(db.collection("numbers").doc(numId(n)),{status:"available",participantId:"",participantName:"",phone:"",updatedAt:now()}));
         });

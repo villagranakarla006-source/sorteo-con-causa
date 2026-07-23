@@ -12,15 +12,15 @@ service cloud.firestore {
       allow create: if request.resource.data.name is string
         && request.resource.data.phone is string
         && request.resource.data.numbers is list
-        && request.resource.data.status in ['pending_transfer','pending_cash','receipt_received'];
+        && request.resource.data.status in ['pending_payment','pending_transfer','pending_cash','receipt_received'];
 
       // Permite que un participante complete su pago desde el sitio.
       // La actualización pública solo puede añadir el comprobante y cambiar
       // un registro pendiente a "receipt_received".
       allow read: if request.auth != null;
       allow update: if request.auth != null || (
-        resource.data.status in ['pending_transfer','pending_cash']
-        && request.resource.data.status == 'receipt_received'
+        resource.data.status in ['pending_payment','pending_transfer','pending_cash']
+        && request.resource.data.status in ['receipt_received','pending_cash']
         && request.resource.data.phone == resource.data.phone
         && request.resource.data.numbers == resource.data.numbers
         && request.resource.data.name == resource.data.name

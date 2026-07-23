@@ -17,6 +17,7 @@
   let lastReceiptFile=null;
   let lastWhatsappMessage="";
   let lastWhatsappUrl="";
+  let registrationMode="pay_now";
 
   const grid=$("#numberGrid");
   const tabs=$("#rangeTabs");
@@ -98,7 +99,10 @@
   function updateSelectionSummary(){
     const numbers=[...selected].sort((a,b)=>a-b);
     $("#selectedNumbers").textContent=numbers.length?numbers.map(fmt).join(", "):"Ninguno";
-    $("#continueButton").disabled=!numbers.length;
+    const payNow=$("#payNowButton");
+    const reserve=$("#reserveNumbersButton");
+    if(payNow)payNow.disabled=!numbers.length;
+    if(reserve)reserve.disabled=!numbers.length;
     const clear=$("#clearSelectionButton");
     if(clear)clear.disabled=!numbers.length;
     const hidden=$("#selectedNumbersInput");
@@ -106,12 +110,17 @@
   }
 
   function updatePaymentMethodUI(){
+    const isReservation=registrationMode==="reserve";
+    const fieldset=$("#paymentMethodFieldset");
+    const notice=$("#reservationNotice");
+    if(fieldset)fieldset.hidden=isReservation;
+    if(notice)notice.hidden=!isReservation;
     const method=form?.querySelector('input[name="paymentMethod"]:checked')?.value||"transferencia";
     const isTransfer=method==="transferencia";
-    if(transferPaymentSection)transferPaymentSection.hidden=!isTransfer;
-    if(cashPaymentSection)cashPaymentSection.hidden=isTransfer;
-    if(receiptFileInput)receiptFileInput.required=false;
-    if(!isTransfer&&receiptFileInput)receiptFileInput.value="";
+    if(transferPaymentSection)transferPaymentSection.hidden=isReservation||!isTransfer;
+    if(cashPaymentSection)cashPaymentSection.hidden=isReservation||isTransfer;
+    if(receiptFileInput)receiptFileInput.required=!isReservation&&isTransfer;
+    if((isReservation||!isTransfer)&&receiptFileInput)receiptFileInput.value="";
   }
 
   function resetForm({close=false}={}){
@@ -138,10 +147,18 @@
     renderGrid();
   }
 
-  function openDialog(){
+  function openDialog(mode="pay_now"){
     const numbers=[...selected].sort((a,b)=>a-b);
     if(!numbers.length)return;
+    registrationMode=mode;
     resetForm();
+    const title=$("#registrationDialogTitle");
+    const modeInput=$("#registrationMode");
+    const submit=$("#submitRegistration");
+    if(modeInput)modeInput.value=mode;
+    if(title)title.textContent=mode==="reserve"?"Aparta tus números":"Paga tu participación ahora";
+    if(submit)submit.textContent=mode==="reserve"?"Apartar números por 7 días":"Registrar pago";
+    updatePaymentMethodUI();
     $("#modalSelectedNumbers").textContent=numbers.map(fmt).join(", ");
     $("#ticketCount").textContent=String(numbers.length);
     $("#paymentTotal").textContent=`$${(numbers.length*PRICE).toLocaleString("es-MX")} MXN`;
@@ -252,8 +269,9 @@
     window.location.assign(lastWhatsappUrl);
   });
 
-  $("#continueButton")?.addEventListener("click",openDialog);
-  $("#showPayment")?.addEventListener("click",()=>selected.size?openDialog():$("#tablero")?.scrollIntoView({behavior:"smooth"}));
+  $("#payNowButton")?.addEventListener("click",()=>openDialog("pay_now"));
+  $("#reserveNumbersButton")?.addEventListener("click",()=>openDialog("reserve"));
+  $("#showPayment")?.addEventListener("click",()=>selected.size?openDialog("pay_now"):$("#tablero")?.scrollIntoView({behavior:"smooth"}));
   $("#clearSelectionButton")?.addEventListener("click",clearSelection);
   $("#closeDialog")?.addEventListener("click",()=>dialog.close());
   $("#copyClabe")?.addEventListener("click",async event=>{
@@ -283,7 +301,8 @@
     const name=$("#participantName").value.trim();
     const phone=$("#participantPhone").value.replace(/\D/g,"");
     const numbers=[...selected].sort((a,b)=>a-b);
-    const paymentMethod=form.querySelector('input[name="paymentMethod"]:checked')?.value||"transferencia";
+    const mode=registrationMode;
+    const paymentMethod=mode==="reserve"?"":(form.querySelector('input[name="paymentMethod"]:checked')?.value||"transferencia");
     const collaborator=(document.querySelector("#participantCollaborator")?.value||"").trim();
     const file=receiptFileInput?.files?.[0]||null;
 
@@ -291,6 +310,7 @@
     if(!numbers.length){status.textContent="Selecciona al menos un número.";return;}
     if(name.length<3){status.textContent="Escribe tu nombre completo.";return;}
     if(phone.length!==10){status.textContent="Escribe un teléfono de 10 dígitos.";return;}
+    if(mode==="pay_now"&&paymentMethod==="transferencia"&&!file){status.textContent="Para pagar por transferencia debes adjuntar el comprobante.";return;}
     if(file&&file.size>10*1024*1024){status.textContent="El comprobante debe pesar menos de 10 MB.";return;}
 
     submit.disabled=true;
@@ -303,7 +323,7 @@
       // El comprobante se guarda únicamente para revisión administrativa.
       let receiptData=await prepareReceiptForPanel(file);
       if(firebaseEnabled){
-        await RifaFirebase.registerParticipant({name,phone,numbers,total,paymentMethod,collaborator,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
+        await RifaFirebase.registerParticipant({name,phone,numbers,total,registrationMode:mode,paymentMethod,collaborator,receiptData,receiptName:file?.name||"",receiptType:file?.type||"",receiptSize:file?.size||0});
       }else{
         if(!window.RifaLocalDB)throw new Error("No fue posible iniciar el registro.");
         if(file&&!receiptData&&file.size<=2*1024*1024){
@@ -314,12 +334,24 @@
             reader.readAsDataURL(file);
           });
         }
-        RifaLocalDB.reserve(numbers,{name,phone,total,paymentMethod,collaborator,receiptData,receiptName:file?.name||"",receiptType:file?.type||""});
+        RifaLocalDB.reserve(numbers,{name,phone,total,registrationMode:mode,paymentMethod,collaborator,receiptData,receiptName:file?.name||"",receiptType:file?.type||""});
         loadLocal();
       }
 
       lastReceiptFile=file;
-      lastWhatsappMessage=buildMessage(name,phone,numbers,total,paymentMethod);
+      lastWhatsappMessage=mode==="reserve"
+        ?`Hola. 💗
+
+Envío notificación de registro y apartado.
+Nombre: ${name}
+Teléfono: ${phone}
+Números apartados: ${numbers.map(fmt).join(", ")}
+Total: $${total.toLocaleString("es-MX")} MXN
+
+Tengo 7 días para completar el pago desde el botón Pagos pendientes del tablero.
+
+Gracias por apoyar esta causa, tu participación es esperanza de vida.`
+        :buildMessage(name,phone,numbers,total,paymentMethod);
       lastWhatsappUrl=`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(lastWhatsappMessage)}`;
       openWhatsappButton.href=lastWhatsappUrl;
       receiptShareActions.hidden=false;
@@ -335,10 +367,14 @@
       renderGrid();
       submit.hidden=true;
       status.className="form-status success";
-      const methodLabel=paymentMethod==="efectivo"?"Efectivo":"Transferencia";
       const nextStep="Ahora presiona el botón resaltado <strong>Enviar notificación de registro</strong>.";
-      const receiptState=file?"Comprobante recibido para revisión.":(paymentMethod==="transferencia"?"Pago pendiente. Podrás volver después con el botón Completar pago.":"Pago pendiente en efectivo.");
-      status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números apartados:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Método de pago:</strong> ${methodLabel}<br><strong>Estatus:</strong> ${receiptState}<br>${collaborator?`<strong>Colaborador:</strong> ${collaborator}<br>`:""}<br>${nextStep}`;
+      if(mode==="reserve"){
+        status.innerHTML=`<strong>¡Tus números quedaron apartados! 💗</strong><br><br><strong>Números:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Plazo:</strong> 7 días para completar el pago.<br>${collaborator?`<strong>Colaborador:</strong> ${collaborator}<br>`:""}<br>Cuando estés lista(o), regresa al tablero y presiona <strong>Pagos pendientes</strong> usando el mismo teléfono.<br><br>${nextStep}`;
+      }else{
+        const methodLabel=paymentMethod==="efectivo"?"Efectivo":"Transferencia";
+        const receiptState=file?"Comprobante recibido para revisión.":"Pago pendiente en efectivo.";
+        status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Método de pago:</strong> ${methodLabel}<br><strong>Estatus:</strong> ${receiptState}<br>${collaborator?`<strong>Colaborador:</strong> ${collaborator}<br>`:""}<br>${nextStep}`;
+      }
       ui.toast?.("Registro realizado correctamente.","success");
 
       setTimeout(()=>receiptShareActions.scrollIntoView({behavior:"smooth",block:"nearest"}),100);
@@ -373,16 +409,28 @@
       pendingLookup={phone,participantId:pending[0].participantId,numbers:pending.map(r=>Number(r.number)).sort((a,b)=>a-b),name:pending[0].participantName||"Participante"};
       $("#pendingRegistrationSummary").hidden=false;
       $("#pendingRegistrationSummary").innerHTML=`<strong>${pendingLookup.name}</strong><span>Números: ${pendingLookup.numbers.map(fmt).join(", ")}</span><span>Total: $${(pendingLookup.numbers.length*PRICE).toLocaleString("es-MX")} MXN</span>`;
+      $("#completePaymentMethodFieldset").hidden=false;
       $("#completeReceiptLabel").hidden=false;
       $("#submitCompletePayment").hidden=false;
-      status.textContent="Registro encontrado. Adjunta el comprobante.";
-    }catch(error){pendingLookup=null;$("#pendingRegistrationSummary").hidden=true;$("#completeReceiptLabel").hidden=true;$("#submitCompletePayment").hidden=true;status.textContent=error.message||"No fue posible buscar el registro.";}
+      updateCompletePaymentMethodUI();
+      status.textContent="Registro encontrado. Elige cómo realizarás el pago.";
+    }catch(error){pendingLookup=null;$("#pendingRegistrationSummary").hidden=true;$("#completePaymentMethodFieldset").hidden=true;$("#completeReceiptLabel").hidden=true;$("#submitCompletePayment").hidden=true;status.textContent=error.message||"No fue posible buscar el registro.";}
   });
+  function updateCompletePaymentMethodUI(){
+    const method=completeForm?.querySelector('input[name="completePaymentMethod"]:checked')?.value||"transferencia";
+    const label=$("#completeReceiptLabel");
+    const input=$("#completeReceiptFile");
+    if(label)label.hidden=method!=="transferencia";
+    if(input){input.required=method==="transferencia";if(method!=="transferencia")input.value="";}
+  }
+  completeForm?.querySelectorAll('input[name="completePaymentMethod"]').forEach(input=>input.addEventListener("change",updateCompletePaymentMethodUI));
+
   completeForm?.addEventListener("submit",async event=>{
     event.preventDefault();
     const status=$("#completePaymentStatus"),file=$("#completeReceiptFile")?.files?.[0];
+    const paymentMethod=completeForm.querySelector('input[name="completePaymentMethod"]:checked')?.value||"transferencia";
     if(!pendingLookup){status.textContent="Busca primero tu registro.";return;}
-    if(!file){status.textContent="Adjunta una imagen o PDF del comprobante.";return;}
+    if(paymentMethod==="transferencia"&&!file){status.textContent="Adjunta una imagen o PDF del comprobante.";return;}
     if(file.size>10*1024*1024){status.textContent="El comprobante debe pesar menos de 10 MB.";return;}
     const button=$("#submitCompletePayment");button.disabled=true;status.textContent="Guardando comprobante…";
     try{

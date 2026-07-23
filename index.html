@@ -115,9 +115,11 @@
 <div class="selection-card">
 <small>Tu selección</small>
 <strong id="selectedNumbers">Ninguno</strong>
-<div class="selection-actions">
-<button disabled="" id="continueButton" type="button">Continuar con mi participación</button>
-<button class="text-button" disabled="" id="clearSelectionButton" type="button">Limpiar selección</button>
+<div class="selection-actions payment-path-actions">
+<button class="button primary" disabled id="payNowButton" type="button">Pagar ahora</button>
+<button class="button secondary" disabled id="reserveNumbersButton" type="button">Apartar números</button>
+<button class="button secondary full" id="openCompletePayment" type="button">Pagos pendientes</button>
+<button class="text-button" disabled id="clearSelectionButton" type="button">Limpiar selección</button>
 </div>
 </div>
 </aside>
@@ -155,7 +157,9 @@
 <dialog id="registrationDialog">
 <form autocomplete="off" id="registrationForm">
 <button class="dialog-close" id="closeDialog" type="button">×</button>
-<p class="eyebrow">Registro</p><h2>Completa tu participación</h2>
+<p class="eyebrow">Registro</p><h2 id="registrationDialogTitle">Completa tu participación</h2>
+<input id="registrationMode" type="hidden" value="pay_now"/>
+<div class="payment-box" id="reservationNotice" hidden><strong>Apartado por 7 días</strong><span>Tus números permanecerán apartados durante una semana. Deberás volver a la sección del tablero y usar el botón <b>Pagos pendientes</b> para completar el pago.</span></div>
 <input id="selectedNumbersInput" name="selectedNumbers" type="hidden" value=""/>
 <div class="modal-summary">
 <p><span>Números:</span><strong id="modalSelectedNumbers"></strong></p>
@@ -165,9 +169,9 @@
 <label>Nombre completo<input autocomplete="name" id="participantName" required=""/><small class="input-help">Escribe el nombre que aparecerá en tu registro.</small></label>
 <label>Teléfono de 10 dígitos<input autocomplete="tel" id="participantPhone" inputmode="numeric" maxlength="10" required=""/><small class="input-help">Lo utilizaremos para confirmar tus números.</small></label>
 <label>Colaborador (opcional)<input id="participantCollaborator" maxlength="80" placeholder="Nombre de quien te invitó"/><small class="input-help">Puedes dejar este espacio vacío y continuar normalmente.</small></label>
-<fieldset class="payment-method-fieldset">
+<fieldset class="payment-method-fieldset" id="paymentMethodFieldset">
 <legend>Método de pago</legend>
-<label class="payment-method-option"><input checked="" name="paymentMethod" type="radio" value="transferencia"/> <span><strong>Transferencia</strong><small>Puedes apartar ahora y subir tu comprobante más tarde.</small></span></label>
+<label class="payment-method-option"><input checked name="paymentMethod" type="radio" value="transferencia"/> <span><strong>Transferencia</strong><small>Para pagar ahora es obligatorio adjuntar el comprobante.</small></span></label>
 <label class="payment-method-option"><input name="paymentMethod" type="radio" value="efectivo"/> <span><strong>Efectivo</strong><small>La administradora confirmará el pago cuando lo reciba.</small></span></label>
 </fieldset>
 <div id="transferPaymentSection">
@@ -185,7 +189,6 @@
 <strong>Pago en efectivo</strong><span>No necesitas adjuntar comprobante. Tu registro quedará apartado hasta que la administradora confirme el pago.</span>
 </div>
 <button class="button primary full" id="submitRegistration" type="submit">Registrar</button>
-<button class="button secondary full" id="openCompletePayment" type="button">Completar pago de un registro existente</button>
 <p class="form-status" id="formStatus"></p>
 <div class="receipt-share-actions" hidden="" id="receiptShareActions">
 <div class="payment-box status-waiting">
@@ -200,12 +203,18 @@
 <dialog id="completePaymentDialog">
 <form autocomplete="off" id="completePaymentForm">
 <button class="dialog-close" id="closeCompletePayment" type="button">×</button>
-<p class="eyebrow">Completar pago</p><h2>Sube tu comprobante</h2>
+<p class="eyebrow">Pagos pendientes</p><h2>Completa el pago de tus números apartados</h2>
+<p class="input-help">Ingresa el mismo número telefónico con el que realizaste el apartado.</p>
 <label>Teléfono de 10 dígitos<input id="completePaymentPhone" inputmode="numeric" maxlength="10" required/><small class="input-help">Debe ser el mismo teléfono usado en el registro.</small></label>
 <button class="button secondary full" id="findPendingRegistration" type="button">Buscar registro</button>
 <div class="payment-box" id="pendingRegistrationSummary" hidden></div>
-<label id="completeReceiptLabel" hidden>Adjuntar comprobante<input accept="image/*,.pdf,application/pdf" id="completeReceiptFile" type="file"/><small class="input-help">Imagen o PDF de hasta 10 MB.</small></label>
-<button class="button primary full" id="submitCompletePayment" type="submit" hidden>Guardar comprobante</button>
+<fieldset class="payment-method-fieldset" id="completePaymentMethodFieldset" hidden>
+<legend>¿Cómo realizarás el pago?</legend>
+<label class="payment-method-option"><input checked name="completePaymentMethod" type="radio" value="transferencia"/> <span><strong>Transferencia</strong><small>Adjunta el comprobante para notificar tu pago.</small></span></label>
+<label class="payment-method-option"><input name="completePaymentMethod" type="radio" value="efectivo"/> <span><strong>Efectivo</strong><small>Notifica que completarás el pago en efectivo.</small></span></label>
+</fieldset>
+<label id="completeReceiptLabel" hidden>Adjuntar comprobante<input accept="image/*,.pdf,application/pdf" id="completeReceiptFile" type="file"/><small class="input-help">Obligatorio para transferencia. Imagen o PDF de hasta 10 MB.</small></label>
+<button class="button primary full" id="submitCompletePayment" type="submit" hidden>Notificar pago</button>
 <p class="form-status" id="completePaymentStatus"></p>
 </form>
 </dialog>
@@ -218,7 +227,7 @@
 <script src="services/firebase-service.js"></script>
 <script src="js/local-db.js"></script>
 <script src="js/gallery.js"></script>
-<script src="js/public-hybrid.js?v=1.2.0-rc1"></script>
+<script src="js/public-hybrid.js?v=1.2.0-rc2"></script>
 <script>(function(){
   const splash=document.getElementById("splashScreen");
   if(!splash)return;

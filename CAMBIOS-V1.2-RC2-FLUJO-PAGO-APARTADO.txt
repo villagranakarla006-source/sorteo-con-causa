@@ -1,0 +1,28 @@
+RIFA CON CAUSA v1.2 RC2 — FLUJO PAGO / APARTADO
+
+Cambios implementados:
+- La sección del tablero ahora muestra tres caminos claros:
+  1. Pagar ahora.
+  2. Apartar números.
+  3. Pagos pendientes.
+- Pagar ahora:
+  - Transferencia exige comprobante obligatorio.
+  - Efectivo conserva el flujo de confirmación administrativa.
+- Apartar números:
+  - No solicita método de pago ni comprobante.
+  - Crea un expediente con estado Pago pendiente.
+  - Apartado válido durante 7 días.
+  - Genera la notificación actual de registro por WhatsApp.
+- Pagos pendientes:
+  - Está en la sección principal del tablero.
+  - Solicita únicamente el teléfono usado en el apartado.
+  - Recupera y actualiza la misma ficha, sin crear duplicados.
+  - Permite elegir transferencia o efectivo.
+  - Transferencia exige comprobante.
+  - Notifica el pago por WhatsApp.
+- Protección contra fichas duplicadas por teléfono activo.
+- Panel administrativo actualizado para reconocer Pago pendiente y mostrar método Por definir.
+- Reglas de Firestore de ejemplo actualizadas.
+
+IMPORTANTE:
+Publicar las reglas incluidas en firestore.rules.example para habilitar el nuevo flujo público.
