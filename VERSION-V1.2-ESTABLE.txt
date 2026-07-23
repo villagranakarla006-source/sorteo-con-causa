@@ -1,0 +1,20 @@
+RIFA CON CAUSA — V1.2 ESTABLE
+
+Esta entrega conserva exclusivamente lo acordado y probado:
+
+- Pagar ahora.
+- Apartar números durante 7 días.
+- Completar pagos pendientes mediante teléfono.
+- Permite varios apartados con el mismo teléfono.
+- Cada apartado conserva su expediente independiente.
+- Selección de uno, varios o todos los apartados pendientes al completar pago.
+- Tarjetas debajo del tablero, sin iconos.
+- Pagar ahora: verde claro.
+- Apartar números: amarillo claro.
+- Completar pago: azul claro.
+- Texto blanco.
+- Bordes definidos y redondeados.
+- Sombra suave.
+- Separación visible entre tarjetas.
+
+No se añadieron funciones fuera de lo acordado.
