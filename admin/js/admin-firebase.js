@@ -32,8 +32,42 @@ function label(s){return s==="available"?"Disponible":s==="reserved"?"Apartado":
 function participantStatus(p){if(p.status==="reserved")return p.paymentMethod==="efectivo"?"pending_cash":"pending_transfer";return p.status||"pending_payment"}
 function isPending(p){const s=participantStatus(p);return s==="pending_payment"||s==="pending_transfer"||s==="pending_cash"||s==="receipt_received"}
 function timeRemaining(p){const d=toDate(p.expiresAt);if(!d||isNaN(d))return "Sin vencimiento";const ms=d-Date.now();if(ms<=0)return "Vencida";const hours=Math.ceil(ms/3600000),days=Math.floor(hours/24),rest=hours%24;return days?`${days} d ${rest} h`:`${hours} h`}
-function reminderMessage(p){const nums=(p.numbers||[]).map(fmt).join(', '),limit=dateFmt(p.expiresAt),method=p.paymentMethod==="efectivo"?"efectivo":"transferencia";return `Hola ${p.name||''}. Te recordamos que tu reserva de los números ${nums} vence el ${limit}. Método de pago: ${method}. Si ya realizaste el pago, comunícate con nosotros para confirmar tu participación. Gracias por apoyar esta causa.`}
-function reminderUrl(p){const phone=String(p.phone||'').replace(/\D/g,'');return `https://wa.me/52${phone}?text=${encodeURIComponent(reminderMessage(p))}`}
+function reminderMessage(p){
+ const nums=(p.numbers||[]).map(fmt).join(', '),total=Number(p.total||((p.numbers||[]).length*PRICE));
+ return `Hola, ${p.name||'Participante'}. 😊
+
+Esperamos que te encuentres muy bien.
+
+Queremos agradecerte por participar en la Rifa con Causa a Karla Villagrana.
+
+Te recordamos que tienes los siguientes números apartados:
+
+🎟️ Números: ${nums||'—'}
+
+💲 Importe pendiente: ${money(total)} MXN
+
+Por favor, envíanos tu comprobante a este WhatsApp para confirmar tu participación y actualizar el estado de tus números.
+
+Muchas gracias por tu confianza, por tu apoyo y por formar parte de esta causa. 💗
+
+¡Te deseamos mucho éxito y mucha suerte! 🍀`;
+}
+function reminderUrl(p){
+ let phone=String(p.phone||'').replace(/\D/g,'');
+ if(phone.length===10)phone='52'+phone;
+ return `https://wa.me/${phone}?text=${encodeURIComponent(reminderMessage(p))}`;
+}
+async function prizeImageFile(){
+ const response=await fetch('../assets/vista-previa-whatsapp-journey.jpg',{cache:'no-store'});
+ if(!response.ok)throw new Error('No fue posible cargar la imagen del premio.');
+ const blob=await response.blob();
+ return new File([blob],'premio-dodge-journey-2013.jpg',{type:blob.type||'image/jpeg'});
+}
+function downloadPrizeImage(file){
+ const url=URL.createObjectURL(file),a=document.createElement('a');
+ a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
 function showView(id){$$('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));$$('.view').forEach(v=>v.hidden=v.id!==id);renderAll()}
 function renderStats(){const c=counts(),expired=participants.filter(p=>['expired','released'].includes(participantStatus(p))).length;$('#available').textContent=c.available;$('#reserved').textContent=c.reserved;$('#paid').textContent=c.paid;$('#expiredCount').textContent=expired;$('#participantCount').textContent=participants.length;$('#total').textContent=money(c.paid*PRICE)}
 function renderDashboard(){const c=counts(),assigned=c.reserved+c.paid,pct=Math.round(assigned/TOTAL*100);$('#progressPercent').textContent=pct+'%';$('#progressBar').style.width=pct+'%';$('#progressPaid').textContent=`${c.reserved} apartados · ${c.paid} pagados · ${assigned} asignados en total`;[['available',c.available],['reserved',c.reserved],['paid',c.paid]].forEach(([k,v])=>{const p=Math.round(v/TOTAL*100);$('#'+k+'Bar').style.width=p+'%';$('#'+k+'Pct').textContent=p+'%'});const due=participants.filter(p=>isPending(p)&&p.reminderDue&&!p.reminderSent).length,soon=participants.filter(p=>{const d=toDate(p.expiresAt);return isPending(p)&&d&&d>Date.now()&&d-Date.now()<=24*3600000}).length,expired=participants.filter(p=>participantStatus(p)==='expired').length;$('#automationAlerts').innerHTML=`<article class="automation-alert warning"><strong>${due}</strong><span>recordatorios listos para enviar</span></article><article class="automation-alert danger"><strong>${soon}</strong><span>reservas vencen en menos de 24 horas</span></article><article class="automation-alert ok"><strong>${expired}</strong><span>reservas expiradas y liberadas</span></article>`;$('#recentActivity').innerHTML=auditRows.slice(0,8).map(a=>`<div class="activity-item"><strong>${esc(a.action)}: ${esc(a.detail)}</strong><span>${dateFmt(a.at)}</span></div>`).join('')||'<div class="empty-state">Todavía no hay movimientos.</div>'}
@@ -56,7 +90,24 @@ if(receipt){
  $('#receiptPreview').innerHTML=`<div class="empty-state">El comprobante no pudo almacenarse en el panel por su tamaño. Revísalo en WhatsApp.<br><a href="https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent('Hola, seguimiento de la Rifa con Causa para '+(p.name||'participante')+', números '+(p.numbers||[]).map(fmt).join(', '))}" target="_blank" rel="noopener">Abrir conversación de WhatsApp</a></div>`;
 }
 $('#participantDialog').showModal()}
-async function sendReminderFor(id){const p=participants.find(x=>x.id===id);if(!p)return;window.open(reminderUrl(p),'_blank','noopener');try{await RifaFirebase.markReminderSent(id)}catch(err){alert(err.message)}}
+async function sendReminderFor(id){
+ const p=participants.find(x=>x.id===id);if(!p)return;
+ try{
+  const image=await prizeImageFile(),message=reminderMessage(p);
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[image]})){
+   await navigator.share({title:'Rifa con Causa a Karla Villagrana',text:message,files:[image]});
+  }else{
+   downloadPrizeImage(image);
+   window.open(reminderUrl(p),'_blank','noopener');
+   alert('Se descargó la imagen del premio y se abrió WhatsApp con el mensaje listo. Adjunta la imagen descargada usando el clip de WhatsApp.');
+  }
+  try{await RifaFirebase.markReminderSent(id)}catch(err){alert(err.message)}
+ }catch(error){
+  console.error(error);
+  window.open(reminderUrl(p),'_blank','noopener');
+  alert('WhatsApp se abrió con el mensaje, pero no fue posible preparar la imagen del premio. Detalle: '+(error?.message||error));
+ }
+}
 function showWinner(d){$('#winnerCard').hidden=false;$('#winnerName').textContent=d.participantName||'Participante';$('#winnerNumber').textContent=fmt(d.winnerNumber);$('#winnerPhone').textContent=d.phone||'—';$('#winnerDate').textContent=dateFmt(d.createdAt);lastWinnerText=`Rifa con Causa\nNúmero ganador: ${fmt(d.winnerNumber)}\nParticipante: ${d.participantName||'—'}\nTeléfono: ${d.phone||'—'}\nFecha: ${dateFmt(d.createdAt)}`}
 function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
 function safeFilename(name,type){const base=String(name||'comprobante').replace(/[^a-z0-9._-]/gi,'-');if(/\.[a-z0-9]{2,5}$/i.test(base))return base;return base+(String(type||'').includes('pdf')?'.pdf':'.jpg')}

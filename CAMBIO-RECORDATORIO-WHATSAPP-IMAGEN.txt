@@ -1,0 +1,9 @@
+CAMBIO APROBADO — RECORDATORIO POR WHATSAPP
+
+- Se reemplazó el mensaje de recordatorio por la versión aprobada.
+- Personaliza nombre, números apartados e importe pendiente.
+- Se eliminó toda mención de vencimiento, fecha límite y método de pago.
+- Se prepara la imagen oficial del premio: assets/vista-previa-whatsapp-journey.jpg.
+- En dispositivos compatibles se comparte imagen y texto juntos mediante el menú de compartir del sistema.
+- En navegadores que no permiten adjuntar archivos automáticamente, la imagen se descarga y WhatsApp se abre con el texto listo para que la organizadora la adjunte mediante el clip.
+- No se modificó ningún otro módulo.

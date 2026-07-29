@@ -1,0 +1,13 @@
+Rifa con Causa v1.2 RC4
+
+Ajuste visual solicitado:
+- Pagar ahora: verde pastel.
+- Apartar números: amarillo pastel.
+- Completar pago: azul pastel.
+- Texto blanco en las tres opciones.
+- Bordes definidos, redondeados y sombra suave.
+- Separación de 16 px entre opciones en celular y 18 px en computadora.
+- Efecto sutil al tocar o pasar el cursor.
+- Se actualizó la versión del CSS para evitar que el navegador conserve el diseño anterior en caché.
+
+No se modificó la lógica funcional de RC3.

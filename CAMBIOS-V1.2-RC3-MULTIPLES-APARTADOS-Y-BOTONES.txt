@@ -1,0 +1,12 @@
+RIFA CON CAUSA — v1.2 RC3
+
+CAMBIOS:
+1. Un mismo teléfono puede registrar nuevos números aunque tenga uno o más apartados pendientes.
+2. Cada apartado se conserva como un expediente independiente vinculado al mismo teléfono.
+3. En Completar pago, el teléfono muestra todos sus apartados pendientes.
+4. El participante puede seleccionar uno, varios o todos los apartados para completar el pago.
+5. Los tres botones del tablero quedaron delimitados por color, sin iconos:
+   - Verde: PAGAR AHORA
+   - Amarillo: APARTAR NÚMEROS
+   - Azul: COMPLETAR PAGO
+6. Los botones de pagar y apartar permanecen atenuados hasta seleccionar números; completar pago siempre está disponible.
