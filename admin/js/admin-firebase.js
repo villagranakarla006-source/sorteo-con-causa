@@ -34,23 +34,17 @@ function isPending(p){const s=participantStatus(p);return s==="pending_payment"|
 function timeRemaining(p){const d=toDate(p.expiresAt);if(!d||isNaN(d))return "Sin vencimiento";const ms=d-Date.now();if(ms<=0)return "Vencida";const hours=Math.ceil(ms/3600000),days=Math.floor(hours/24),rest=hours%24;return days?`${days} d ${rest} h`:`${hours} h`}
 function reminderMessage(p){
  const nums=(p.numbers||[]).map(fmt).join(', '),total=Number(p.total||((p.numbers||[]).length*PRICE));
- return `Hola, ${p.name||'Participante'}. 😊
-
-Esperamos que te encuentres muy bien.
-
-Queremos agradecerte por participar en la Rifa con Causa a Karla Villagrana.
-
-Te recordamos que tienes los siguientes números apartados:
-
-🎟️ Números: ${nums||'—'}
-
-💲 Importe pendiente: ${money(total)} MXN
-
-Por favor, envíanos tu comprobante a este WhatsApp para confirmar tu participación y actualizar el estado de tus números.
-
-Muchas gracias por tu confianza, por tu apoyo y por formar parte de esta causa. 💗
-
-¡Te deseamos mucho éxito y mucha suerte! 🍀`;
+ return [
+  `Hola, ${p.name||'Participante'}. \uD83D\uDE0A`,
+  'Esperamos que te encuentres muy bien.',
+  'Queremos agradecerte por participar en la Rifa con Causa a Karla Villagrana, cuyo premio es una Dodge Journey 2013.',
+  'Te recordamos que tienes los siguientes números apartados:',
+  `Números: ${nums||'—'}`,
+  `Importe pendiente: ${money(total)} MXN`,
+  'Por favor, envíanos tu comprobante a este WhatsApp para confirmar tu participación y actualizar el estado de tus números.',
+  'Muchas gracias por tu confianza, por tu apoyo y por formar parte de esta causa. \uD83D\uDC97',
+  '¡Te deseamos mucho éxito y mucha suerte! \uD83C\uDF40'
+ ].join('\n');
 }
 function whatsappPhone(p){
  let phone=String(p.phone||p.telefono||p.celular||'').replace(/\D/g,'');
@@ -71,10 +65,34 @@ async function prizeImageFile(){
  const blob=await response.blob();
  return new File([blob],'premio-dodge-journey-2013.jpg',{type:blob.type||'image/jpeg'});
 }
-function downloadPrizeImage(file){
- const url=URL.createObjectURL(file),a=document.createElement('a');
- a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
- setTimeout(()=>URL.revokeObjectURL(url),2000);
+function showPrizePreview(imageUrl,whatsappUrl,participantId){
+ let dialog=document.querySelector('#prizePreviewDialog');
+ if(!dialog){
+  dialog=document.createElement('dialog');
+  dialog.id='prizePreviewDialog';
+  dialog.innerHTML=`<form method="dialog" style="max-width:460px;margin:auto;padding:0;border:0;background:transparent">
+   <section style="background:#fff;border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(0,0,0,.25);text-align:center">
+    <h3 style="margin:0 0 12px">Imagen del premio</h3>
+    <img id="prizePreviewImage" alt="Dodge Journey 2013" style="display:block;width:100%;max-height:360px;object-fit:contain;border-radius:14px;background:#f6f6f6">
+    <p style="margin:14px 0 8px">La imagen no se descargará. Puedes mantenerla presionada en el celular o abrirla para compartirla en WhatsApp.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+     <button type="button" id="openPrizeImage" class="secondary-btn">Abrir imagen</button>
+     <button type="button" id="openParticipantWhatsapp" class="primary-btn">Abrir WhatsApp</button>
+     <button type="submit" class="secondary-btn">Cerrar</button>
+    </div>
+   </section>
+  </form>`;
+  document.body.appendChild(dialog);
+ }
+ const img=dialog.querySelector('#prizePreviewImage');
+ img.src=imageUrl;
+ dialog.querySelector('#openPrizeImage').onclick=()=>window.open(imageUrl,'_blank','noopener');
+ dialog.querySelector('#openParticipantWhatsapp').onclick=async()=>{
+  window.open(whatsappUrl,'_blank','noopener');
+  try{await RifaFirebase.markReminderSent(participantId)}catch(err){alert(err.message)}
+  dialog.close();
+ };
+ dialog.showModal();
 }
 function showView(id){$$('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));$$('.view').forEach(v=>v.hidden=v.id!==id);renderAll()}
 function renderStats(){const c=counts(),expired=participants.filter(p=>['expired','released'].includes(participantStatus(p))).length;$('#available').textContent=c.available;$('#reserved').textContent=c.reserved;$('#paid').textContent=c.paid;$('#expiredCount').textContent=expired;$('#participantCount').textContent=participants.length;$('#total').textContent=money(c.paid*PRICE)}
@@ -105,18 +123,8 @@ async function sendReminderFor(id){
   alert('El teléfono registrado no es válido para WhatsApp. Revisa que tenga 10 dígitos en la ficha del participante.');
   return;
  }
- try{
-  const image=await prizeImageFile();
-  downloadPrizeImage(image);
-  // Abrir directamente la conversación del número registrado.
-  window.open(url,'_blank','noopener');
-  alert('Se abrió el WhatsApp del participante con el mensaje listo. Adjunta la imagen del premio que se descargó automáticamente.');
-  try{await RifaFirebase.markReminderSent(id)}catch(err){alert(err.message)}
- }catch(error){
-  console.error(error);
-  window.open(url,'_blank','noopener');
-  alert('Se abrió el WhatsApp del participante con el mensaje listo, pero no fue posible descargar la imagen del premio. Detalle: '+(error?.message||error));
- }
+ window.open(url,'_blank','noopener');
+ try{await RifaFirebase.markReminderSent(id)}catch(err){console.error(err);alert(err.message)}
 }
 function showWinner(d){$('#winnerCard').hidden=false;$('#winnerName').textContent=d.participantName||'Participante';$('#winnerNumber').textContent=fmt(d.winnerNumber);$('#winnerPhone').textContent=d.phone||'—';$('#winnerDate').textContent=dateFmt(d.createdAt);lastWinnerText=`Rifa con Causa\nNúmero ganador: ${fmt(d.winnerNumber)}\nParticipante: ${d.participantName||'—'}\nTeléfono: ${d.phone||'—'}\nFecha: ${dateFmt(d.createdAt)}`}
 function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}

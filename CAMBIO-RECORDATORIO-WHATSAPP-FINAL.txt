@@ -1,0 +1,8 @@
+Actualización final del recordatorio por WhatsApp
+
+- Abre directamente el chat del número registrado del participante.
+- Se eliminó la vista previa y cualquier intento de abrir o descargar la imagen del premio.
+- Mensaje compacto, sin espacios excesivos entre frases.
+- Emojis codificados de forma segura para WhatsApp: saludo, corazón y trébol.
+- Se menciona el premio: Dodge Journey 2013.
+- Se mantienen nombre, números apartados e importe pendiente personalizados.
