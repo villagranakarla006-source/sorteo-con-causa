@@ -1,0 +1,9 @@
+Rifa con Causa v1.2.4 — Recordatorio final
+
+Cambios limitados al módulo de recordatorios del panel administrativo:
+- Se eliminó el botón Copiar CLABE agregado al panel administrativo.
+- Se conservó Enviar recordatorio por WhatsApp.
+- En el mensaje, la etiqueta CLABE y los 18 dígitos aparecen en líneas separadas.
+- La CLABE se envía sin espacios para facilitar su selección y copiado en WhatsApp.
+- Se mantuvo el mensaje compacto, sin emojis y con el formato acordado.
+- No se modificó el sitio público ni su flujo de WhatsApp.
