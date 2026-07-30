@@ -1,0 +1,8 @@
+VERSIÓN v1.2.1
+
+Cambios realizados:
+- Se eliminó el botón visible para abrir/enviar por WhatsApp después del registro.
+- Se conserva el botón Copiar CLABE completa.
+- Al copiar, se muestra: “CLABE copiada correctamente.”
+- La CLABE se copia sin espacios.
+- No se modificaron Firebase, tablero, panel administrativo, consulta ni boletos.

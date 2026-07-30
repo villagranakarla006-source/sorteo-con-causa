@@ -91,7 +91,7 @@ function showPrizePreview(imageUrl,whatsappUrl,participantId){
     <p style="margin:14px 0 8px">La imagen no se descargará. Puedes mantenerla presionada en el celular o abrirla para compartirla en WhatsApp.</p>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
      <button type="button" id="openPrizeImage" class="secondary-btn">Abrir imagen</button>
-     <button type="button" id="openParticipantWhatsapp" class="primary-btn">Abrir WhatsApp</button>
+     <button type="button" id="openParticipantWhatsapp" class="primary-btn"></button>
      <button type="submit" class="secondary-btn">Cerrar</button>
     </div>
    </section>
