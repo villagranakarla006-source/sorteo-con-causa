@@ -1,0 +1,7 @@
+CORRECCIÓN — DIRECCIÓN AL WHATSAPP DEL PARTICIPANTE
+
+- El botón "Enviar recordatorio" abre directamente la conversación del teléfono guardado en la ficha.
+- Normaliza números mexicanos de 10 dígitos, +52 y el antiguo formato +521.
+- Valida el teléfono antes de abrir WhatsApp.
+- Conserva el mensaje aprobado y descarga la imagen oficial del premio para adjuntarla.
+- No se modificaron otros módulos ni el diseño.
