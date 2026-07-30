@@ -35,27 +35,29 @@ function timeRemaining(p){const d=toDate(p.expiresAt);if(!d||isNaN(d))return "Si
 function reminderMessage(p){
  const nums=(p.numbers||[]).map(fmt).join(', '),total=Number(p.total||((p.numbers||[]).length*PRICE));
  const method=String(p.paymentMethod||'transferencia').toLowerCase();
+ const smile='\u{1F60A}',card='\u{1F4B3}',heart='\u{1F497}',luck='\u{1F340}';
+ const cleanClabe=String(cfg.clabe||'—').replace(/\s+/g,'');
  const lines=[
-  `*Hola, ${p.name||'Participante'}. 😊*`,
+  `*Hola, ${p.name||'Participante'}. ${smile}*`,
   'Esperamos que te encuentres muy bien.',
-  `Queremos agradecerte por participar en la *Rifa con Causa a Karla Villagrana*, cuyo premio es una *${cfg.prize||'Dodge Journey 2013'}*.` ,
+  `Gracias por participar en la *Rifa con Causa a Karla Villagrana*, cuyo premio es una *${cfg.prize||'Dodge Journey 2013'}*.`,
   `*Números apartados:* *${nums||'—'}*`,
   `*Importe pendiente:* *${money(total)} MXN*`
  ];
  if(method==='efectivo'){
-  lines.push('*Por favor, comunícate con nosotros a este mismo WhatsApp para coordinar tu pago y confirmar tu participación.*');
+  lines.push('Comunícate por este WhatsApp para coordinar tu pago y recibir tu boleto digital.');
  }else{
   lines.push(
-   'Si elegiste realizar tu pago mediante *transferencia bancaria*, puedes hacerlo a la siguiente cuenta:',
+   `*${card} Datos para transferencia*`,
    `*Banco:* *${cfg.bankName||'Banamex'}*`,
    `*Titular:* *${cfg.accountHolder||'Karla Villagrana'}*`,
-   `*CLABE:* *${cfg.clabe||'—'}*`,
-   '*Una vez realizada la transferencia, por favor envíanos tu comprobante a este mismo WhatsApp para confirmar tu participación y enviarte tu boleto digital.*'
+   `*CLABE:* *${cleanClabe}*`,
+   'Envía tu comprobante por este WhatsApp y recibe tu boleto digital.'
   );
  }
  lines.push(
-  '*Muchas gracias por tu confianza, por tu apoyo y por formar parte de esta causa. 💗*',
-  '*¡Te deseamos mucho éxito y mucha suerte! 🍀*'
+  `*Muchas gracias por tu confianza, por tu apoyo y por formar parte de esta causa. ${heart}*`,
+  `¡Te deseamos mucho éxito y mucha suerte! ${luck}`
  );
  return lines.join('\n');
 }
