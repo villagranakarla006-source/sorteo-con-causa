@@ -1,0 +1,5 @@
+Cambio solicitado:
+- La imagen del premio ya no se descarga automáticamente.
+- Al pulsar "Enviar recordatorio" se muestra una vista previa de la imagen.
+- Desde la vista previa se puede abrir la imagen o abrir directamente el WhatsApp del participante con el mensaje preparado.
+- Se mantiene WhatsApp normal, sin API.
