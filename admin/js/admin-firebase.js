@@ -34,17 +34,30 @@ function isPending(p){const s=participantStatus(p);return s==="pending_payment"|
 function timeRemaining(p){const d=toDate(p.expiresAt);if(!d||isNaN(d))return "Sin vencimiento";const ms=d-Date.now();if(ms<=0)return "Vencida";const hours=Math.ceil(ms/3600000),days=Math.floor(hours/24),rest=hours%24;return days?`${days} d ${rest} h`:`${hours} h`}
 function reminderMessage(p){
  const nums=(p.numbers||[]).map(fmt).join(', '),total=Number(p.total||((p.numbers||[]).length*PRICE));
- return [
-  `Hola, ${p.name||'Participante'}. \uD83D\uDE0A`,
+ const method=String(p.paymentMethod||'transferencia').toLowerCase();
+ const lines=[
+  `*Hola, ${p.name||'Participante'}. 😊*`,
   'Esperamos que te encuentres muy bien.',
-  'Queremos agradecerte por participar en la Rifa con Causa a Karla Villagrana, cuyo premio es una Dodge Journey 2013.',
-  'Te recordamos que tienes los siguientes números apartados:',
-  `Números: ${nums||'—'}`,
-  `Importe pendiente: ${money(total)} MXN`,
-  'Por favor, envíanos tu comprobante a este WhatsApp para confirmar tu participación y actualizar el estado de tus números.',
-  'Muchas gracias por tu confianza, por tu apoyo y por formar parte de esta causa. \uD83D\uDC97',
-  '¡Te deseamos mucho éxito y mucha suerte! \uD83C\uDF40'
- ].join('\n');
+  `Queremos agradecerte por participar en la *Rifa con Causa a Karla Villagrana*, cuyo premio es una *${cfg.prize||'Dodge Journey 2013'}*.` ,
+  `*Números apartados:* *${nums||'—'}*`,
+  `*Importe pendiente:* *${money(total)} MXN*`
+ ];
+ if(method==='efectivo'){
+  lines.push('*Por favor, comunícate con nosotros a este mismo WhatsApp para coordinar tu pago y confirmar tu participación.*');
+ }else{
+  lines.push(
+   'Si elegiste realizar tu pago mediante *transferencia bancaria*, puedes hacerlo a la siguiente cuenta:',
+   `*Banco:* *${cfg.bankName||'Banamex'}*`,
+   `*Titular:* *${cfg.accountHolder||'Karla Villagrana'}*`,
+   `*CLABE:* *${cfg.clabe||'—'}*`,
+   '*Una vez realizada la transferencia, por favor envíanos tu comprobante a este mismo WhatsApp para confirmar tu participación y enviarte tu boleto digital.*'
+  );
+ }
+ lines.push(
+  '*Muchas gracias por tu confianza, por tu apoyo y por formar parte de esta causa. 💗*',
+  '*¡Te deseamos mucho éxito y mucha suerte! 🍀*'
+ );
+ return lines.join('\n');
 }
 function whatsappPhone(p){
  let phone=String(p.phone||p.telefono||p.celular||'').replace(/\D/g,'');

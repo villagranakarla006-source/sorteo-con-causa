@@ -1,0 +1,8 @@
+ACTUALIZACIÓN DEL RECORDATORIO DE WHATSAPP
+
+- Mensaje compacto, sin espacios excesivos.
+- Datos importantes formateados en negritas para WhatsApp.
+- Para transferencia muestra Banco, Titular y CLABE desde shared/config.js.
+- Para efectivo no muestra información bancaria.
+- El texto solicita enviar el comprobante para recibir el boleto digital.
+- No se modificaron otras funciones del proyecto.
