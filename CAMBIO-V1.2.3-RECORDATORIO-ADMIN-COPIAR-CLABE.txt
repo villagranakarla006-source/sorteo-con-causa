@@ -1,0 +1,11 @@
+Rifa con Causa v1.2.3 — Recordatorio del panel administrativo
+
+Cambios aplicados únicamente en Panel administrativo > Recordatorios:
+- Se eliminó el botón adicional “Abrir WhatsApp” de la vista previa antigua.
+- Se mantiene “Enviar recordatorio por WhatsApp”, que abre directamente el chat del participante.
+- Se agregó “Copiar CLABE” para participantes con pago por transferencia.
+- Al copiar se muestra: “CLABE copiada correctamente.”
+- Para pago en efectivo no se muestra el botón de copiar CLABE.
+- El mensaje compacto aprobado se conserva sin emojis.
+
+No se modificó el sitio público ni su flujo de WhatsApp.

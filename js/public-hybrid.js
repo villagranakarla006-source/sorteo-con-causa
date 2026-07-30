@@ -25,6 +25,7 @@
   const form=$("#registrationForm");
   const receiptFileInput=$("#receiptFile");
   const receiptShareActions=$("#receiptShareActions");
+  const openWhatsappButton=$("#openWhatsappButton");
   const numberSearch=$("#numberSearch");
   const numberSearchStatus=$("#numberSearchStatus");
   const transferPaymentSection=$("#transferPaymentSection");
@@ -259,20 +260,25 @@
     alert("Se abrió WhatsApp y se descargó el comprobante. Usa el clip de WhatsApp para adjuntar el archivo descargado.");
   }
 
+  openWhatsappButton?.addEventListener("click",event=>{
+    event.preventDefault();
+    if(!lastWhatsappUrl){
+      alert("Primero completa tu registro para generar la notificación.");
+      return;
+    }
+    // Abrir siempre el chat de la organizadora en la misma pestaña.
+    // Esto evita que los navegadores móviles bloqueen la ventana emergente.
+    window.location.assign(lastWhatsappUrl);
+  });
+
   $("#payNowButton")?.addEventListener("click",()=>openDialog("pay_now"));
   $("#reserveNumbersButton")?.addEventListener("click",()=>openDialog("reserve"));
   $("#showPayment")?.addEventListener("click",()=>selected.size?openDialog("pay_now"):$("#tablero")?.scrollIntoView({behavior:"smooth"}));
   $("#clearSelectionButton")?.addEventListener("click",clearSelection);
   $("#closeDialog")?.addEventListener("click",()=>dialog.close());
   $("#copyClabe")?.addEventListener("click",async event=>{
-    const button=event.currentTarget;
-    try{
-      await navigator.clipboard.writeText(String(cfg.clabe||"").replace(/\s/g,""));
-      button.textContent="CLABE copiada correctamente.";
-      window.setTimeout(()=>{button.textContent="Copiar CLABE completa";},2200);
-    }catch(_){
-      prompt("Copia la CLABE:",String(cfg.clabe||"").replace(/\s/g,""));
-    }
+    try{await navigator.clipboard.writeText(cfg.clabe);event.currentTarget.textContent="CLABE copiada";}
+    catch(_){prompt("Copia la CLABE:",cfg.clabe);}
   });
   numberSearch?.addEventListener("input",()=>{numberSearch.value=(numberSearch.value||"").replace(/\D/g,"").slice(0,3);renderGrid();});
   numberSearch?.addEventListener("keydown",event=>{
@@ -349,7 +355,13 @@ Tengo 7 días para completar el pago desde el botón Pagos pendientes del tabler
 Gracias por apoyar esta causa, tu participación es esperanza de vida.`
         :buildMessage(name,phone,numbers,total,paymentMethod);
       lastWhatsappUrl=`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(lastWhatsappMessage)}`;
+      openWhatsappButton.href=lastWhatsappUrl;
       receiptShareActions.hidden=false;
+      if(openWhatsappButton){
+        openWhatsappButton.className="button primary full whatsapp-main-action whatsapp-main-action--active";
+        openWhatsappButton.textContent="Enviar notificación de registro";
+        openWhatsappButton.href=lastWhatsappUrl;
+      }
 
       selected.clear();
       saveSelection();
@@ -357,12 +369,13 @@ Gracias por apoyar esta causa, tu participación es esperanza de vida.`
       renderGrid();
       submit.hidden=true;
       status.className="form-status success";
+      const nextStep="Ahora presiona el botón resaltado <strong>Enviar notificación de registro</strong>.";
       if(mode==="reserve"){
-        status.innerHTML=`<strong>¡Tus números quedaron apartados! 💗</strong><br><br><strong>Números:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Plazo:</strong> 7 días para completar el pago.<br>${collaborator?`<strong>Colaborador:</strong> ${collaborator}<br>`:""}<br>Cuando estés lista(o), regresa al tablero y presiona <strong>Pagos pendientes</strong> usando el mismo teléfono.`;
+        status.innerHTML=`<strong>¡Tus números quedaron apartados! 💗</strong><br><br><strong>Números:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Plazo:</strong> 7 días para completar el pago.<br>${collaborator?`<strong>Colaborador:</strong> ${collaborator}<br>`:""}<br>Cuando estés lista(o), regresa al tablero y presiona <strong>Pagos pendientes</strong> usando el mismo teléfono.<br><br>${nextStep}`;
       }else{
         const methodLabel=paymentMethod==="efectivo"?"Efectivo":"Transferencia";
         const receiptState=file?"Comprobante recibido para revisión.":"Pago pendiente en efectivo.";
-        status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Método de pago:</strong> ${methodLabel}<br><strong>Estatus:</strong> ${receiptState}<br>${collaborator?`<strong>Colaborador:</strong> ${collaborator}<br>`:""}`;
+        status.innerHTML=`<strong>¡Gracias de corazón por tu valioso apoyo! 💗</strong><br><br>Tu participación fue recibida correctamente.<br><strong>Números:</strong> ${numbers.map(fmt).join(", ")}<br><strong>Total:</strong> $${total.toLocaleString("es-MX")} MXN<br><strong>Método de pago:</strong> ${methodLabel}<br><strong>Estatus:</strong> ${receiptState}<br>${collaborator?`<strong>Colaborador:</strong> ${collaborator}<br>`:""}<br>${nextStep}`;
       }
       ui.toast?.("Registro realizado correctamente.","success");
 
