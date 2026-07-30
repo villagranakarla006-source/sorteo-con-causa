@@ -52,10 +52,18 @@ Muchas gracias por tu confianza, por tu apoyo y por formar parte de esta causa. 
 
 ¡Te deseamos mucho éxito y mucha suerte! 🍀`;
 }
+function whatsappPhone(p){
+ let phone=String(p.phone||p.telefono||p.celular||'').replace(/\D/g,'');
+ // México: WhatsApp usa 52 + los 10 dígitos, sin el antiguo prefijo móvil 1.
+ if(phone.startsWith('0052'))phone=phone.slice(4);
+ if(phone.length===13&&phone.startsWith('521'))phone='52'+phone.slice(3);
+ else if(phone.length===10)phone='52'+phone;
+ else if(phone.length>12)phone='52'+phone.slice(-10);
+ return phone;
+}
 function reminderUrl(p){
- let phone=String(p.phone||'').replace(/\D/g,'');
- if(phone.length===10)phone='52'+phone;
- return `https://wa.me/${phone}?text=${encodeURIComponent(reminderMessage(p))}`;
+ const phone=whatsappPhone(p);
+ return phone?`https://wa.me/${phone}?text=${encodeURIComponent(reminderMessage(p))}`:'';
 }
 async function prizeImageFile(){
  const response=await fetch('../assets/vista-previa-whatsapp-journey.jpg',{cache:'no-store'});
@@ -92,20 +100,22 @@ if(receipt){
 $('#participantDialog').showModal()}
 async function sendReminderFor(id){
  const p=participants.find(x=>x.id===id);if(!p)return;
+ const url=reminderUrl(p),phone=whatsappPhone(p);
+ if(!phone||phone.length!==12||!phone.startsWith('52')){
+  alert('El teléfono registrado no es válido para WhatsApp. Revisa que tenga 10 dígitos en la ficha del participante.');
+  return;
+ }
  try{
-  const image=await prizeImageFile(),message=reminderMessage(p);
-  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[image]})){
-   await navigator.share({title:'Rifa con Causa a Karla Villagrana',text:message,files:[image]});
-  }else{
-   downloadPrizeImage(image);
-   window.open(reminderUrl(p),'_blank','noopener');
-   alert('Se descargó la imagen del premio y se abrió WhatsApp con el mensaje listo. Adjunta la imagen descargada usando el clip de WhatsApp.');
-  }
+  const image=await prizeImageFile();
+  downloadPrizeImage(image);
+  // Abrir directamente la conversación del número registrado.
+  window.open(url,'_blank','noopener');
+  alert('Se abrió el WhatsApp del participante con el mensaje listo. Adjunta la imagen del premio que se descargó automáticamente.');
   try{await RifaFirebase.markReminderSent(id)}catch(err){alert(err.message)}
  }catch(error){
   console.error(error);
-  window.open(reminderUrl(p),'_blank','noopener');
-  alert('WhatsApp se abrió con el mensaje, pero no fue posible preparar la imagen del premio. Detalle: '+(error?.message||error));
+  window.open(url,'_blank','noopener');
+  alert('Se abrió el WhatsApp del participante con el mensaje listo, pero no fue posible descargar la imagen del premio. Detalle: '+(error?.message||error));
  }
 }
 function showWinner(d){$('#winnerCard').hidden=false;$('#winnerName').textContent=d.participantName||'Participante';$('#winnerNumber').textContent=fmt(d.winnerNumber);$('#winnerPhone').textContent=d.phone||'—';$('#winnerDate').textContent=dateFmt(d.createdAt);lastWinnerText=`Rifa con Causa\nNúmero ganador: ${fmt(d.winnerNumber)}\nParticipante: ${d.participantName||'—'}\nTeléfono: ${d.phone||'—'}\nFecha: ${dateFmt(d.createdAt)}`}
