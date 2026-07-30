@@ -1,0 +1,10 @@
+ACTUALIZACIÓN DEL RECORDATORIO DE WHATSAPP
+
+- Mensaje compacto, sin líneas vacías innecesarias.
+- CLABE completa, sin espacios y en una línea independiente para facilitar su selección y copia.
+- Frase breve: “Envía tu comprobante por este WhatsApp y recibe tu boleto digital.”
+- Frase de agradecimiento completa en negritas.
+- Despedida sin negritas.
+- Emojis definidos mediante escapes Unicode para evitar que aparezcan como signos de interrogación.
+- Datos bancarios mostrados solo en recordatorios de transferencia.
+- No se modificaron otros módulos.

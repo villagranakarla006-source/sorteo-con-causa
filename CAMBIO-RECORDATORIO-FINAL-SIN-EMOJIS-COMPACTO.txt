@@ -1,0 +1,12 @@
+CAMBIO FINAL DEL RECORDATORIO DE WHATSAPP
+
+- Se eliminaron todos los emojis del recordatorio.
+- Se sustituyó la frase larga por: "Envía tu comprobante por este WhatsApp y recibe tu boleto digital."
+- Esa frase se muestra en texto normal, sin negritas.
+- "Datos para transferencia" se muestra en texto normal, sin negritas.
+- Banco, titular y CLABE permanecen resaltados en negritas.
+- La CLABE se presenta sin espacios para facilitar su copia.
+- El agradecimiento completo permanece en negritas.
+- La despedida se muestra en texto normal.
+- El mensaje usa saltos de línea simples para conservar una presentación compacta.
+- No se modificaron otros módulos del sistema.
