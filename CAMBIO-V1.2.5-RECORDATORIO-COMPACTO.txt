@@ -1,0 +1,9 @@
+Rifa con Causa v1.2.5
+
+Cambios limitados al mensaje de recordatorio del panel administrativo:
+- Mensaje compacto, sin líneas vacías.
+- Sin emojis.
+- CLABE sin espacios y sola en una línea.
+- Sin botón Copiar CLABE en el panel administrativo.
+- Se conserva Enviar recordatorio, necesario para abrir el chat del participante.
+- No se modificó el sitio público, Firebase, tablero, consulta ni boletos.

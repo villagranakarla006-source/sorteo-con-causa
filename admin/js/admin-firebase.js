@@ -40,17 +40,17 @@ function reminderMessage(p){
   `Hola, ${p.name||'Participante'}.`,
   'Esperamos que te encuentres muy bien.',
   `Gracias por participar en la *Rifa con Causa a Karla Villagrana*, cuyo premio es una *${cfg.prize||'Dodge Journey 2013'}*.`,
-  `*Números apartados:* *${nums||'—'}*`,
-  `*Importe pendiente:* *${money(total)} MXN*`
+  `*Números apartados: ${nums||'—'}*`,
+  `*Importe pendiente: ${money(total)} MXN*`
  ];
  if(method==='efectivo'){
   lines.push('Comunícate por este WhatsApp para coordinar tu pago y recibir tu boleto digital.');
  }else{
   lines.push(
    'Datos para transferencia',
-   `*Banco:* *${cfg.bankName||'Banamex'}*`,
-   `*Titular:* *${cfg.accountHolder||'Karla Villagrana'}*`,
-   '*CLABE:*',
+   `*Banco: ${cfg.bankName||'Banamex'}*`,
+   `*Titular: ${cfg.accountHolder||'Karla Villagrana'}*`,
+   '*CLABE*',
    `*${cleanClabe}*`,
    'Envía tu comprobante por este WhatsApp y recibe tu boleto digital.'
   );
