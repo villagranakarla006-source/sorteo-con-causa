@@ -1,0 +1,7 @@
+Rifa con Causa v1.2.7
+
+- El botón Copiar CLABE ahora permanece visible en la ficha del participante.
+- Copia la CLABE configurada, sin espacios.
+- Muestra confirmación de copiado y conserva alternativa manual si el navegador bloquea el portapapeles.
+- Se incrementó la versión del script para evitar caché.
+- No se modificó el sitio público.
