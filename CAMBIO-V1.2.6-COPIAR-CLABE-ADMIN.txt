@@ -1,0 +1,9 @@
+Rifa con Causa v1.2.6 — Copiar CLABE en recordatorios
+
+Cambios limitados al panel administrativo:
+- Se habilitó el botón “Copiar CLABE” en la ficha del participante.
+- Solo se muestra cuando el método de pago es Transferencia.
+- Copia la CLABE configurada en shared/config.js, sin espacios.
+- Muestra “CLABE copiada correctamente.”
+- Incluye método alternativo de copiado para navegadores sin Clipboard API.
+- No se modificó el sitio público ni el mensaje de recordatorio.
