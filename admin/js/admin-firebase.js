@@ -62,13 +62,20 @@ function reminderMessage(p){
  return lines.join('\n');
 }
 function whatsappPhone(p){
- let phone=String(p.phone||p.telefono||p.celular||'').replace(/\D/g,'');
- // México: WhatsApp usa 52 + los 10 dígitos, sin el antiguo prefijo móvil 1.
- if(phone.startsWith('0052'))phone=phone.slice(4);
+ // En la ficha abierta se usa primero el valor visible del campo Teléfono.
+ // Esto garantiza que el recordatorio se dirija al número mostrado en esa ficha.
+ const dialogPhone=(currentParticipantId&&p?.id===currentParticipantId)?($('#participantPhoneEdit')?.value||''):'';
+ const numberRow=records.find(r=>r.participantId===p?.id&&r.phone);
+ let phone=String(dialogPhone||p?.phone||p?.telefono||p?.celular||p?.mobile||numberRow?.phone||'').replace(/\D/g,'');
+ // Normalización para números mexicanos de WhatsApp: 52 + 10 dígitos.
+ if(phone.startsWith('00'))phone=phone.slice(2);
  if(phone.length===13&&phone.startsWith('521'))phone='52'+phone.slice(3);
- else if(phone.length===10)phone='52'+phone;
- else if(phone.length>12)phone='52'+phone.slice(-10);
- return phone;
+ if(phone.length===12&&phone.startsWith('52'))return phone;
+ if(phone.length===11&&phone.startsWith('1'))phone=phone.slice(1);
+ if(phone.length===10)return '52'+phone;
+ // Como último recurso, usar los últimos 10 dígitos únicamente cuando existan.
+ if(phone.length>10)return '52'+phone.slice(-10);
+ return '';
 }
 function reminderUrl(p){
  const phone=whatsappPhone(p);
@@ -96,18 +103,26 @@ if(receipt){
  $('#receiptPreview').innerHTML=`<div class="empty-state">El comprobante no pudo almacenarse en el panel por su tamaño. Revísalo en WhatsApp.<br><a href="https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent('Hola, seguimiento de la Rifa con Causa para '+(p.name||'participante')+', números '+(p.numbers||[]).map(fmt).join(', '))}" target="_blank" rel="noopener">Abrir conversación de WhatsApp</a></div>`;
 }
 $('#participantDialog').showModal()}
-async function sendReminderFor(id){
+function sendReminderFor(id){
  const p=participants.find(x=>x.id===id);if(!p)return;
  const phone=whatsappPhone(p);
  if(!/^52\d{10}$/.test(phone)){
-  alert('El teléfono registrado no es válido para WhatsApp. Revisa que tenga 10 dígitos en la ficha del participante.');
+  alert('No fue posible identificar el teléfono del participante. Verifica que la ficha muestre un número mexicano de 10 dígitos.');
   return;
  }
- const url=`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(reminderMessage(p))}`;
- // Abrir en la misma pestaña conserva el número del participante y evita bloqueos
- // de ventanas emergentes en Android, iPhone y WhatsApp Web.
- try{await RifaFirebase.markReminderSent(id)}catch(err){console.error(err)}
- window.location.assign(url);
+ const url=`https://wa.me/${phone}?text=${encodeURIComponent(reminderMessage(p))}`;
+ // El enlace se abre de forma síncrona dentro del clic del usuario para evitar
+ // bloqueos del navegador y conservar exactamente el destinatario de la ficha.
+ const link=document.createElement('a');
+ link.href=url;
+ link.target='_blank';
+ link.rel='noopener noreferrer';
+ link.style.display='none';
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+ // El registro del envío se hace después y nunca bloquea la apertura de WhatsApp.
+ Promise.resolve(RifaFirebase.markReminderSent(id)).catch(err=>console.error(err));
 }
 function showWinner(d){$('#winnerCard').hidden=false;$('#winnerName').textContent=d.participantName||'Participante';$('#winnerNumber').textContent=fmt(d.winnerNumber);$('#winnerPhone').textContent=d.phone||'—';$('#winnerDate').textContent=dateFmt(d.createdAt);lastWinnerText=`Rifa con Causa\nNúmero ganador: ${fmt(d.winnerNumber)}\nParticipante: ${d.participantName||'—'}\nTeléfono: ${d.phone||'—'}\nFecha: ${dateFmt(d.createdAt)}`}
 function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}

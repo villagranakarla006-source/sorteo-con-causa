@@ -1,0 +1,7 @@
+CORRECCIÓN V1.3.0
+
+- El recordatorio usa primero el teléfono visible en la ficha abierta.
+- Como respaldo usa el teléfono guardado en el participante o en sus números.
+- Normaliza México a 52 + 10 dígitos.
+- Abre wa.me de forma síncrona antes de registrar el envío, evitando bloqueos.
+- Conserva el botón Copiar CLABE y el resto del sistema sin cambios.
