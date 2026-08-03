@@ -1,0 +1,7 @@
+Rifa con Causa v1.2.9
+
+Corrección puntual:
+- El botón Enviar recordatorio abre WhatsApp en la misma pestaña.
+- Usa api.whatsapp.com/send con el teléfono registrado del participante.
+- Normaliza teléfonos mexicanos a 52 + 10 dígitos.
+- Conserva el botón Copiar CLABE y el resto del panel sin cambios.

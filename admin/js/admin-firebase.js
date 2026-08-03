@@ -103,17 +103,11 @@ async function sendReminderFor(id){
   alert('El teléfono registrado no es válido para WhatsApp. Revisa que tenga 10 dígitos en la ficha del participante.');
   return;
  }
- const url=`https://wa.me/${phone}?text=${encodeURIComponent(reminderMessage(p))}`;
- // Crear y pulsar un enlace dentro del mismo clic evita que el navegador bloquee
- // la apertura y conserva el número del participante como destinatario.
- const link=document.createElement('a');
- link.href=url;
- link.target='_blank';
- link.rel='noopener noreferrer';
- document.body.appendChild(link);
- link.click();
- link.remove();
- try{await RifaFirebase.markReminderSent(id)}catch(err){console.error(err);alert('WhatsApp se abrió, pero no fue posible registrar el envío del recordatorio: '+(err?.message||err))}
+ const url=`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(reminderMessage(p))}`;
+ // Abrir en la misma pestaña conserva el número del participante y evita bloqueos
+ // de ventanas emergentes en Android, iPhone y WhatsApp Web.
+ try{await RifaFirebase.markReminderSent(id)}catch(err){console.error(err)}
+ window.location.assign(url);
 }
 function showWinner(d){$('#winnerCard').hidden=false;$('#winnerName').textContent=d.participantName||'Participante';$('#winnerNumber').textContent=fmt(d.winnerNumber);$('#winnerPhone').textContent=d.phone||'—';$('#winnerDate').textContent=dateFmt(d.createdAt);lastWinnerText=`Rifa con Causa\nNúmero ganador: ${fmt(d.winnerNumber)}\nParticipante: ${d.participantName||'—'}\nTeléfono: ${d.phone||'—'}\nFecha: ${dateFmt(d.createdAt)}`}
 function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
