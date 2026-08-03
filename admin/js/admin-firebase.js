@@ -98,13 +98,22 @@ if(receipt){
 $('#participantDialog').showModal()}
 async function sendReminderFor(id){
  const p=participants.find(x=>x.id===id);if(!p)return;
- const url=reminderUrl(p),phone=whatsappPhone(p);
- if(!phone||phone.length!==12||!phone.startsWith('52')){
+ const phone=whatsappPhone(p);
+ if(!/^52\d{10}$/.test(phone)){
   alert('El teléfono registrado no es válido para WhatsApp. Revisa que tenga 10 dígitos en la ficha del participante.');
   return;
  }
- window.open(url,'_blank','noopener');
- try{await RifaFirebase.markReminderSent(id)}catch(err){console.error(err);alert(err.message)}
+ const url=`https://wa.me/${phone}?text=${encodeURIComponent(reminderMessage(p))}`;
+ // Crear y pulsar un enlace dentro del mismo clic evita que el navegador bloquee
+ // la apertura y conserva el número del participante como destinatario.
+ const link=document.createElement('a');
+ link.href=url;
+ link.target='_blank';
+ link.rel='noopener noreferrer';
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+ try{await RifaFirebase.markReminderSent(id)}catch(err){console.error(err);alert('WhatsApp se abrió, pero no fue posible registrar el envío del recordatorio: '+(err?.message||err))}
 }
 function showWinner(d){$('#winnerCard').hidden=false;$('#winnerName').textContent=d.participantName||'Participante';$('#winnerNumber').textContent=fmt(d.winnerNumber);$('#winnerPhone').textContent=d.phone||'—';$('#winnerDate').textContent=dateFmt(d.createdAt);lastWinnerText=`Rifa con Causa\nNúmero ganador: ${fmt(d.winnerNumber)}\nParticipante: ${d.participantName||'—'}\nTeléfono: ${d.phone||'—'}\nFecha: ${dateFmt(d.createdAt)}`}
 function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}

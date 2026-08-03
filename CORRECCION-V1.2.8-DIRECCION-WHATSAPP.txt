@@ -1,0 +1,6 @@
+Rifa con Causa v1.2.8
+
+Cambio puntual:
+- Restaurado el direccionamiento del botón Enviar recordatorio al WhatsApp del teléfono registrado en la ficha.
+- Se conserva Copiar CLABE.
+- No se modificó el panel público ni otros módulos.
