@@ -103,13 +103,18 @@ function canvasBlob(canvas){return new Promise((resolve,reject)=>{try{canvas.toB
 function triggerDownload(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
 async function downloadTicket(p){const c=await createTicket(p);const blob=await canvasBlob(c);triggerDownload(blob,filename(p));return c}
 async function shareTicket(p){
- const c=await createTicket(p),blob=await canvasBlob(c),file=new File([blob],filename(p),{type:'image/png'}),nums=(p.numbers||[]).map(fmt).join(', ');
- const msg=`Hola ${clean(p.name)||'participante'} 💗\n\nTu pago fue verificado correctamente. Tus números ${nums} ya están confirmados como PAGADOS.\n\nTe compartimos tu boleto digital de participación. Gracias por apoyar esta causa.`;
- try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({title:'Boleto digital — Rifa con Causa',text:msg,files:[file]});return}}catch(e){if(e?.name==='AbortError')return;console.warn(e)}
- triggerDownload(blob,file.name);
- const phone=String(p.phone||'').replace(/\D/g,''),whatsappPhone=phone.length===10?'52'+phone:phone;
- window.open(`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(msg)}`,'_blank','noopener');
- alert('Se descargó el boleto y se abrió WhatsApp. Adjunta la imagen descargada usando el clip.');
+ const c=await createTicket(p),blob=await canvasBlob(c),nums=(p.numbers||[]).map(fmt).join(', ');
+ const msg=`Hola ${clean(p.name)||'participante'}\n\nTu pago fue verificado correctamente. Tus números ${nums} ya están confirmados como PAGADOS.\n\nTe compartimos tu boleto digital de participación. Gracias por apoyar esta causa.`;
+ triggerDownload(blob,filename(p));
+ let phone=String(p.phone||p.telefono||p.celular||p.whatsapp||p.mobile||p.phoneNumber||'').replace(/\D/g,'');
+ if(phone.startsWith('00'))phone=phone.slice(2);
+ if(phone.startsWith('521')&&phone.length===13)phone='52'+phone.slice(3);
+ if(!(phone.startsWith('52')&&phone.length===12))phone=phone.length>=10?'52'+phone.slice(-10):'';
+ if(!phone)throw new Error('La ficha no contiene un teléfono válido de 10 dígitos.');
+ const url=`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+ alert('El boleto se descargó. Al continuar se abrirá el WhatsApp del participante; adjunta la imagen descargada usando el clip.');
+ window.location.assign(url);
 }
+
 window.RifaTicket={createTicket,downloadTicket,shareTicket};
 })();

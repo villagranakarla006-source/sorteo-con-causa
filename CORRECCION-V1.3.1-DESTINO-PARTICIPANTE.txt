@@ -1,0 +1,7 @@
+Corrección puntual v1.3.1
+
+- El recordatorio toma el teléfono de la ficha seleccionada y abre ese chat.
+- Confirmar pago / enviar boleto descarga el boleto y abre el chat del participante.
+- Se eliminó el uso de la hoja de compartir del dispositivo porque no permite dirigir a un destinatario concreto.
+- Se normalizan teléfonos mexicanos al formato 52 + 10 dígitos.
+- No se modificó el panel público.
