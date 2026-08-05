@@ -1,0 +1,7 @@
+Rifa con Causa v1.4.1
+
+Corrección puntual:
+- El generador del boleto ahora recupera el comprobante desde todos los campos compatibles.
+- Si el comprobante ya se visualiza en la ficha administrativa, utiliza esa misma fuente como respaldo.
+- Se mantiene el comprobante en miniatura dentro del recuadro COMPROBANTE VERIFICADO.
+- No se modificaron expirados, recuperación, WhatsApp, registro ni panel público.

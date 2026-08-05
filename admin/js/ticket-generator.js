@@ -34,6 +34,50 @@ async function loadReceiptImage(src){
  return loadImage(value);
 }
 
+
+function findReceiptSource(participant){
+ const direct=[
+  participant?.receiptData,participant?.receiptUrl,participant?.receipt,
+  participant?.comprobanteData,participant?.comprobanteUrl,participant?.comprobante,
+  participant?.paymentReceiptData,participant?.paymentReceiptUrl,
+  participant?.payment?.receiptData,participant?.payment?.receiptUrl,
+  participant?.payment?.comprobanteData,participant?.payment?.comprobanteUrl
+ ];
+ for(const value of direct){
+  const text=String(value||'').trim();
+  if(text&&(text.startsWith('data:image/')||text.startsWith('data:application/pdf')||/^https?:/i.test(text))) return text;
+ }
+ // Respaldo: si el comprobante ya se visualiza en la ficha, reutiliza exactamente esa fuente.
+ const preview=document.querySelector('#receiptPreview img, #receiptPreview iframe');
+ const previewSrc=String(preview?.src||preview?.getAttribute?.('src')||'').trim();
+ if(previewSrc) return previewSrc;
+ // Último respaldo: busca recursivamente campos cuyo nombre mencione comprobante/receipt.
+ const seen=new Set();
+ function walk(value,depth=0){
+  if(depth>4||value==null) return '';
+  if(typeof value==='string'){
+   const text=value.trim();
+   return (text.startsWith('data:image/')||text.startsWith('data:application/pdf')||/^https?:/i.test(text))?text:'';
+  }
+  if(typeof value!=='object'||seen.has(value)) return '';
+  seen.add(value);
+  for(const [key,val] of Object.entries(value)){
+   if(/receipt|comprobante|voucher|proof/i.test(key)){
+    const found=walk(val,depth+1);if(found)return found;
+   }
+  }
+  return '';
+ }
+ return walk(participant);
+}
+function findReceiptType(participant,receipt){
+ const direct=clean(participant?.receiptType||participant?.comprobanteType||participant?.paymentReceiptType||participant?.payment?.receiptType).toLowerCase();
+ if(direct)return direct;
+ if(String(receipt).startsWith('data:application/pdf'))return 'application/pdf';
+ if(String(receipt).startsWith('data:image/'))return String(receipt).slice(5,String(receipt).indexOf(';'));
+ return '';
+}
+
 function fitText(ctx,text,maxWidth,startSize,minSize=18){let size=startSize;do{ctx.font=`700 ${size}px Arial`;if(ctx.measureText(text).width<=maxWidth)return size;size-=2}while(size>=minSize);return minSize}
 function roundPath(ctx,x,y,w,h,r){
  r=Math.max(0,Math.min(r,w/2,h/2));
@@ -69,8 +113,8 @@ async function createTicket(participant){
 
  ctx.fillStyle='rgba(255,255,255,.99)';rounded(ctx,730,575,266,385,22);ctx.strokeStyle='#0c8b91';ctx.lineWidth=2;ctx.strokeRect(731,576,264,383);
  ctx.fillStyle='#0b7f82';rounded(ctx,744,594,238,50,12);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 18px Arial';ctx.fillText('COMPROBANTE VERIFICADO',863,626);
- const receipt=participant.receiptData||participant.receiptUrl||participant.comprobanteData||participant.comprobanteUrl||'';
- const receiptType=clean(participant.receiptType).toLowerCase();
+ const receipt=findReceiptSource(participant);
+ const receiptType=findReceiptType(participant,receipt);
  const isPdf=receiptType.includes('pdf')||String(receipt).startsWith('data:application/pdf');
  if(receipt&&!isPdf){
   try{
