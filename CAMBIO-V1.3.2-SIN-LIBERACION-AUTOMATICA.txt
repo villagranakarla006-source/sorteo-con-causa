@@ -1,0 +1,9 @@
+Rifa con Causa v1.3.2
+
+Cambio aplicado:
+- Se desactivó la liberación automática de números al vencer un apartado.
+- Se desactivó el cambio automático de la ficha a Expirado.
+- Las fichas y sus números permanecen intactos hasta una acción manual de la administradora.
+- Los recordatorios previos al vencimiento continúan funcionando.
+
+No se modificaron WhatsApp, boletos, tablero público, registro ni consulta.

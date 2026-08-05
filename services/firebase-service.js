@@ -202,17 +202,11 @@
       if(status!=="pending_payment"&&status!=="pending_transfer"&&status!=="pending_cash"&&status!=="receipt_received") continue;
       const expires=p.expiresAt?.toDate?p.expiresAt.toDate():(p.expiresAt?new Date(p.expiresAt):null);
       if(!expires||isNaN(expires)) continue;
+      // Los apartados vencidos permanecen intactos hasta que la administradora
+      // decida manualmente confirmar, liberar, cancelar o eliminar la ficha.
+      // No se cambia el estado del participante ni se liberan sus números.
       if(expires<=current){
-        await db.runTransaction(async tx=>{
-          const ref=db.collection("participants").doc(doc.id),fresh=await tx.get(ref);
-          if(!fresh.exists) return;
-          const data=fresh.data(),st=data.status==="reserved"?(data.paymentMethod==="efectivo"?"pending_cash":"pending_transfer"):data.status;
-          if(st!=="pending_payment"&&st!=="pending_transfer"&&st!=="pending_cash"&&st!=="receipt_received") return;
-          tx.update(ref,{status:"expired",expiredAt:now(),releasedAt:now(),updatedAt:now()});
-          (data.numbers||[]).forEach(n=>tx.update(db.collection("numbers").doc(numId(n)),{status:"available",participantId:"",participantName:"",phone:"",updatedAt:now()}));
-        });
-        const batch=db.batch();audit(batch,"Liberación automática","Reserva vencida; números liberados",doc.id);await batch.commit();
-        expired++;
+        continue;
       }else if(expires<=reminderLimit&&!p.reminderSent&&!p.reminderDue){
         const batch=db.batch();
         batch.update(doc.ref,{reminderDue:true,reminderDueAt:now(),updatedAt:now()});
