@@ -1,0 +1,10 @@
+Rifa con Causa v1.4 — Estabilización administrativa
+
+- Se conserva la desactivación de la liberación automática.
+- Nueva pestaña Expirados para fichas vencidas, liberadas o recuperadas como historial.
+- Recuperación segura: solo restaura números que continúan disponibles.
+- Los números ocupados nunca se sobrescriben y quedan documentados en la ficha.
+- Las fichas vencidas con números aún apartados se muestran como pendientes de revisión.
+- Se conservan recordatorios, boletos, WhatsApp y panel público sin cambios de diseño.
+
+Importante: las fichas que ya fueron eliminadas físicamente de Firebase solo pueden recuperarse desde un respaldo/exportación existente.

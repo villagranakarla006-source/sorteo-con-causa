@@ -22,6 +22,7 @@
 <button class="tab-btn active" data-view="dashboardHome">Resumen</button>
 <button class="tab-btn" data-view="numbersView">Números</button>
 <button class="tab-btn" data-view="participantsView">Participantes</button>
+<button class="tab-btn" data-view="expiredView">Expirados</button>
 <button class="tab-btn" data-view="drawView">Sorteo</button>
 <button class="tab-btn" data-view="historyView">Historial</button>
 </nav>
@@ -96,6 +97,14 @@
 <div id="participantCards" class="participant-cards"></div>
 </section>
 
+
+<section id="expiredView" class="view panel" hidden>
+<div class="section-title"><div><p class="eyebrow">Conservación de datos</p><h2>Participantes expirados</h2></div><span id="expiredResultCount">0 fichas</span></div>
+<p class="expired-help">Las fichas se conservan sin sobrescribir números actualmente ocupados. Una recuperación solo restaura los números que continúen disponibles; los demás quedan registrados como antecedente.</p>
+<div class="toolbar expired-toolbar"><input id="expiredSearch" placeholder="Buscar nombre, teléfono o número"><select id="expiredFilter"><option value="all">Todas las fichas</option><option value="overdue">Vencidas con números conservados</option><option value="released">Expiradas / liberadas</option><option value="history">Recuperadas solo como historial</option></select></div>
+<div id="expiredCards" class="participant-cards expired-cards"></div>
+</section>
+
 <section id="drawView" class="view" hidden>
 <div class="draw-layout">
 <article class="panel draw-machine">
@@ -154,5 +163,5 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script src="../services/firebase-config.js"></script>
 <script src="../services/firebase-service.js"></script>
-<script src="js/ticket-generator.js?v=1.3.1-destino-participante"></script>
-<script src="js/admin-firebase.js?v=1.3.1-destino-participante"></script></body></html>
+<script src="js/ticket-generator.js?v=1.4.0-estabilizacion"></script>
+<script src="js/admin-firebase.js?v=1.4.0-estabilizacion"></script></body></html>

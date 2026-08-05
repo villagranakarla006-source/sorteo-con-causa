@@ -218,6 +218,54 @@
     return {expired,reminders};
   }
 
+
+  async function recoverExpiredParticipant(id){
+    init();
+    if(!auth.currentUser) throw new Error("Inicia sesión como administradora.");
+    const ref=db.collection("participants").doc(id);
+    let result={restored:[],occupied:[]};
+    await db.runTransaction(async tx=>{
+      const doc=await tx.get(ref);
+      if(!doc.exists) throw new Error("La ficha ya no existe en Firebase.");
+      const p=doc.data();
+      if(!["expired","released","recovered_history"].includes(String(p.status||""))) {
+        throw new Error("Esta ficha no necesita recuperación.");
+      }
+      const original=[...new Set((p.originalNumbers||p.numbers||[]).map(Number).filter(n=>n>=1&&n<=500))].sort((a,b)=>a-b);
+      if(!original.length) throw new Error("La ficha no conserva números originales.");
+      const refs=original.map(n=>db.collection("numbers").doc(numId(n)));
+      const docs=await Promise.all(refs.map(r=>tx.get(r)));
+      const restored=[],occupied=[];
+      docs.forEach((numberDoc,index)=>{
+        const n=original[index],row=numberDoc.exists?numberDoc.data():{};
+        const free=!numberDoc.exists||!row.status||row.status==="available"||row.participantId===id;
+        if(free) restored.push(n); else occupied.push(n);
+      });
+      const nextStatus=restored.length?"pending_payment":"recovered_history";
+      tx.update(ref,{
+        originalNumbers:original,
+        numbers:restored,
+        unavailableNumbers:occupied,
+        status:nextStatus,
+        recoveredAt:now(),
+        expiresAt:null,
+        reminderDue:false,
+        reminderSent:false,
+        updatedAt:now()
+      });
+      restored.forEach(n=>tx.set(db.collection("numbers").doc(numId(n)),{
+        number:n,status:"reserved",participantId:id,participantName:p.name||"Participante",phone:p.phone||"",reservedAt:now(),updatedAt:now()
+      },{merge:true}));
+      result={restored,occupied};
+    });
+    const batch=db.batch();
+    audit(batch,"Ficha recuperada",result.restored.length
+      ?`Se restauraron ${result.restored.length} número(s). ${result.occupied.length} número(s) ya estaban ocupados.`
+      :`La ficha se recuperó como historial; sus ${result.occupied.length} número(s) originales ya estaban ocupados.`,id);
+    await batch.commit();
+    return result;
+  }
+
   async function deleteParticipant(id){
     init();
     if(!auth.currentUser) throw new Error("Inicia sesión como administradora.");
@@ -239,5 +287,5 @@
   }
   async function updateNumber(number,changes){init();const batch=db.batch();batch.update(db.collection("numbers").doc(numId(number)),{...changes,updatedAt:now()});audit(batch,"Número",`${numId(number)} actualizado`);await batch.commit();}
   async function registerDraw(draw){init();const ref=db.collection("draws").doc(),batch=db.batch();batch.set(ref,{...draw,createdAt:now()});audit(batch,"Sorteo",`Ganador ${numId(draw.winnerNumber)}`,draw.participantId||"");await batch.commit();return{id:ref.id,...draw,createdAt:new Date().toISOString()};}
-  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,completePaymentByPhone,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,markTicketSent,markReminderSent,processReservationAutomation,updateParticipant,deleteParticipant,updateNumber,registerDraw};
+  window.RifaFirebase={isConfigured:()=>ready,ensureNumbers,registerParticipant,completePaymentByPhone,findParticipationByPhone,listenNumbers,listenParticipants,listenAudit,listenDraws,login,logout,onAuth,setParticipantStatus,markTicketSent,markReminderSent,processReservationAutomation,recoverExpiredParticipant,updateParticipant,deleteParticipant,updateNumber,registerDraw};
 })();
